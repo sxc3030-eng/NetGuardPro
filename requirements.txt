@@ -1,0 +1,38 @@
+# ═══════════════════════════════════════════════════════
+#  NetGuardPro Suite — Python Dependencies
+# ═══════════════════════════════════════════════════════
+
+# ── Core (all programs) ──────────────────────────────
+pywebview>=4.0             # Native desktop UI
+requests>=2.28             # HTTP client
+psutil>=5.9                # System monitoring
+
+# ── Notifications ────────────────────────────────────
+winotify>=1.1              # Windows toast notifications
+
+# ── NetGuard Pro ─────────────────────────────────────
+scapy>=2.5                 # Packet capture & analysis
+dpkt>=1.9                  # Deep packet inspection
+geoip2>=4.7                # GeoIP lookups
+pycountry>=22.3            # Country codes
+
+# ── CleanGuard Pro ───────────────────────────────────
+yara-python>=4.3           # YARA malware signatures
+pefile>=2023.2             # PE file analysis
+watchdog>=3.0              # File system monitoring
+
+# ── MailShield Pro ───────────────────────────────────
+dnspython>=2.3             # DNS lookups (SPF/DKIM)
+cryptography>=41.0         # Email encryption
+bleach>=6.0                # HTML sanitization
+
+# ── VPN Guard Pro ────────────────────────────────────
+# WireGuard — system install required (not pip)
+
+# ── SentinelOS Cortex ────────────────────────────────
+aiohttp>=3.9               # Async HTTP for agents
+websockets>=12.0           # WebSocket communication
+
+# ── System Tray ──────────────────────────────────────
+pystray>=0.19              # System tray icon
+Pillow>=10.0               # Image processing for tray
