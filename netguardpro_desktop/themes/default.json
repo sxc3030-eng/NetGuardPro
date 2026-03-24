@@ -1,0 +1,22 @@
+{
+    "name": "NetGuardPro Dark",
+    "author": "NetGuardPro Team",
+    "colors": {
+        "bg": "#0a0a12",
+        "accent": "#00e5ff",
+        "accent2": "#0088ff",
+        "text": "#e0e0e0",
+        "text-dim": "#888",
+        "card-bg": "rgba(15,15,25,0.85)",
+        "dock-bg": "rgba(10,10,20,0.92)",
+        "topbar-bg": "rgba(8,8,16,0.94)",
+        "border": "rgba(0,229,255,0.12)",
+        "danger": "#ff2255",
+        "success": "#00ff88"
+    },
+    "starfield": {
+        "count": 200,
+        "color": "rgba(100,180,255,0.4)",
+        "speed": 0.15
+    }
+}

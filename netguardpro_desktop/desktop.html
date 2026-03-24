@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetGuardPro Desktop</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root {
+    --bg: #0c0c14;
+    --surface: #13131e;
+    --surface2: #1a1a2a;
+    --accent: #00b8d4;
+    --text: #e8e8ec;
+    --text2: #8888a0;
+    --border: rgba(255,255,255,0.06);
+    --green: #00c853;
+    --red: #ff3355;
+    --radius: 10px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+header {
+    height: 52px; min-height: 52px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px;
+}
+.brand {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 14px; letter-spacing: 1px;
+}
+.brand i { color: var(--accent); font-size: 18px; }
+.brand span { color: var(--accent); }
+.header-right {
+    display: flex; align-items: center; gap: 20px; font-size: 12px; color: var(--text2);
+}
+.header-right .stat { display: flex; align-items: center; gap: 5px; }
+.header-right .stat i { font-size: 10px; opacity: 0.6; }
+#score-badge {
+    padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 11px;
+    background: rgba(0,184,212,0.1); border: 1px solid rgba(0,184,212,0.25); color: var(--accent);
+    cursor: pointer;
+}
+#clock { font-weight: 600; font-size: 13px; color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* ── Main Grid ──────────────────────────────────────────── */
+main {
+    flex: 1; overflow-y: auto; padding: 24px;
+}
+main::-webkit-scrollbar { width: 5px; }
+main::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+
+.section-title {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--text2); margin: 0 0 14px 4px;
+}
+.section-title:not(:first-child) { margin-top: 28px; }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+/* ── Program Card ───────────────────────────────────────── */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+.card:hover {
+    background: var(--surface2);
+    border-color: rgba(255,255,255,0.1);
+}
+.card-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+}
+.card-info { flex: 1; min-width: 0; }
+.card-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-desc { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.card-status {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    background: var(--red); opacity: 0.7;
+}
+.card-status.on { background: var(--green); opacity: 1; }
+
+/* ── Footer / Toolbar ───────────────────────────────────── */
+footer {
+    height: 48px; min-height: 48px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px;
+}
+.footer-left { display: flex; align-items: center; gap: 6px; }
+.tb-btn {
+    width: 36px; height: 36px; border-radius: 8px; border: none;
+    background: transparent; color: var(--text2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; cursor: pointer; transition: all 0.15s;
+}
+.tb-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+.tb-btn.active-dot { position: relative; }
+.tb-btn.active-dot::after {
+    content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+    width: 4px; height: 4px; border-radius: 50%; background: var(--green);
+}
+.tb-btn.danger:hover { color: var(--red); background: rgba(255,51,85,0.08); }
+.footer-right { font-size: 11px; color: var(--text2); }
+
+/* ── System Info Panel ──────────────────────────────────── */
+#sysinfo {
+    display: none; position: fixed; top: 56px; right: 20px; z-index: 200;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); width: 260px; padding: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+#sysinfo.show { display: block; }
+.si-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; }
+.si-label { color: var(--text2); }
+.si-val { font-weight: 600; }
+.si-bar { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.06); margin-bottom: 12px; }
+.si-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+
+/* ── Context Menu ───────────────────────────────────────── */
+#ctxmenu {
+    display: none; position: fixed; z-index: 999;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; min-width: 180px; padding: 4px 0;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+#ctxmenu.show { display: block; }
+.ctx-item {
+    padding: 7px 16px; font-size: 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+}
+.ctx-item:hover { background: rgba(255,255,255,0.04); }
+.ctx-item i { width: 14px; text-align: center; font-size: 11px; color: var(--accent); opacity: 0.6; }
+.ctx-sep { height: 1px; background: var(--border); margin: 3px 0; }
+
+/* ── Toast ──────────────────────────────────────────────── */
+#toasts { position: fixed; bottom: 56px; right: 16px; z-index: 300; display: flex; flex-direction: column-reverse; gap: 6px; }
+.toast {
+    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: 8px; padding: 10px 16px; font-size: 12px; max-width: 300px;
+    animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <div class="brand">
+        <i class="fas fa-shield-halved"></i>
+        <span>NETGUARDPRO</span>
+    </div>
+    <div class="header-right">
+        <span id="score-badge" onclick="toggleSysInfo()"><i class="fas fa-shield-check"></i> <span id="score-text">—</span></span>
+        <div class="stat"><i class="fas fa-microchip"></i><span id="cpu-val">—</span></div>
+        <div class="stat"><i class="fas fa-memory"></i><span id="ram-val">—</span></div>
+        <span id="clock">--:--:--</span>
+    </div>
+</header>
+
+<!-- System Info -->
+<div id="sysinfo">
+    <div class="si-row"><span class="si-label">Hostname</span><span class="si-val" id="si-host">—</span></div>
+    <div class="si-row"><span class="si-label">OS</span><span class="si-val" id="si-os">—</span></div>
+    <div class="si-row"><span class="si-label">CPU</span><span class="si-val" id="si-cpu">—</span></div>
+    <div class="si-bar"><div class="si-bar-fill" id="si-cpu-bar" style="width:0;background:var(--accent)"></div></div>
+    <div class="si-row"><span class="si-label">RAM</span><span class="si-val" id="si-ram">—</span></div>
+    <div class="si-bar"><div class="si-bar-fill" id="si-ram-bar" style="width:0;background:#8855ff"></div></div>
+    <div class="si-row"><span class="si-label">Disk (C:)</span><span class="si-val" id="si-disk">—</span></div>
+    <div class="si-bar"><div class="si-bar-fill" id="si-disk-bar" style="width:0;background:#ff8800"></div></div>
+</div>
+
+<!-- Main Content -->
+<main>
+    <div class="section-title">Core</div>
+    <div class="grid" id="grid-core"></div>
+
+    <div class="section-title">Defense</div>
+    <div class="grid" id="grid-defense"></div>
+
+    <div class="section-title">Network</div>
+    <div class="grid" id="grid-network"></div>
+
+    <div class="section-title">Forensics & Offense</div>
+    <div class="grid" id="grid-forensics"></div>
+
+    <div class="section-title">Utilities</div>
+    <div class="grid" id="grid-utility"></div>
+</main>
+
+<!-- Footer Toolbar -->
+<footer>
+    <div class="footer-left">
+        <button class="tb-btn" onclick="dockLaunch('netguard')" title="NetGuard" style="color:#00b8d4" id="tb-netguard"><i class="fas fa-shield-halved"></i></button>
+        <button class="tb-btn" onclick="dockLaunch('sentinel')" title="Cortex" style="color:#ff00ff" id="tb-sentinel"><i class="fas fa-brain"></i></button>
+        <button class="tb-btn" onclick="dockLaunch('siem')" title="SIEM" style="color:#00ccff" id="tb-siem"><i class="fas fa-chart-line"></i></button>
+        <button class="tb-btn" onclick="dockLaunch('vpnguard')" title="VPN" style="color:#8855ff" id="tb-vpnguard"><i class="fas fa-lock"></i></button>
+        <button class="tb-btn" onclick="dockLaunch('mailshield')" title="MailShield" style="color:#ff6600" id="tb-mailshield"><i class="fas fa-envelope-open-text"></i></button>
+        <button class="tb-btn" onclick="toggleSysInfo()" title="System Info"><i class="fas fa-server"></i></button>
+        <button class="tb-btn danger" onclick="shutdownAll()" title="Shutdown All"><i class="fas fa-power-off"></i></button>
+    </div>
+    <div class="footer-right">
+        <span id="running-count">0</span> / <span id="total-count">14</span> running
+    </div>
+</footer>
+
+<!-- Context Menu -->
+<div id="ctxmenu">
+    <div class="ctx-item" onclick="refreshStatus()"><i class="fas fa-rotate"></i>Refresh</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" onclick="launchAll()"><i class="fas fa-play"></i>Launch All</div>
+    <div class="ctx-item" onclick="shutdownAll()" style="color:var(--red)"><i class="fas fa-power-off" style="color:var(--red);opacity:1"></i>Shutdown All</div>
+</div>
+
+<!-- Toasts -->
+<div id="toasts"></div>
+
+<script>
+// ── State ────────────────────────────────────────────────
+let programs = [];
+const CATEGORY_MAP = {
+    core: 'grid-core',
+    defense: 'grid-defense',
+    network: 'grid-network',
+    forensics: 'grid-forensics',
+    offense: 'grid-forensics',
+    utility: 'grid-utility',
+};
+
+// ── Clock ────────────────────────────────────────────────
+setInterval(() => {
+    document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-US', { hour12: false });
+}, 1000);
+
+// ── Render ───────────────────────────────────────────────
+function renderPrograms(list) {
+    programs = list;
+    // Clear all grids
+    Object.values(CATEGORY_MAP).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+    });
+
+    for (const p of list) {
+        const gridId = CATEGORY_MAP[p.category] || 'grid-utility';
+        const grid = document.getElementById(gridId);
+        if (!grid) continue;
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.ondblclick = () => toggleProgram(p.id, p.running);
+        card.title = `${p.name} — ${p.desc}\nPort ${p.port}\nDouble-click to ${p.running ? 'stop' : 'launch'}`;
+        card.innerHTML = `
+            <div class="card-icon" style="color:${p.color};background:${p.color}12">
+                <i class="fas fa-${p.icon}"></i>
+            </div>
+            <div class="card-info">
+                <div class="card-name">${p.name}</div>
+                <div class="card-desc">${p.desc} · :${p.port}</div>
+            </div>
+            <div class="card-status ${p.running ? 'on' : ''}"></div>
+        `;
+        grid.appendChild(card);
+    }
+
+    // Footer count
+    const running = list.filter(p => p.running).length;
+    document.getElementById('running-count').textContent = running;
+    document.getElementById('total-count').textContent = list.length;
+
+    // Toolbar dots
+    for (const id of ['netguard','sentinel','siem','vpnguard','mailshield']) {
+        const btn = document.getElementById('tb-' + id);
+        const prog = list.find(p => p.id === id);
+        if (btn) {
+            btn.className = 'tb-btn' + (prog && prog.running ? ' active-dot' : '');
+        }
+    }
+}
+
+// ── Actions ──────────────────────────────────────────────
+async function toggleProgram(id, running) {
+    const api = window.pywebview ? window.pywebview.api : null;
+    if (!api) { toast(`[Demo] Would ${running ? 'stop' : 'launch'} ${id}`); return; }
+    if (running) {
+        const r = await api.stop_program(id);
+        toast(r.ok ? `Stopped ${id}` : r.error, r.ok ? 'info' : 'error');
+    } else {
+        const r = await api.launch_program(id);
+        toast(r.ok ? `Launched ${id}` : r.error, r.ok ? 'success' : 'error');
+    }
+}
+
+async function dockLaunch(id) {
+    const p = programs.find(x => x.id === id);
+    if (p) toggleProgram(id, p.running);
+}
+
+async function shutdownAll() {
+    if (!confirm('Shutdown all programs?')) return;
+    const api = window.pywebview ? window.pywebview.api : null;
+    if (api) {
+        const r = await api.shutdown_all();
+        toast(`Stopped ${r.stopped?.length || 0} programs`);
+    }
+}
+
+async function launchAll() {
+    const api = window.pywebview ? window.pywebview.api : null;
+    if (!api) return;
+    for (const p of programs) {
+        if (!p.running) await api.launch_program(p.id);
+    }
+    toast('Launching all programs...');
+}
+
+// ── Update from Python ───────────────────────────────────
+window.updateStatus = function(status, score, sysInfo) {
+    renderPrograms(status);
+
+    // Score badge
+    document.getElementById('score-text').textContent = `${score.grade} ${score.running}/${score.total}`;
+
+    // Header stats
+    document.getElementById('cpu-val').textContent = sysInfo.cpu_percent + '%';
+    document.getElementById('ram-val').textContent = sysInfo.ram_percent + '%';
+
+    // Sys info panel
+    document.getElementById('si-host').textContent = sysInfo.hostname || '—';
+    document.getElementById('si-os').textContent = sysInfo.os || '—';
+    document.getElementById('si-cpu').textContent = (sysInfo.cpu_percent || 0) + '%';
+    document.getElementById('si-cpu-bar').style.width = (sysInfo.cpu_percent || 0) + '%';
+    document.getElementById('si-ram').textContent = `${sysInfo.ram_used_gb || 0}/${sysInfo.ram_total_gb || 0} GB`;
+    document.getElementById('si-ram-bar').style.width = (sysInfo.ram_percent || 0) + '%';
+    document.getElementById('si-disk').textContent = `${sysInfo.disk_used_gb || 0}/${sysInfo.disk_total_gb || 0} GB`;
+    document.getElementById('si-disk-bar').style.width = (sysInfo.disk_percent || 0) + '%';
+};
+
+// ── UI Helpers ───────────────────────────────────────────
+function toggleSysInfo() {
+    document.getElementById('sysinfo').classList.toggle('show');
+}
+function refreshStatus() {
+    const api = window.pywebview ? window.pywebview.api : null;
+    if (api) api.get_status().then(s => api.get_security_score().then(sc => api.get_system_info().then(si => window.updateStatus(s, sc, si))));
+}
+
+// Context menu
+document.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    const m = document.getElementById('ctxmenu');
+    m.style.left = Math.min(e.clientX, innerWidth - 200) + 'px';
+    m.style.top = Math.min(e.clientY, innerHeight - 120) + 'px';
+    m.classList.add('show');
+});
+document.addEventListener('click', e => {
+    document.getElementById('ctxmenu').classList.remove('show');
+    if (!e.target.closest('#sysinfo') && !e.target.closest('#score-badge'))
+        document.getElementById('sysinfo').classList.remove('show');
+});
+
+// Toast
+function toast(msg, type='info') {
+    const colors = { info: 'var(--accent)', success: 'var(--green)', error: 'var(--red)' };
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.style.borderLeftColor = colors[type] || colors.info;
+    el.textContent = msg;
+    document.getElementById('toasts').appendChild(el);
+    setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 200); }, 4000);
+}
+
+// ── Init ─────────────────────────────────────────────────
+window.addEventListener('pywebviewready', () => refreshStatus());
+
+// Browser fallback (demo mode)
+if (!window.pywebview) {
+    setTimeout(() => {
+        window.updateStatus([
+            {id:"netguard",name:"NetGuard Pro",port:8765,icon:"shield-halved",color:"#00b8d4",desc:"IDS / Firewall",category:"defense",running:true},
+            {id:"sentinel",name:"SentinelOS Cortex",port:8900,icon:"brain",color:"#ff00ff",desc:"Command Center",category:"core",running:true},
+            {id:"cleanguard",name:"CleanGuard Pro",port:8810,icon:"broom",color:"#00ff88",desc:"System Cleanup",category:"utility",running:false},
+            {id:"mailshield",name:"MailShield Pro",port:8801,icon:"envelope-open-text",color:"#ff6600",desc:"Email Security",category:"defense",running:true},
+            {id:"vpnguard",name:"VPN Guard Pro",port:8820,icon:"lock",color:"#8855ff",desc:"WireGuard VPN",category:"network",running:true},
+            {id:"honeypot",name:"HoneyPot",port:8830,icon:"jar",color:"#ffcc00",desc:"Honeypot Trap",category:"defense",running:false},
+            {id:"fim",name:"File Integrity",port:8840,icon:"file-shield",color:"#22ddaa",desc:"FIM",category:"defense",running:true},
+            {id:"strikeback",name:"StrikeBack",port:8850,icon:"crosshairs",color:"#ff2255",desc:"Active Defense",category:"defense",running:false},
+            {id:"recorder",name:"Recorder",port:8860,icon:"video",color:"#33aaff",desc:"Forensic Recorder",category:"forensics",running:false},
+            {id:"redteam",name:"RedTeam Simulator",port:8870,icon:"crosshairs",color:"#ff2222",desc:"Penetration Testing",category:"offense",running:false},
+            {id:"siem",name:"SIEM / SOAR",port:8880,icon:"chart-line",color:"#00ccff",desc:"Security Brain",category:"core",running:true},
+            {id:"sandbox",name:"Sandbox",port:8890,icon:"flask-vial",color:"#aa44ff",desc:"Malware Analysis",category:"forensics",running:false},
+            {id:"mobile",name:"Mobile Gateway",port:8895,icon:"mobile-screen",color:"#11cc88",desc:"Mobile Protection",category:"network",running:false},
+            {id:"helpagent",name:"Help Agent",port:8899,icon:"robot",color:"#ffaa00",desc:"AI Assistant",category:"utility",running:true},
+        ],
+        {grade:"B",color:"#88ff00",running:7,total:14,percent:50},
+        {hostname:"DESKTOP-NG",os:"Windows 11",cpu_percent:34,ram_percent:62,ram_total_gb:16,ram_used_gb:9.9,disk_total_gb:512,disk_used_gb:287,disk_percent:56,net_sent_mb:1240,net_recv_mb:4580}
+        );
+    }, 300);
+}
+</script>
+</body>
+</html>
