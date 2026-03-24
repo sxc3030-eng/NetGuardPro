@@ -1,36 +1,125 @@
-# 🛡️ NetGuardPro Suite v3.0
+<div align="center">
 
-**A modular cybersecurity platform for Windows** — 10 programs covering network defense, malware scanning, VPN, email security, and more.
+# 🛡️ NetGuardPro Suite
 
-> **Plateforme de cybersécurité modulaire pour Windows** — 10 programmes couvrant la défense réseau, le scan de malware, VPN, sécurité email, et plus.
+### 14-Program Cybersecurity Defense Platform for Windows
 
-![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)
-![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6?logo=windows)
-![License](https://img.shields.io/badge/License-GPL%20v3-green)
-![Programs](https://img.shields.io/badge/Programs-10-orange)
-![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+[![License](https://img.shields.io/badge/License-Commercial-blue.svg)]()
+[![Python](https://img.shields.io/badge/Python-3.8%2B-green.svg)]()
+[![Platform](https://img.shields.io/badge/Platform-Windows-0078D6.svg)]()
+[![Programs](https://img.shields.io/badge/Programs-14-ff6600.svg)]()
+[![GPG Signed](https://img.shields.io/badge/Commits-GPG%20Signed-brightgreen.svg)]()
+
+*Protect. Detect. Respond.*
+
+[Quick Start](#-quick-start) | [Programs](#-programs) | [Licensing](#-licensing) | [Architecture](#-architecture) | [Linux Version](#-linux-version)
+
+</div>
 
 ---
 
-## 📐 Architecture
+## 🚀 Overview
+
+NetGuardPro Suite is a comprehensive cybersecurity platform combining **14 integrated security tools** into a single defense ecosystem. Built entirely in Python with native WebSocket communication, every program runs independently or orchestrated through **SentinelOS Cortex** — the central command center that correlates events, triggers automated playbooks, and provides a unified threat dashboard.
+
+Whether you need a network firewall, antivirus scanner, VPN manager, email security gateway, or a full SIEM/SOAR platform — NetGuardPro has you covered.
+
+---
+
+## 📦 Programs
+
+| # | Program | Port | Description |
+|---|---------|------|-------------|
+| 1 | 🛡️ **NetGuard Pro** | 8765 | Network Firewall & Intrusion Detection System |
+| 2 | 🧹 **CleanGuard Pro** | 8810 | Antivirus, Malware Scanner & System Cleaner |
+| 3 | 📧 **MailShield Pro** | 8801 | Secure Email Client with Phishing Detection |
+| 4 | 🔐 **VPN Guard Pro** | 8820 | WireGuard VPN with Kill Switch & DNS Leak Protection |
+| 5 | 🗺️ **SentinelOS Mapper** | — | Interactive Network Map & Device Firewall |
+| 6 | 🧠 **SentinelOS Cortex** | 8900 | Central Orchestrator, Playbooks & Threat Intelligence |
+| 7 | 📁 **File Integrity Monitor** | 8840 | SHA-256 File Integrity Monitoring |
+| 8 | 🍯 **Honeypot** | 8830 | Deception Traps (SSH, FTP, HTTP) |
+| 9 | ⚔️ **StrikeBack** | 8850 | Active Defense & Automated Counter-Measures |
+| 10 | 🎙️ **Recorder** | 8860 | Forensic Security Event Recording |
+| 11 | 🔴 **RedTeam** | — | Offensive Security & Penetration Testing Tools |
+| 12 | 🧪 **Sandbox** | — | Isolated Malware Analysis Environment |
+| 13 | 📱 **Mobile Gateway** | — | Mobile Device Security Bridge |
+| 14 | 📊 **SIEM** | — | Security Information & Event Management |
+| + | 🤖 **Help Agent** | — | Interactive Guide for All Programs |
+
+---
+
+## 🖥️ Screenshots
+
+> Screenshots coming soon. Launch any program and visit `http://localhost:<port>` to see the dashboard in action.
+
+---
+
+## ⚡ Quick Start
+
+### Option 1 — Clone & Run
+
+```bat
+git clone https://github.com/sxc3030-eng/NetGuardPro.git
+cd NetGuardPro
+pip install -r requirements.txt
+python netguard.py
+```
+
+### Option 2 — Selective Installer (Recommended)
+
+```bat
+cd installer
+python netguardpro_installer.py
+```
+
+Choose which programs to install, set your install path, and go.
+
+### Option 3 — Launch Everything via Cortex
+
+```bat
+cd launchers
+LANCER_SENTINEL.bat
+```
+
+Cortex starts all agents automatically and provides a unified dashboard on port **8900**.
+
+### Option 4 — Launch Individual Programs
+
+```bat
+cd launchers
+LANCER_NETGUARD.bat          :: NetGuard Pro
+LANCER_CLEANGUARD.bat        :: CleanGuard Pro
+LANCER_MAILSHIELD.bat        :: MailShield Pro
+LANCER_VPNGUARD.bat          :: VPN Guard Pro
+LANCER_SENTINEL_MAPPER.bat   :: SentinelOS Mapper
+LANCER_SIEM.bat              :: SIEM Dashboard
+LANCER_REDTEAM.bat           :: RedTeam Tools
+LANCER_SANDBOX.bat           :: Sandbox Environment
+LANCER_HELPAGENT.bat         :: Help Agent
+```
+
+---
+
+## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                   SentinelOS Cortex (:8900)                 │
-│                Central Orchestrator / Agent Bus              │
-├───────┬───────┬───────┬───────┬───────┬───────┬─────┬───────┤
-│       │       │       │       │       │       │     │       │
-▼       ▼       ▼       ▼       ▼       ▼       ▼     ▼       │
-┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌────────┐ │
-│ Net ││Clean││Mail ││ VPN ││Honey││ FIM ││Strk ││Recorder│ │
-│Guard││Guard││Shld ││Guard││ pot ││     ││Back ││        │ │
-│:8765││:8810││:8801││:8820││:8830││:8840││:8850││:8860   │ │
-└─────┘└─────┘└─────┘└─────┘└─────┘└─────┘└─────┘└────────┘ │
-                                                              │
-         ┌──────────────────────────────┐                     │
-         │   SentinelOS Mapper          │◄────────────────────┘
-         │   Network Map + Firewall     │
-         └──────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                    SentinelOS Cortex (:8900)                     │
+│               Central Orchestrator / Agent Bus                   │
+│                    SIEM / SOAR Engine                             │
+├────────┬────────┬────────┬────────┬────────┬────────┬────────────┤
+│        │        │        │        │        │        │            │
+▼        ▼        ▼        ▼        ▼        ▼        ▼            ▼
+┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌────────┐
+│ Net  ││Clean ││Mail  ││ VPN  ││Honey ││ FIM  ││Strk  ││Recorder│
+│Guard ││Guard ││Shld  ││Guard ││ pot  ││      ││Back  ││        │
+│:8765 ││:8810 ││:8801 ││:8820 ││:8830 ││:8840 ││:8850 ││:8860   │
+└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘└────────┘
+
+     ┌────────┐ ┌────────┐ ┌─────────┐ ┌──────────────┐
+     │RedTeam │ │Sandbox │ │ Mobile  │ │ SIEM / SOAR  │
+     │        │ │        │ │ Gateway │ │              │
+     └────────┘ └────────┘ └─────────┘ └──────────────┘
 
   Shared Modules:
   ├── permissions.py         (role-based access control)
@@ -39,207 +128,42 @@
   └── netguard_tray.py       (tray icon management)
 ```
 
-Each program runs **independently** via its own launcher, or **all together** through **SentinelOS Cortex**.
+- All programs communicate via **WebSocket** on localhost
+- Shared **permission system** with role-based access control
+- **SentinelOS Cortex** = central command center that orchestrates all agents
+- **SIEM/SOAR** correlates events across all agents and triggers automated playbooks
+- Native **Windows toast notifications** for real-time security alerts
 
 ---
 
-## 🧩 Programs
+## 💰 Licensing
 
-| # | Program | Port | Description |
-|---|---------|------|-------------|
-| 1 | **NetGuard Pro** 🛡️ | 8765 | Network IDS, packet capture, DPI, firewall, geo-blocking |
-| 2 | **CleanGuard Pro** 🧹 | 8810 | System cleaner, malware scanner, YARA rules, quarantine |
-| 3 | **MailShield Pro** 📧 | 8801 | Secure email, phishing detection, SPF/DKIM, attachment scan |
-| 4 | **VPN Guard Pro** 🔐 | 8820 | WireGuard VPN, kill switch, DNS leak protection |
-| 5 | **SentinelOS Mapper** 🗺️ | — | Interactive network map, device firewall, multi-interface scan |
-| 6 | **SentinelOS Cortex** 🧠 | 8900 | Central orchestrator, playbooks, threat intelligence, alerts |
-| 7 | **File Integrity Monitor** 📁 | 8840 | SHA-256 file integrity monitoring |
-| 8 | **Honeypot** 🍯 | 8830 | Deception traps (SSH, FTP, HTTP) |
-| 9 | **StrikeBack** ⚔️ | 8850 | Active defense, auto-blocking, counter-measures |
-| 10 | **Recorder** 🎙️ | 8860 | Forensic recording of security events |
-| + | **Help Agent** 🤖 | — | Interactive guide for all programs |
+### 🆓 Community (Free)
+5 core programs for personal, non-commercial use.
 
----
+### ⭐ Pro — $29/year
+All 14 programs + commercial use license.
 
-## 🚀 Quick Start
+### 🎯 Early Bird — $14.99 (Lifetime!)
+**Limited to 500 spots** — All 14 programs, all future updates, forever.
 
-### Option 1: Selective Installer (Recommended)
-
-```bash
-cd installer
-python netguardpro_installer.py
-```
-
-Choose which programs to install, set install path, and go.
-
-### Option 2: Launch Everything via Cortex
-
-```bash
-cd launchers
-# Double-click or run:
-LANCER_SENTINEL.bat
-```
-
-Cortex starts all agents automatically and provides a unified dashboard on port 8900.
-
-### Option 3: Launch Individual Programs
-
-```bash
-cd launchers
-LANCER_NETGUARD.bat          # NetGuard Pro
-LANCER_CLEANGUARD.bat        # CleanGuard Pro
-LANCER_MAILSHIELD.bat        # MailShield Pro
-LANCER_VPNGUARD.bat          # VPN Guard Pro
-LANCER_SENTINEL_MAPPER.bat   # SentinelOS Mapper
-LANCER_HELPAGENT.bat         # Help Agent
-```
-
----
-
-## 🔑 Permission System
-
-NetGuardPro includes an optional role-based permission system. **Disabled by default** — all operations are allowed.
-
-### How to Enable
-
-1. Open any program's settings
-2. Go to **Permissions → Enable**
-3. Create a master admin account (username + password)
-4. **Lock** to require authentication
-
-### Permission Types
-
-| Type | Description | Example |
-|------|-------------|---------|
-| `read` | View dashboard, see data | View network map |
-| `write` | Create rules, add entries | Add firewall rule |
-| `modify` | Change settings, edit configs | Edit scan schedule |
-| `execute` | Run scans, block IPs | Start packet capture |
-
-### User Management
-
-```python
-from permissions import PermissionManager
-pm = PermissionManager()
-
-# Enable with master account
-pm.enable("admin", "my_password")
-
-# Create restricted user
-pm.create_user("my_password", "viewer", "viewer_pass", {
-    "netguard": ["read"],
-    "sentinel_mapper": ["read", "execute"]
-})
-
-# Lock (require auth for operations)
-pm.lock("my_password")
-```
-
----
-
-## 🔔 Toast Notifications
-
-Windows 10/11 native notifications for all security alerts.
-
-- 🔴 **Critical threats** — long-duration notification
-- 🛡️ **Device blocked/unblocked** — firewall actions
-- 🔍 **Scan complete** — results summary
-- 🍯 **Honeypot triggered** — intruder detected
-- 📁 **File integrity change** — unauthorized modification
-- 📢 **General events** — VPN connected, recording started
-
-Requires `winotify` (auto-installed by launchers). Silent no-op if unavailable.
-
----
-
-## 📋 Feature Details
-
-### NetGuard Pro 🛡️
-
-| Feature | Setting | Admin |
-|---------|---------|-------|
-| Packet Capture | — | ✅ |
-| Intrusion Detection (IDS) | `suricata_enabled` | ❌ |
-| Deep Packet Inspection | `dpi_enabled` | ❌ |
-| Geo-Blocking | `geo_blocked_countries` | ✅ |
-| IP Blocking (Windows FW) | — | ✅ |
-| Threat History | — | ❌ |
-
-### SentinelOS Mapper 🗺️
-
-| Feature | Admin | Description |
-|---------|-------|-------------|
-| Multi-Interface Scan | ❌ | Scans Wi-Fi, Ethernet, VPN simultaneously |
-| Device Firewall | ✅ | Block/unblock devices via Windows Firewall |
-| Per-Port Blocking | ✅ | Block specific ports on specific devices |
-| Device Naming | ❌ | Click to rename any device on the map |
-| Deep Scan | ❌ | Detailed port and service analysis |
-| Attempt Tracking | — | Counts blocked connection attempts |
-
-### SentinelOS Cortex 🧠
-
-| Feature | Description |
-|---------|-------------|
-| Agent Management | Auto-starts and monitors all 8 agents |
-| Automated Playbooks | Chain actions across agents on triggers |
-| Threat Intelligence | Aggregates threat data from all agents |
-| Alert System | Telegram / Discord / Windows toast notifications |
-
-### CleanGuard Pro 🧹
-
-| Feature | Description |
-|---------|-------------|
-| System Clean | Temp files, browser cache, junk removal |
-| Malware Scan | Quick / Full / Custom with YARA rules |
-| Quarantine | Isolate and manage detected threats |
-| Real-time Monitor | File system watchdog |
-
-### MailShield Pro 📧
-
-| Feature | Description |
-|---------|-------------|
-| Phishing Detection | URL analysis, sender reputation, header checks |
-| SPF/DKIM Validation | Automatic email authentication |
-| Attachment Scanning | Pre-download threat analysis |
-| Encrypted Email | End-to-end encryption support |
-
-### VPN Guard Pro 🔐
-
-| Feature | Description |
-|---------|-------------|
-| WireGuard VPN | Connect/disconnect, peer management |
-| Kill Switch | Block internet on VPN disconnect |
-| DNS Leak Protection | Force DNS through VPN tunnel |
-| Tunnel Monitoring | Real-time bandwidth and status |
-
----
-
-## 🌐 Network Ports
-
-| Port | Program | Protocol |
-|------|---------|----------|
-| 8765 | NetGuard Pro | WebSocket |
-| 8801 | MailShield Pro | HTTP/WS |
-| 8810 | CleanGuard Pro | HTTP/WS |
-| 8820 | VPN Guard Pro | HTTP/WS |
-| 8830 | Honeypot | HTTP/WS |
-| 8840 | FIM | HTTP/WS |
-| 8850 | StrikeBack | HTTP/WS |
-| 8860 | Recorder | HTTP/WS |
-| 8900 | SentinelOS Cortex | HTTP/WS |
+### 🏢 Enterprise — $99/year
+Unlimited devices + priority support + custom playbooks.
 
 ---
 
 ## 💻 Requirements
 
-- **OS**: Windows 10 / 11
-- **Python**: 3.10+
-- **RAM**: 4 GB minimum (8 GB recommended for full suite)
-- **Disk**: ~50 MB for all programs
+| Requirement | Minimum | Recommended |
+|-------------|---------|-------------|
+| **OS** | Windows 10 | Windows 11 |
+| **Python** | 3.8+ | 3.10+ |
+| **RAM** | 4 GB | 8 GB (full suite) |
+| **Disk** | 50 MB | 100 MB (with captures) |
 
-### Required Dependencies
+### Dependencies
 
-```bash
+```bat
 pip install -r requirements.txt
 ```
 
@@ -254,46 +178,59 @@ Key packages: `pywebview`, `scapy`, `requests`, `psutil`, `winotify`, `pystray`,
 
 ---
 
-## ⚙️ Configuration
-
-Each program stores its settings in a JSON file:
-
-| Program | Settings File |
-|---------|--------------|
-| NetGuard Pro | `netguard_settings.json` |
-| CleanGuard Pro | `cleanguard/cleanguard_settings.json` |
-| MailShield Pro | `mailshield/mailshield_settings.json` |
-| VPN Guard Pro | `vpnguard/vpnguard_settings.json` |
-| SentinelOS | `sentinel/sentinel_settings.json` |
-| Permissions | `permissions_state.json` |
-
----
-
 ## 📁 Project Structure
 
 ```
 NetGuardPro/
-├── netguard.py                 ← NetGuard Pro (main)
-├── startup_utils.py            ← Shared: tray + startup
-├── permissions.py              ← Shared: permission system
-├── toast_notifications.py      ← Shared: Windows notifications
-├── requirements.txt            ← All pip dependencies
+├── netguard.py                 # NetGuard Pro (main firewall/IDS)
+├── permissions.py              # Shared: role-based access control
+├── toast_notifications.py      # Shared: Windows toast alerts
+├── startup_utils.py            # Shared: system tray + auto-start
+├── requirements.txt            # All pip dependencies
 │
-├── cleanguard/                 ← CleanGuard Pro
-├── mailshield/                 ← MailShield Pro
-├── vpnguard/                   ← VPN Guard Pro
-├── sentinel/                   ← SentinelOS (Mapper + Cortex)
-├── fim/                        ← File Integrity Monitor
-├── honeypot/                   ← Honeypot
-├── strikeback/                 ← StrikeBack
-├── recorder/                   ← Recorder
-├── help_agent/                 ← Help Agent
-├── installer/                  ← Selective Installer
-├── launchers/                  ← Batch launchers
-├── wireguard/                  ← WireGuard configs
-├── captures/                   ← Packet captures
-└── reports/                    ← Generated reports
+├── cleanguard/                 # CleanGuard Pro
+├── mailshield/                 # MailShield Pro
+├── vpnguard/                   # VPN Guard Pro
+├── sentinel/                   # SentinelOS (Mapper + Cortex)
+├── siem/                       # SIEM / SOAR Engine
+├── fim/                        # File Integrity Monitor
+├── honeypot/                   # Honeypot Deception Traps
+├── strikeback/                 # StrikeBack Active Defense
+├── recorder/                   # Forensic Recorder
+├── redteam/                    # RedTeam Offensive Tools
+├── sandbox/                    # Malware Sandbox
+├── mobile_gateway/             # Mobile Device Gateway
+├── help_agent/                 # Interactive Help Agent
+├── installer/                  # Selective Installer
+├── launchers/                  # Batch launchers (.bat)
+├── wireguard/                  # WireGuard VPN configs
+├── captures/                   # Packet capture files
+└── reports/                    # Generated security reports
 ```
+
+---
+
+## 🔑 GPG Verification
+
+All commits in this repository are signed with GPG key **`5C99E502B17F16D5`**.
+
+To verify commit signatures:
+```bat
+git log --show-signature -1
+```
+
+---
+
+## 🔔 Toast Notifications
+
+Windows 10/11 native notifications for all security alerts:
+
+- 🔴 **Critical threats** — high-priority, persistent notification
+- 🛡️ **Device blocked/unblocked** — firewall actions in real time
+- 🔍 **Scan complete** — results summary with threat count
+- 🍯 **Honeypot triggered** — intruder detected on deception trap
+- 📁 **File integrity change** — unauthorized file modification
+- 📢 **General events** — VPN connected, recording started, and more
 
 ---
 
@@ -301,35 +238,32 @@ NetGuardPro/
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/my-feature`)
-3. Commit your changes (`git commit -m 'Add my feature'`)
+3. Commit your changes (`git commit -S -m 'Add my feature'`)
 4. Push to the branch (`git push origin feature/my-feature`)
 5. Open a Pull Request
+
+All contributions must include GPG-signed commits.
 
 ---
 
 ## 📜 License
 
-This project is licensed under the **GNU General Public License v3.0** — see the [LICENSE](LICENSE) file for details.
+Commercial software. See [LICENSE](LICENSE) for full terms.
 
 ---
 
-## 🗺️ Roadmap
+## 🐧 Linux Version
 
-- [ ] Linux support
-- [ ] macOS support
-- [ ] Cloud dashboard
-- [ ] Mobile companion app
-- [ ] AI-powered threat analysis
-- [ ] SIEM integration (Splunk, ELK)
-- [ ] Automatic update system
-- [ ] Multi-language support (DE, ES, PT)
+Looking for Linux? Check out **[Optimus](https://github.com/sxc3030-eng/Optimus)** — our Linux cybersecurity distribution with a custom desktop environment and bootable ISO builder!
 
 ---
 
 <div align="center">
 
-**NetGuardPro Suite** — Built with 🐍 Python + pywebview
+**NetGuardPro Suite** — Built with Python + pywebview
 
-*Cybersecurity for everyone / Cybersécurité pour tous*
+*Protect. Detect. Respond.*
+
+Made by [@sxc3030-eng](https://github.com/sxc3030-eng)
 
 </div>
