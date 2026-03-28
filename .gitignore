@@ -39,3 +39,7 @@ desktop.ini
 # Sensitive
 *.env
 credentials.json
+
+# Python embedded runtime (download during build)
+python_embed/
+dist/

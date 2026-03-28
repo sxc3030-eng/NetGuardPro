@@ -1,0 +1,258 @@
+================================================================================
+
+                    NETGUARDPRO SUITE — SOFTWARE LICENSE AGREEMENT
+
+                        Version 1.0.0 — Effective March 2026
+
+================================================================================
+
+    Copyright (c) 2026 sxc3030-eng. All rights reserved.
+
+    This Software License Agreement ("Agreement") is a legal agreement between
+    you ("Licensee") and sxc3030-eng ("Licensor") for the use of the
+    NetGuardPro Cybersecurity Suite and all associated programs, documentation,
+    and related materials (collectively, the "Software").
+
+    BY INSTALLING, COPYING, OR OTHERWISE USING THE SOFTWARE, YOU ACKNOWLEDGE
+    THAT YOU HAVE READ, UNDERSTOOD, AND AGREE TO BE BOUND BY THE TERMS AND
+    CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT USE THE SOFTWARE.
+
+================================================================================
+                              SECTION 1 — DEFINITIONS
+================================================================================
+
+    "Software" refers to the NetGuardPro Suite, including but not limited to:
+    NetGuard Pro, CleanGuard Pro, MailShield Pro, VPN Guard Pro,
+    File Integrity Monitor, SentinelOS SIEM/SOAR, HoneyPot Deployer,
+    Network Recorder, StrikeBack Active Defense, Help Agent, and all
+    associated configuration files, documentation, and assets.
+
+    "License Key" refers to the unique alphanumeric code provided upon
+    purchase or registration that activates and validates the Software.
+
+    "Device" refers to a single physical or virtual machine on which the
+    Software is installed.
+
+    "Organization" refers to a single legal entity, including all of its
+    subsidiaries and affiliates operating under the same corporate umbrella.
+
+================================================================================
+                           SECTION 2 — LICENSING TIERS
+================================================================================
+
+    The Software is available under the following licensing tiers. Each tier
+    grants specific rights and limitations as described below.
+
+    --------------------------------------------------------------------------
+    2.1  COMMUNITY LICENSE (Free of Charge)
+    --------------------------------------------------------------------------
+
+         (a)  SCOPE: Grants a non-exclusive, non-transferable, revocable
+              license to use the following programs:
+
+                  - NetGuard Pro (Network Monitor & Packet Analyzer)
+                  - CleanGuard Pro (System Cleanup & Optimization)
+                  - MailShield Pro (Secure Email Client)
+                  - VPN Guard Pro (VPN Management & WireGuard Integration)
+                  - File Integrity Monitor (FIM)
+
+         (b)  PERMITTED USE: Personal and educational use only.
+
+         (c)  RESTRICTIONS:
+              - No commercial deployment or use in production environments
+              - No redistribution in any form
+              - No modification of source code
+              - Limited to one (1) device per license
+              - No access to SentinelOS SIEM/SOAR advanced features
+
+         (d)  SUPPORT: Community forums only. No guaranteed response time.
+
+    --------------------------------------------------------------------------
+    2.2  PRO LICENSE ($29.00 USD / Year)
+    --------------------------------------------------------------------------
+
+         (a)  SCOPE: Grants a non-exclusive, non-transferable license to use
+              ALL fourteen (14) programs included in the Software.
+
+         (b)  PERMITTED USE: Commercial use permitted within a single
+              organization.
+
+         (c)  DEVICE LIMIT: Up to five (5) devices per license.
+
+         (d)  DURATION: Valid for twelve (12) months from the date of
+              purchase. Renewable annually at the then-current rate.
+
+         (e)  SUPPORT: Standard email support with 72-hour response time
+              during business days.
+
+         (f)  UPDATES: All software updates released during the active
+              license period are included at no additional cost.
+
+    --------------------------------------------------------------------------
+    2.3  EARLY BIRD LICENSE ($14.99 USD — Lifetime)
+    --------------------------------------------------------------------------
+
+         (a)  SCOPE: Grants a non-exclusive, non-transferable, perpetual
+              license to use ALL fourteen (14) programs included in the
+              Software.
+
+         (b)  PERMITTED USE: Commercial use permitted within a single
+              organization.
+
+         (c)  DEVICE LIMIT: Up to ten (10) devices per license.
+
+         (d)  DURATION: Lifetime. This license does not expire and includes
+              all future versions of the Software at no additional cost.
+
+         (e)  SUPPORT: Priority email support with 48-hour response time
+              during business days.
+
+         (f)  AVAILABILITY: Limited to the first five hundred (500)
+              purchasers. Once all Early Bird licenses have been sold,
+              this tier will no longer be available.
+
+         (g)  SPECIAL CONDITIONS:
+              - Non-transferable: Cannot be sold, assigned, or transferred
+                to another individual or organization
+              - Non-refundable: All sales are final
+              - Lifetime updates: Includes all major and minor versions
+
+    --------------------------------------------------------------------------
+    2.4  ENTERPRISE LICENSE ($99.00 USD / Year)
+    --------------------------------------------------------------------------
+
+         (a)  SCOPE: Grants a non-exclusive, non-transferable license to use
+              ALL fourteen (14) programs included in the Software, plus
+              advanced SentinelOS SIEM/SOAR features and enterprise
+              integrations.
+
+         (b)  PERMITTED USE: Commercial use permitted. Multi-site deployment
+              within the licensed organization is allowed.
+
+         (c)  DEVICE LIMIT: Unlimited devices within the licensed
+              organization.
+
+         (d)  DURATION: Valid for twelve (12) months from the date of
+              purchase. Renewable annually at the then-current rate.
+
+         (e)  SUPPORT:
+              - Dedicated support channel
+              - Service Level Agreement (SLA): 24-hour response time
+              - Custom integration assistance
+
+         (f)  ADDITIONAL FEATURES:
+              - Advanced threat intelligence feeds
+              - Custom playbook development assistance
+              - Multi-site deployment management
+              - Centralized logging and reporting
+
+================================================================================
+                          SECTION 3 — GENERAL TERMS
+================================================================================
+
+    3.1  INTELLECTUAL PROPERTY
+
+         The Software is protected by copyright laws and international
+         treaties. The Licensor retains all intellectual property rights,
+         title, and interest in and to the Software. This Agreement does not
+         grant the Licensee any rights to trademarks, service marks, or
+         trade names of the Licensor.
+
+    3.2  RESTRICTIONS
+
+         Unless expressly authorized by this Agreement, the Licensee shall
+         NOT:
+
+         (a)  Copy, reproduce, or duplicate the Software except for
+              reasonable backup purposes;
+         (b)  Reverse engineer, decompile, disassemble, or otherwise attempt
+              to derive the source code of the Software;
+         (c)  Modify, adapt, translate, or create derivative works based on
+              the Software;
+         (d)  Redistribute, sublicense, rent, lease, lend, or resell the
+              Software or any portion thereof;
+         (e)  Remove or alter any proprietary notices, labels, or marks on
+              the Software;
+         (f)  Use the Software to develop a competing product or service;
+         (g)  Share license keys with unauthorized parties.
+
+    3.3  DISCLAIMER OF WARRANTIES
+
+         THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT
+         WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+         TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+         PURPOSE, AND NONINFRINGEMENT. THE LICENSOR DOES NOT WARRANT THAT
+         THE SOFTWARE WILL BE UNINTERRUPTED, ERROR-FREE, OR COMPLETELY
+         SECURE. USE OF THE SOFTWARE IS AT THE LICENSEE'S OWN RISK.
+
+    3.4  LIMITATION OF LIABILITY
+
+         IN NO EVENT SHALL THE LICENSOR BE LIABLE FOR ANY INDIRECT,
+         INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING
+         BUT NOT LIMITED TO LOSS OF PROFITS, DATA, BUSINESS OPPORTUNITY, OR
+         GOODWILL, ARISING OUT OF OR IN CONNECTION WITH THE USE OR INABILITY
+         TO USE THE SOFTWARE, EVEN IF THE LICENSOR HAS BEEN ADVISED OF THE
+         POSSIBILITY OF SUCH DAMAGES.
+
+         THE LICENSOR'S TOTAL AGGREGATE LIABILITY SHALL NOT EXCEED THE AMOUNT
+         PAID BY THE LICENSEE FOR THE SOFTWARE IN THE TWELVE (12) MONTHS
+         PRECEDING THE CLAIM.
+
+    3.5  TERMINATION
+
+         (a)  This Agreement is effective until terminated.
+         (b)  The Licensor may terminate this Agreement immediately if the
+              Licensee breaches any provision herein.
+         (c)  Upon termination, the Licensee must cease all use of the
+              Software and destroy all copies in their possession.
+         (d)  Sections 3.1, 3.3, 3.4, and 3.6 shall survive termination.
+
+    3.6  GOVERNING LAW
+
+         This Agreement shall be governed by and construed in accordance with
+         the laws of the jurisdiction in which the Licensor resides, without
+         regard to its conflict of law provisions. Any disputes arising under
+         or in connection with this Agreement shall be subject to the
+         exclusive jurisdiction of the courts in that jurisdiction.
+
+    3.7  SEVERABILITY
+
+         If any provision of this Agreement is held to be invalid or
+         unenforceable, the remaining provisions shall continue in full force
+         and effect.
+
+    3.8  ENTIRE AGREEMENT
+
+         This Agreement constitutes the entire agreement between the parties
+         regarding the subject matter hereof and supersedes all prior or
+         contemporaneous agreements, representations, and understandings.
+
+================================================================================
+                            SECTION 4 — ATTRIBUTION
+================================================================================
+
+    The NetGuardPro Suite is built with Python, pywebview, Scapy, and various
+    open-source components. All open-source dependencies retain their original
+    licenses (MIT, BSD, GPL, Apache, etc.) as specified in their respective
+    source repositories.
+
+    The Licensor acknowledges and respects the contributions of the open-source
+    community. A full list of third-party components and their licenses is
+    available in the Software's documentation.
+
+================================================================================
+                           SECTION 5 — CONTACT
+================================================================================
+
+    For licensing inquiries, support, or questions regarding this Agreement:
+
+        Developer:   sxc3030-eng
+        Repository:  https://github.com/sxc3030-eng
+        License:     Commercial — All Rights Reserved
+
+================================================================================
+
+    Last Updated: March 2026
+    Document Version: 1.0.0
+
+================================================================================
