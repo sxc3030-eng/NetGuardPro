@@ -169,7 +169,8 @@ Name: "{autodesktop}\NetGuard Pro"; Filename: "{app}\python\pythonw.exe"; Parame
 
 [Run]
 ; Install Python dependencies silently
-Filename: "{app}\python\python.exe"; Parameters: "-m pip install --no-warn-script-location --quiet websockets scapy pywebview pystray Pillow psutil requests watchdog pefile"; WorkingDir: "{app}"; StatusMsg: "{cm:InstallingDeps}"; Flags: runhidden waituntilterminated
+Filename: "{app}\python\python.exe"; Parameters: "-m pip install --no-warn-script-location --no-build-isolation --quiet setuptools wheel"; WorkingDir: "{app}"; StatusMsg: "{cm:InstallingDeps}"; Flags: runhidden waituntilterminated
+Filename: "{app}\python\python.exe"; Parameters: "-m pip install --no-warn-script-location --no-build-isolation --quiet websockets scapy pywebview pystray Pillow psutil requests watchdog pefile"; WorkingDir: "{app}"; StatusMsg: "{cm:InstallingDeps}"; Flags: runhidden waituntilterminated
 ; Configure firewall rules
 Filename: "netsh"; Parameters: "advfirewall firewall add rule name=""NetGuard Pro"" dir=in action=allow program=""{app}\python\pythonw.exe"" enable=yes"; StatusMsg: "{cm:ConfiguringFirewall}"; Tasks: firewall; Flags: runhidden waituntilterminated
 Filename: "netsh"; Parameters: "advfirewall firewall add rule name=""NetGuard Pro WS"" dir=in action=allow protocol=TCP localport=8765 enable=yes"; Tasks: firewall; Flags: runhidden waituntilterminated
@@ -178,8 +179,8 @@ Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\netguard.py"""; Worki
 
 [UninstallRun]
 ; Remove firewall rules
-Filename: "netsh"; Parameters: "advfirewall firewall delete rule name=""NetGuard Pro"""; Flags: runhidden
-Filename: "netsh"; Parameters: "advfirewall firewall delete rule name=""NetGuard Pro WS"""; Flags: runhidden
+Filename: "netsh"; Parameters: "advfirewall firewall delete rule name=""NetGuard Pro"""; Flags: runhidden; RunOnceId: "RemoveFW1"
+Filename: "netsh"; Parameters: "advfirewall firewall delete rule name=""NetGuard Pro WS"""; Flags: runhidden; RunOnceId: "RemoveFW2"
 ; Kill running processes before uninstall
 Filename: "taskkill"; Parameters: "/F /IM pythonw.exe"; Flags: runhidden; RunOnceId: "KillPython"
 
@@ -233,7 +234,7 @@ begin
     end;
 
     { Create autostart registry entry if selected }
-    if IsTaskSelected('autostart') then
+    if WizardIsTaskSelected('autostart') then
     begin
       RegWriteStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run',
         'NetGuardPro',
