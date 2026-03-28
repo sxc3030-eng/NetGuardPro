@@ -4435,7 +4435,7 @@ def main_webview():
     dashboard_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "netguard_dashboard.html")
 
     window = webview.create_window(
-        "NetGuard Pro — NetGuardPro Suite",
+        "NetGuard Pro - NetGuardPro Suite",
         dashboard_path,
         js_api=api,
         width=1360,
