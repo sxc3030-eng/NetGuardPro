@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NetGuardPro — Comprehensive Test Suite
+NetGuardPro  - Comprehensive Test Suite
 Tests all 14 programs for import, port conflicts, API health, and basic functionality.
 Run: python tests/test_all.py
 """
@@ -292,7 +292,7 @@ class TestPortAvailability(unittest.TestCase):
 def run_tests():
     """Run all tests and return results."""
     print("=" * 70)
-    print("  NetGuardPro — Comprehensive Test Suite")
+    print("  NetGuardPro  - Comprehensive Test Suite")
     print("=" * 70)
     print()
 
@@ -320,9 +320,9 @@ def run_tests():
     print()
     print("=" * 70)
     if result.wasSuccessful():
-        print("  ✅ ALL TESTS PASSED!")
+        print("  âœ… ALL TESTS PASSED!")
     else:
-        print(f"  ❌ {len(result.failures)} failures, {len(result.errors)} errors")
+        print(f"  â-Œ {len(result.failures)} failures, {len(result.errors)} errors")
     print("=" * 70)
 
     return result.wasSuccessful()

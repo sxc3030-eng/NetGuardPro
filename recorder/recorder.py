@@ -1,19 +1,19 @@
 """
-SentinelOS — RecordAgent v1.0.0 (Forensic Recorder)
+SentinelOS  - RecordAgent v1.0.0 (Forensic Recorder)
 Records EVERYTHING during security incidents for forensic analysis.
 Monitors system activity and creates detailed incident reports.
 
 Port: 8860
 Architecture:
     RecordAgent (port 8860)
-        ├── SessionRecorder    — records all network sessions/connections
-        ├── ProcessMonitor     — tracks process creation/termination
-        ├── FileWatcher        — monitors file system changes in real-time
-        ├── NetworkLogger      — captures connection metadata (not payload)
-        ├── IncidentTimeline   — unified timeline of all recorded events
-        ├── ReportGenerator    — generates incident reports (JSON format)
-        ├── WebSocket Server   — serves state to Cortex
-        └── Storage Manager    — manages recording storage/rotation
+        â"œâ"€â"€ SessionRecorder     - records all network sessions/connections
+        â"œâ"€â"€ ProcessMonitor      - tracks process creation/termination
+        â"œâ"€â"€ FileWatcher         - monitors file system changes in real-time
+        â"œâ"€â"€ NetworkLogger       - captures connection metadata (not payload)
+        â"œâ"€â"€ IncidentTimeline    - unified timeline of all recorded events
+        â"œâ"€â"€ ReportGenerator     - generates incident reports (JSON format)
+        â"œâ"€â"€ WebSocket Server    - serves state to Cortex
+        â""â"€â"€ Storage Manager     - manages recording storage/rotation
 
 Usage: python recorder.py [--headless] [--port 8860]
 """
@@ -60,7 +60,7 @@ try:
 except ImportError:
     HAS_WEBVIEW = False
 
-# ── Shared modules ──────────────────────────────────────────
+# â"€â"€ Shared modules â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 try:
     from permissions import PermissionManager
     HAS_PERMISSIONS = True
@@ -73,9 +73,9 @@ try:
 except ImportError:
     HAS_TOAST = False
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # CONFIGURATION
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 VERSION = "1.0.0"
 WS_PORT = 8860
@@ -130,9 +130,9 @@ else:
 WATCHED_DIRS = [d for d in WATCHED_DIRS if os.path.isdir(d)]
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# SESSION RECORDER — records all network sessions/connections
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# SESSION RECORDER  - records all network sessions/connections
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class SessionRecorder:
     """Records network connection sessions using psutil."""
@@ -241,9 +241,9 @@ class SessionRecorder:
         }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# PROCESS MONITOR — tracks process creation/termination
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# PROCESS MONITOR  - tracks process creation/termination
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class ProcessMonitor:
     """Monitors process creation and termination using psutil."""
@@ -392,9 +392,9 @@ class ProcessMonitor:
         }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# FILE WATCHER — monitors file system changes in real-time
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# FILE WATCHER  - monitors file system changes in real-time
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class FileWatcher:
     """Monitors key directories for file changes using polling with os.scandir()."""
@@ -412,7 +412,7 @@ class FileWatcher:
         self._take_initial_snapshots()
         t = threading.Thread(target=self._watch_loop, daemon=True)
         t.start()
-        logger.info(f"[FileWatcher] Started — watching {len(self.watched_dirs)} directories")
+        logger.info(f"[FileWatcher] Started  - watching {len(self.watched_dirs)} directories")
 
     def stop(self):
         self._running = False
@@ -514,9 +514,9 @@ class FileWatcher:
         }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# NETWORK LOGGER — captures connection metadata (not payload)
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# NETWORK LOGGER  - captures connection metadata (not payload)
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class NetworkLogger:
     """Captures network connection metadata using psutil net_io_counters."""
@@ -613,9 +613,9 @@ class NetworkLogger:
         return {"bytes_sent": 0, "bytes_recv": 0, "delta_sent": 0, "delta_recv": 0}
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# INCIDENT TIMELINE — unified chronological timeline
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# INCIDENT TIMELINE  - unified chronological timeline
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class IncidentTimeline:
     """Unified chronological timeline of all recorded events with severity levels."""
@@ -656,9 +656,9 @@ class IncidentTimeline:
             return list(self.events)[-limit:]
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# REPORT GENERATOR — generates incident reports (JSON format)
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# REPORT GENERATOR  - generates incident reports (JSON format)
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class ReportGenerator:
     """Generates JSON incident reports from recorded data."""
@@ -775,9 +775,9 @@ class ReportGenerator:
             ]
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# STORAGE MANAGER — manages recording storage/rotation
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# STORAGE MANAGER  - manages recording storage/rotation
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class StorageManager:
     """Manages recording storage and log rotation."""
@@ -791,7 +791,7 @@ class StorageManager:
         self._running = True
         t = threading.Thread(target=self._rotation_loop, daemon=True)
         t.start()
-        logger.info(f"[StorageManager] Started — max storage: {self.max_mb} MB")
+        logger.info(f"[StorageManager] Started  - max storage: {self.max_mb} MB")
 
     def stop(self):
         self._running = False
@@ -807,7 +807,7 @@ class StorageManager:
     def _check_and_rotate(self):
         used = self.get_storage_used_mb()
         if used > self.max_mb:
-            logger.warning(f"[StorageManager] Storage {used:.1f} MB exceeds limit {self.max_mb} MB — rotating")
+            logger.warning(f"[StorageManager] Storage {used:.1f} MB exceeds limit {self.max_mb} MB  - rotating")
             self._rotate()
 
     def _rotate(self):
@@ -839,9 +839,9 @@ class StorageManager:
         return total / (1024 * 1024)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# RECORD ENGINE — main orchestrator
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# RECORD ENGINE  - main orchestrator
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class RecordEngine:
     """Main forensic recording engine. Orchestrates all monitors."""
@@ -967,12 +967,12 @@ class RecordEngine:
 
         self.timeline.add("system", "incident_started", "critical", {
             "incident_id": self.current_incident["id"],
-            "message": f"Incident {self.current_incident['id']} started — intensive recording mode active",
+            "message": f"Incident {self.current_incident['id']} started  - intensive recording mode active",
         })
 
-        logger.warning(f"[RecordEngine] INCIDENT STARTED: {self.current_incident['id']} — mode=incident")
+        logger.warning(f"[RecordEngine] INCIDENT STARTED: {self.current_incident['id']}  - mode=incident")
         if HAS_TOAST:
-            toast_event("Recorder", "Recording started — incident mode active")
+            toast_event("Recorder", "Recording started  - incident mode active")
         return self.current_incident
 
     def stop_incident(self) -> Optional[dict]:
@@ -1004,7 +1004,7 @@ class RecordEngine:
         self.mode = "normal"
         self.current_incident = None
 
-        logger.info(f"[RecordEngine] Incident closed — returning to normal mode")
+        logger.info(f"[RecordEngine] Incident closed  - returning to normal mode")
         if HAS_TOAST:
             toast_event("Recorder", "Recording stopped")
         return closed
@@ -1051,9 +1051,9 @@ class RecordEngine:
         }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # WEBSOCKET SERVER
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 _engine = RecordEngine()
 _ws_clients: set = set()
@@ -1128,7 +1128,7 @@ async def handle_ws(websocket, path=None):
                     conns = _engine.network_logger.get_current_connections()
                     response = {"type": "connections", "connections": conns, "count": len(conns)}
 
-                # ── Permission management commands ──────────────────────
+                # â"€â"€ Permission management commands â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
                 elif cmd == "perm_get_status":
                     if _engine._perm:
                         response = {
@@ -1203,9 +1203,9 @@ async def broadcast_loop():
         await asyncio.sleep(5)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # MAIN
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 def main():
     headless = "--headless" in sys.argv
@@ -1269,7 +1269,7 @@ def main():
 
         try:
             webview.create_window(
-                f"Recorder � NetGuardPro Suite",
+                f"Recorder - NetGuardPro Suite",
                 f"http://localhost:{port}",
                 width=1100,
                 height=750,

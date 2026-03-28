@@ -1,5 +1,5 @@
 """
-Startup & Tray Mode Utilities — shared by NetGuard, MailShield, CleanGuard, and VPN Guard
+Startup & Tray Mode Utilities  - shared by NetGuard, MailShield, CleanGuard, and VPN Guard
 Handles Windows startup registration and system tray (stealth) mode.
 """
 
@@ -9,9 +9,9 @@ import threading
 
 IS_WINDOWS = sys.platform == "win32"
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # WINDOWS STARTUP REGISTRATION
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 STARTUP_REG_PATH = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
 
@@ -93,13 +93,13 @@ def get_all_startup_states() -> dict:
     }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# SYSTEM TRAY (STEALTH MODE) — uses pystray
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# SYSTEM TRAY (STEALTH MODE)  - uses pystray
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 def create_tray_icon(program_name: str, on_show=None, on_quit=None):
     """Create a system tray icon for stealth mode.
-    Returns (icon, thread) — call icon.stop() to remove.
+    Returns (icon, thread)  - call icon.stop() to remove.
     on_show: callback when user clicks 'Show'
     on_quit: callback when user clicks 'Quit'
     """

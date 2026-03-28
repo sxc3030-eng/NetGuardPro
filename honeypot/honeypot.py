@@ -1,16 +1,16 @@
 """
-SentinelOS — HoneyPot Agent v1.0
+SentinelOS  - HoneyPot Agent v1.0
 Deception-based intrusion detection.
 Creates fake services and trap files to detect attackers.
 
 Port: 8830
 Architecture:
     HoneyPot Agent
-        ├── Trap Files — monitored bait files (passwords.txt, etc.)
-        ├── Fake Services — fake SSH/HTTP/FTP listeners
-        ├── Interaction Logger — logs all attacker activity
-        ├── WebSocket Server — serves state to Cortex
-        └── Agent Bus integration — publishes honeypot.* events
+        â"œâ"€â"€ Trap Files  - monitored bait files (passwords.txt, etc.)
+        â"œâ"€â"€ Fake Services  - fake SSH/HTTP/FTP listeners
+        â"œâ"€â"€ Interaction Logger  - logs all attacker activity
+        â"œâ"€â"€ WebSocket Server  - serves state to Cortex
+        â""â"€â"€ Agent Bus integration  - publishes honeypot.* events
 """
 
 import os
@@ -28,7 +28,7 @@ from collections import defaultdict
 
 import websockets
 
-# ── Shared modules ──────────────────────────────────────────
+# â"€â"€ Shared modules â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 try:
     from permissions import PermissionManager
     HAS_PERMISSIONS = True
@@ -65,9 +65,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger("SentinelOS.HoneyPot")
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # TRAP FILE MANAGER
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 # Bait files that attract attackers
 TRAP_FILES = [
@@ -122,7 +122,7 @@ class TrapFileManager:
         for filepath, info in self.traps.items():
             try:
                 if not os.path.exists(filepath):
-                    # File was DELETED — definitely suspicious
+                    # File was DELETED  - definitely suspicious
                     alerts.append({
                         "type": "trap_deleted",
                         "file": info["name"],
@@ -189,9 +189,9 @@ class TrapFileManager:
         ]
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # FAKE SERVICE LISTENER
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class FakeServiceListener:
     """Listens on common ports to detect scanning/intrusion attempts."""
@@ -293,9 +293,9 @@ class FakeServiceListener:
         self._running = False
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # HONEYPOT ENGINE
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class HoneyPotEngine:
     """Main honeypot engine combining traps + fake services."""
@@ -387,9 +387,9 @@ class HoneyPotEngine:
         self.services.stop()
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # WEBSOCKET SERVER
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 _engine = HoneyPotEngine()
 _ws_clients = set()
@@ -411,7 +411,7 @@ async def handle_ws(websocket, path=None):
                         "alerts": _engine.alerts[-limit:],
                     }, default=str))
 
-                # ── Permission commands ─────────────────────────
+                # â"€â"€ Permission commands â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
                 elif cmd == "perm_get_status":
                     if _engine._perm:
                         await websocket.send(json.dumps({

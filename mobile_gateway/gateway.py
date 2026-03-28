@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """
-Mobile Gateway v1.0.0 — NetGuardPro Suite
+Mobile Gateway v1.0.0  - NetGuardPro Suite
 VPN gateway + DNS filter for mobile devices (Android/iOS).
 Mobile devices connect via WireGuard and get DNS filtering + mail security.
 
 Port: 8895 (API/WebSocket) + WireGuard 51820
 Architecture:
     Mobile Gateway
-        ├── WireGuardManager  — WireGuard server for mobile clients
-        ├── QRCodeGenerator   — QR codes for mobile WireGuard config
-        ├── DNSFilter         — DNS proxy with blocklists (ads, trackers, malware, phishing)
-        ├── DeviceManager     — Connected mobile device tracking + policies
-        ├── MailProxy         — Lightweight email security for mobile
-        ├── GatewayEngine     — Main engine combining all components
-        ├── GatewayAPI        — pywebview js_api bridge
-        └── WebSocket Server  — port 8895 real-time state push
+        â"œâ"€â"€ WireGuardManager   - WireGuard server for mobile clients
+        â"œâ"€â"€ QRCodeGenerator    - QR codes for mobile WireGuard config
+        â"œâ"€â"€ DNSFilter          - DNS proxy with blocklists (ads, trackers, malware, phishing)
+        â"œâ"€â"€ DeviceManager      - Connected mobile device tracking + policies
+        â"œâ"€â"€ MailProxy          - Lightweight email security for mobile
+        â"œâ"€â"€ GatewayEngine      - Main engine combining all components
+        â"œâ"€â"€ GatewayAPI         - pywebview js_api bridge
+        â""â"€â"€ WebSocket Server   - port 8895 real-time state push
 """
 
 import os
@@ -34,7 +34,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from collections import defaultdict, deque
 
-# Fix pythonw (no console) — redirect None stdout/stderr to devnull
+# Fix pythonw (no console)  - redirect None stdout/stderr to devnull
 if sys.stdout is None:
     sys.stdout = open(os.devnull, 'w')
 if sys.stderr is None:
@@ -48,7 +48,7 @@ if sys.platform == 'win32':
     except Exception:
         pass
 
-# ── Optional dependencies ────────────────────────────────────────────────
+# â"€â"€ Optional dependencies â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 try:
     import websockets
     HAS_WS = True
@@ -81,7 +81,7 @@ try:
 except ImportError:
     HAS_CRYPTO = False
 
-# ── Shared NetGuardPro modules ──────────────────────────────────────────
+# â"€â"€ Shared NetGuardPro modules â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 GATEWAY_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(GATEWAY_DIR)
 sys.path.insert(0, BASE_DIR)
@@ -98,7 +98,7 @@ try:
 except ImportError:
     HAS_TOAST = False
 
-# ── Constants ────────────────────────────────────────────────────────────
+# â"€â"€ Constants â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 VERSION = "1.0.0"
 WS_PORT = 8895
 WG_PORT = 51820
@@ -117,7 +117,7 @@ SETTINGS_FILE = os.path.join(GATEWAY_DIR, "gateway_settings.json")
 for _d in [CONFIGS_DIR, BLOCKLISTS_DIR, LOG_DIR]:
     os.makedirs(_d, exist_ok=True)
 
-# ── Logging ──────────────────────────────────────────────────────────────
+# â"€â"€ Logging â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [MobileGateway] %(levelname)s: %(message)s",
@@ -129,9 +129,9 @@ logging.basicConfig(
 logger = logging.getLogger("NetGuardPro.MobileGateway")
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # WIREGUARD MANAGER
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class WireGuardManager:
     """Manages WireGuard server for mobile clients."""
@@ -232,7 +232,7 @@ class WireGuardManager:
                 logger.warning(f"[WG] Crypto fallback failed: {e}")
 
         # Last resort: generate pseudo-random keys (NOT cryptographically secure for production)
-        logger.warning("[WG] No key generation method available — using random placeholder keys")
+        logger.warning("[WG] No key generation method available  - using random placeholder keys")
         raw_priv = os.urandom(32)
         raw_pub = hashlib.sha256(raw_priv).digest()
         return base64.b64encode(raw_priv).decode(), base64.b64encode(raw_pub).decode()
@@ -493,9 +493,9 @@ class WireGuardManager:
         }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # QR CODE GENERATOR
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class QRCodeGenerator:
     """Generates QR codes for mobile WireGuard configuration."""
@@ -545,9 +545,9 @@ class QRCodeGenerator:
         }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # DNS FILTER
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class DNSFilter:
     """DNS proxy server with domain blocklists (ads, trackers, malware, phishing)."""
@@ -850,9 +850,9 @@ class DNSFilter:
         }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # DEVICE MANAGER
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class DeviceManager:
     """Tracks connected mobile devices with policies."""
@@ -966,9 +966,9 @@ class DeviceManager:
             return not (now >= start or now <= end)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # MAIL PROXY (Lightweight email security)
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class MailProxy:
     """Lightweight email security advisory for mobile devices."""
@@ -1084,9 +1084,9 @@ class MailProxy:
         }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # GATEWAY ENGINE
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class GatewayEngine:
     """Main engine combining WireGuard, DNS filter, device manager, mail proxy."""
@@ -1205,16 +1205,16 @@ class GatewayEngine:
             await asyncio.sleep(5)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # GLOBAL ENGINE INSTANCE
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 _engine = GatewayEngine()
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # GATEWAY API (pywebview js_api)
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class GatewayAPI:
     """API exposed to JavaScript via pywebview.api."""
@@ -1228,17 +1228,17 @@ class GatewayAPI:
     def set_window(self, window):
         self._window = window
 
-    # ── Permission helper ────────────────────────────────────────────────
+    # â"€â"€ Permission helper â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     def _check_perm(self, action):
         if self._perm and not self._perm.check("mobile_gateway", action, self._auth_user):
             return {"type": "error", "message": f"Permission denied: {action}"}
         return None
 
-    # ── State ────────────────────────────────────────────────────────────
+    # â"€â"€ State â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     def get_state(self):
         return json.loads(json.dumps(_engine.get_state(), default=str))
 
-    # ── Gateway control ──────────────────────────────────────────────────
+    # â"€â"€ Gateway control â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     def start_gateway(self):
         denied = self._check_perm("start")
         if denied:
@@ -1253,7 +1253,7 @@ class GatewayAPI:
         _engine.stop()
         return {"type": "ack", "cmd": "stop_gateway", "running": False}
 
-    # ── Device management ────────────────────────────────────────────────
+    # â"€â"€ Device management â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     def add_device(self, name, device_type="phone", os_type="android"):
         denied = self._check_perm("manage_devices")
         if denied:
@@ -1295,7 +1295,7 @@ class GatewayAPI:
         )
         return {"type": "ack", "success": success}
 
-    # ── QR Code ──────────────────────────────────────────────────────────
+    # â"€â"€ QR Code â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     def get_qr_code(self, pubkey):
         peer = _engine.wg.peers.get(pubkey)
         if not peer:
@@ -1320,7 +1320,7 @@ class GatewayAPI:
         )
         return {"config": config}
 
-    # ── WireGuard tunnel ─────────────────────────────────────────────────
+    # â"€â"€ WireGuard tunnel â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     def start_tunnel(self):
         denied = self._check_perm("tunnel")
         if denied:
@@ -1339,7 +1339,7 @@ class GatewayAPI:
             _engine.timeline_add("shield_off", "WireGuard tunnel stopped", "wireguard")
         return result
 
-    # ── DNS Filter ───────────────────────────────────────────────────────
+    # â"€â"€ DNS Filter â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     def get_dns_stats(self):
         return _engine.dns.get_stats()
 
@@ -1367,7 +1367,7 @@ class GatewayAPI:
         success = _engine.dns.remove_custom_rule(domain)
         return {"type": "ack", "success": success}
 
-    # ── Mail proxy ───────────────────────────────────────────────────────
+    # â"€â"€ Mail proxy â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     def check_url(self, url):
         return _engine.mail.check_url(url)
 
@@ -1377,7 +1377,7 @@ class GatewayAPI:
     def get_mail_stats(self):
         return _engine.mail.get_stats()
 
-    # ── Permissions ──────────────────────────────────────────────────────
+    # â"€â"€ Permissions â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     def perm_get_status(self):
         if not self._perm:
             return {"available": False}
@@ -1412,9 +1412,9 @@ class GatewayAPI:
         return {"success": ok, "user": user}
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # PYWEBVIEW STATE BROADCAST
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 def _pywebview_state_broadcast(api: GatewayAPI):
     """Background thread: push state to pywebview window periodically."""
@@ -1429,9 +1429,9 @@ def _pywebview_state_broadcast(api: GatewayAPI):
         time.sleep(4)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # WEBSOCKET SERVER (port 8895)
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 _ws_clients: set = set()
 
@@ -1526,9 +1526,9 @@ async def ws_broadcast_loop():
         await asyncio.sleep(5)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # MAIN ENTRY POINTS
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 def _format_bytes(n: int) -> str:
     """Human-readable byte size."""
@@ -1540,7 +1540,7 @@ def _format_bytes(n: int) -> str:
 
 
 def main_webview():
-    """Launch with pywebview — native window, direct API calls."""
+    """Launch with pywebview  - native window, direct API calls."""
     print(f"""
 +======================================================+
 |        Mobile Gateway v{VERSION}                         |
@@ -1627,13 +1627,13 @@ async def main_async():
 
 
 def main():
-    """Main entry point — chooses pywebview or WebSocket mode."""
+    """Main entry point  - chooses pywebview or WebSocket mode."""
     headless = "--headless" in sys.argv
     if headless:
         sys.argv.remove("--headless")
 
     if not headless and HAS_WEBVIEW:
-        print("[*] pywebview detected — launching native window mode")
+        print("[*] pywebview detected  - launching native window mode")
         main_webview()
     else:
         mode = "headless" if headless else "WebSocket"

@@ -1,14 +1,14 @@
 """
-SentinelOS — SOAR Playbook Engine v1.0
+SentinelOS  - SOAR Playbook Engine v1.0
 Security Orchestration, Automated Response.
 Defines playbooks that trigger automated responses when threats are detected.
 
 Architecture:
     PlaybookEngine
-        ├── Subscribes to AgentBus events
-        ├── Evaluates playbook conditions against agent states
-        ├── Executes response actions (cross-agent commands)
-        └── Logs all executions for audit trail
+        â"œâ"€â"€ Subscribes to AgentBus events
+        â"œâ"€â"€ Evaluates playbook conditions against agent states
+        â"œâ"€â"€ Executes response actions (cross-agent commands)
+        â""â"€â"€ Logs all executions for audit trail
 """
 
 import time
@@ -20,9 +20,9 @@ from collections import defaultdict
 logger = logging.getLogger("SentinelOS.Playbook")
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # PLAYBOOK DEFINITIONS
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 # Each playbook has:
 #   name, description (fr/en), trigger (channel pattern),
@@ -147,12 +147,12 @@ DEFAULT_PLAYBOOKS = [
 ]
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # PLAYBOOK ENGINE
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class PlaybookEngine:
-    """SOAR Playbook engine — evaluates conditions and executes automated responses."""
+    """SOAR Playbook engine  - evaluates conditions and executes automated responses."""
 
     def __init__(self, bus, connectors, api=None):
         self.bus = bus
@@ -173,7 +173,7 @@ class PlaybookEngine:
         self.api = api
 
     def _on_event(self, event):
-        """Called for every bus event — check if any playbook should trigger."""
+        """Called for every bus event  - check if any playbook should trigger."""
         if not self._running:
             return
         for pb in self.playbooks:
@@ -209,7 +209,7 @@ class PlaybookEngine:
         if condition != "always" and not self._eval_condition(condition):
             return
 
-        # FIRE — execute actions
+        # FIRE  - execute actions
         logger.info(f"[Playbook] FIRING: {pb_id} (trigger: {event.channel})")
         self._last_fired[pb_id] = time.time()
         self._execute_actions(pb, event)
@@ -270,7 +270,7 @@ class PlaybookEngine:
                 chains = s.get("attack_chains", {})
                 variables["netguard.attack_chains_count"] = len(chains) if isinstance(chains, dict) else 0
 
-        # Simple expression evaluator (safe — no exec/eval of arbitrary code)
+        # Simple expression evaluator (safe  - no exec/eval of arbitrary code)
         try:
             # Handle comparisons: "agent.key > value", "agent.key == value"
             for op in [" > ", " >= ", " < ", " <= ", " == ", " != "]:
@@ -332,7 +332,7 @@ class PlaybookEngine:
         levels = {"info": 0, "warning": 1, "critical": 2}
         return levels.get(severity, 0) >= levels.get(minimum, 0)
 
-    # ─── API Methods ──────────────────────────────────────────────────
+    # â"€â"€â"€ API Methods â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def get_playbooks(self, lang: str = "fr") -> list:
         """Get all playbooks with localized names."""

@@ -14,7 +14,7 @@ import sqlite3
 import os
 import sys
 
-# Fix pythonw (no console) — redirect None stdout/stderr to devnull
+# Fix pythonw (no console)  - redirect None stdout/stderr to devnull
 if sys.stdout is None:
     sys.stdout = open(os.devnull, 'w')
 if sys.stderr is None:
@@ -78,7 +78,7 @@ SETTINGS_PATH = SCRIPT_DIR / "mailshield_settings.json"
 QUARANTINE_DIR = SCRIPT_DIR / "mailshield_quarantine"
 LOG_PATH = SCRIPT_DIR / "mailshield.log"
 
-# ─── Logging Setup ────────────────────────────────────────────────────────────
+# â"€â"€â"€ Logging Setup â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 logging.basicConfig(
     level=logging.INFO,
@@ -90,7 +90,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("MailShield")
 
-# ─── Password Encryption ──────────────────────────────────────────────────────
+# â"€â"€â"€ Password Encryption â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 class PasswordVault:
     """Encrypts/decrypts passwords using a machine-unique key + AES-like XOR cipher."""
@@ -128,7 +128,7 @@ class PasswordVault:
 
 password_vault = PasswordVault()
 
-# ─── API Security ─────────────────────────────────────────────────────────────
+# â"€â"€â"€ API Security â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 API_TOKEN_PATH = SCRIPT_DIR / ".api_token"
 
@@ -144,7 +144,7 @@ def get_or_create_api_token():
 
 API_TOKEN = get_or_create_api_token()
 
-# ─── Settings ──────────────────────────────────────────────────────────────────
+# â"€â"€â"€ Settings â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 def load_settings():
     try:
@@ -180,7 +180,7 @@ def get_decrypted_password(account):
     """Get the decrypted password for an account."""
     return password_vault.decrypt(account.get("password", ""))
 
-# ─── Database ──────────────────────────────────────────────────────────────────
+# â"€â"€â"€ Database â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 def init_database():
     conn = sqlite3.connect(str(DB_PATH))
@@ -307,7 +307,7 @@ def init_database():
     conn.commit()
     conn.close()
 
-# ─── Email Header Decoder ─────────────────────────────────────────────────────
+# â"€â"€â"€ Email Header Decoder â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 def decode_header_value(value):
     if not value:
@@ -328,7 +328,7 @@ def parse_email_address(addr_str):
     name, address = email.utils.parseaddr(decoded)
     return name, address
 
-# ─── Filter Engine ─────────────────────────────────────────────────────────────
+# â"€â"€â"€ Filter Engine â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 class FilterEngine:
     def __init__(self, settings):
@@ -399,7 +399,7 @@ class FilterEngine:
         text_pool = f"{from_name} {from_email} {subject} {body} {' '.join(attachment_names)}".lower()
         return sum(1 for kw in keywords if kw.lower() in text_pool)
 
-# ─── Attachment Scanner ────────────────────────────────────────────────────────
+# â"€â"€â"€ Attachment Scanner â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 class AttachmentScanner:
     def __init__(self, settings):
@@ -454,7 +454,7 @@ class AttachmentScanner:
         result = "; ".join(reasons) if reasons else "clean"
         return max(0, score), False, is_quarantined, result
 
-# ─── Contact Book ──────────────────────────────────────────────────────────────
+# â"€â"€â"€ Contact Book â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 class ContactBook:
     def __init__(self):
@@ -557,7 +557,7 @@ class ContactBook:
             conn.commit()
         conn.close()
 
-# ─── Provider Detector ─────────────────────────────────────────────────────────
+# â"€â"€â"€ Provider Detector â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 # Thunderbird public client ID - widely used by open-source email clients
 MS_CLIENT_ID = "9e5f94bc-e8a4-4e73-b8be-63364c29d753"
@@ -693,7 +693,7 @@ class MicrosoftOAuth:
         auth_string = f"user={user}\x01auth=Bearer {access_token}\x01\x01"
         return auth_string
 
-# ─── Blacklist Manager ─────────────────────────────────────────────────────────
+# â"€â"€â"€ Blacklist Manager â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 class BlacklistManager:
     """Manages email/domain blacklist."""
@@ -762,7 +762,7 @@ class BlacklistManager:
         return "\n".join(lines)
 
 
-# ─── Threat Logger ─────────────────────────────────────────────────────────────
+# â"€â"€â"€ Threat Logger â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 class ThreatLogger:
     """Logs and tracks security threats."""
@@ -815,7 +815,7 @@ class ThreatLogger:
         conn.close()
 
 
-# ─── Phishing Detector ────────────────────────────────────────────────────────
+# â"€â"€â"€ Phishing Detector â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 class PhishingDetector:
     """Advanced phishing and fraud detection."""
@@ -925,7 +925,7 @@ class PhishingDetector:
         }
 
 
-# ─── Internationalization ─────────────────────────────────────────────────────
+# â"€â"€â"€ Internationalization â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 I18N = {
     "fr": {
@@ -1057,7 +1057,7 @@ I18N = {
 }
 
 
-# ─── Mail Engine ───────────────────────────────────────────────────────────────
+# â"€â"€â"€ Mail Engine â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 class MailShieldEngine:
     def __init__(self):
@@ -1086,7 +1086,7 @@ class MailShieldEngine:
         self.attachment_scanner = AttachmentScanner(self.settings)
         self.provider_detector = ProviderDetector(self.settings)
 
-    # ── IMAP Connection ────────────────────────────────────────────────────
+    # â"€â"€ IMAP Connection â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def connect_imap(self, account=None):
         acc = account or (self.settings.get("accounts", [{}])[0] if self.settings.get("accounts") else {})
@@ -1149,7 +1149,7 @@ class MailShieldEngine:
                 pass
             self.imap_conn = None
 
-    # ── Fetch Emails ───────────────────────────────────────────────────────
+    # â"€â"€ Fetch Emails â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def fetch_emails(self, folder="INBOX", limit=50, since_days=30):
         if not self.imap_conn:
@@ -1362,7 +1362,7 @@ class MailShieldEngine:
             score -= 15
         return max(0, min(100, score))
 
-    # ── Send Email ─────────────────────────────────────────────────────────
+    # â"€â"€ Send Email â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def send_email(self, to, subject, body_html, cc="", bcc="", attachments=None, account=None):
         # Permission check for send
@@ -1433,7 +1433,7 @@ class MailShieldEngine:
         except Exception as e:
             return False, str(e)
 
-    # ── Database Queries ───────────────────────────────────────────────────
+    # â"€â"€ Database Queries â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def get_emails(self, category=None, folder="INBOX", search=None, page=1, per_page=50):
         conn = sqlite3.connect(str(DB_PATH))
@@ -1558,7 +1558,7 @@ class MailShieldEngine:
             return {"filename": row[0], "content_type": row[1], "data": row[2]}
         return None
 
-# ─── HTTP Server ───────────────────────────────────────────────────────────────
+# â"€â"€â"€ HTTP Server â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 engine = None
 
@@ -1625,7 +1625,7 @@ class MailShieldHTTPHandler(SimpleHTTPRequestHandler):
             safe = json.loads(json.dumps(engine.settings))
             for acc in safe.get("accounts", []):
                 if acc.get("password"):
-                    acc["password"] = "••••••••"  # Never expose passwords
+                    acc["password"] = " -¢ -¢ -¢ -¢ -¢ -¢ -¢ -¢"  # Never expose passwords
             self.json_response(safe)
         elif path == "/api/settings/filters":
             self.json_response(engine.settings.get("filter_keywords", {}))
@@ -2136,7 +2136,7 @@ A : {orig['to_email']}<br>
                 self.json_response({"enabled": new_state, "available": True})
             else:
                 self.json_response({"enabled": False, "available": False})
-        # ── Permission API ─────────────────────────────────────────────────
+        # â"€â"€ Permission API â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
         elif path == "/api/perm/status":
             if engine._perm:
                 self.json_response(engine._perm.get_status("mailshield"))
@@ -2231,7 +2231,7 @@ A : {orig['to_email']}<br>
         self.send_header("Access-Control-Allow-Headers", "Content-Type, X-API-Token")
         self.end_headers()
 
-# ─── WebSocket Server ──────────────────────────────────────────────────────────
+# â"€â"€â"€ WebSocket Server â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 async def ws_handler(websocket):
     engine.ws_clients.add(websocket)
@@ -2274,7 +2274,7 @@ async def broadcast(data):
         msg = json.dumps(data, ensure_ascii=False, default=str)
         await asyncio.gather(*(c.send(msg) for c in engine.ws_clients), return_exceptions=True)
 
-# ─── Auto Sync Thread ─────────────────────────────────────────────────────────
+# â"€â"€â"€ Auto Sync Thread â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 def auto_sync_loop():
     while engine.running:
@@ -2292,7 +2292,7 @@ def auto_sync_loop():
             except:
                 pass
 
-# ─── Main ──────────────────────────────────────────────────────────────────────
+# â"€â"€â"€ Main â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 def _common_init():
     """Common initialization for both pywebview and browser modes"""
@@ -2344,7 +2344,7 @@ def _common_init():
 
 
 def main_webview():
-    """Launch with pywebview — native window, HTTP API still runs in background"""
+    """Launch with pywebview  - native window, HTTP API still runs in background"""
     host, http_port, ws_port, httpd = _common_init()
 
     print("""
@@ -2360,7 +2360,7 @@ def main_webview():
     print()
 
     window = webview.create_window(
-        f"MailShield Pro � NetGuardPro Suite",
+        f"MailShield Pro - NetGuardPro Suite",
         f"http://{host}:{http_port}",
         width=1360,
         height=860,

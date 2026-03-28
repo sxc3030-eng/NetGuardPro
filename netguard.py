@@ -26,7 +26,7 @@ import sys
 import hashlib
 import base64
 
-# Fix pythonw (no console) — redirect None stdout/stderr to devnull
+# Fix pythonw (no console)  - redirect None stdout/stderr to devnull
 if sys.stdout is None:
     sys.stdout = open(os.devnull, 'w')
 if sys.stderr is None:
@@ -113,7 +113,7 @@ class Config:
     dpi_mask_sensitive: bool  = True
     auto_block_enabled: bool  = True
     auto_block_hits:    int   = 10
-    # v3.0 — Advanced Detection
+    # v3.0  - Advanced Detection
     anomaly_enabled:        bool  = True
     anomaly_zscore:         float = 3.0
     anomaly_baseline_min:   int   = 60
@@ -123,7 +123,7 @@ class Config:
     ja3_enabled:            bool  = True
     entropy_enabled:        bool  = True
     entropy_threshold:      float = 3.5
-    # v3.0 — Threat Intelligence
+    # v3.0  - Threat Intelligence
     virustotal_api_key:     str   = ""
     virustotal_enabled:     bool  = False
     otx_api_key:            str   = ""
@@ -132,7 +132,7 @@ class Config:
     abuseipdb_enabled:      bool  = False
     threat_feeds_enabled:   bool  = True
     threat_feeds_interval:  int   = 3600
-    # v3.0 — Active Response
+    # v3.0  - Active Response
     discord_webhook_url:    str   = ""
     discord_enabled:        bool  = False
     discord_min_severity:   str   = "high"
@@ -144,7 +144,7 @@ class Config:
     quarantine_enabled:     bool  = False
     auto_forensic_enabled:  bool  = True
     auto_forensic_severity: str   = "critical"
-    # v3.0 — WireGuard VPN
+    # v3.0  - WireGuard VPN
     wg_enabled:         bool  = False
     wg_interface:       str   = "wg0"
     wg_listen_port:     int   = 51820
@@ -175,7 +175,7 @@ BLOCKED_NETS:   list = []
 KNOWN_BAD_RANGES = ["185.220.0.0/16", "162.247.74.0/24"]
 P2P_PORTS = set(range(6881, 6890)) | {51413, 1337, 2710}
 
-# ─── Géoblocage ────────────────────────────────────────────────────────────
+# â"€â"€â"€ Géoblocage â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 GEO_BLOCKED_COUNTRIES: set = set()
 
 GEO_IP_RANGES = {
@@ -222,14 +222,14 @@ GEO_IP_RANGES = {
 GEO_COUNTRY_NAMES = {
     "RU":"Russie","CN":"Chine","KP":"Corée du Nord","IR":"Iran",
     "KR":"Corée du Sud","BR":"Brésil","NG":"Nigeria","IN":"Inde",
-    "US":"États-Unis","DE":"Allemagne","FR":"France","NL":"Pays-Bas",
+    "US":"Ã‰tats-Unis","DE":"Allemagne","FR":"France","NL":"Pays-Bas",
 }
 
 _geo_cache: dict = {}
 _geo_city_cache: dict = {}  # ip -> {city, country, country_name}
 
 def get_geo_info(ip: str) -> dict:
-    """Retourne {country, country_name, city} pour une IP — cache local d'abord, API ensuite"""
+    """Retourne {country, country_name, city} pour une IP  - cache local d'abord, API ensuite"""
     if ip in _geo_city_cache:
         return _geo_city_cache[ip]
     country = get_country(ip)
@@ -264,7 +264,7 @@ def _fetch_city_async(ip: str):
     except Exception:
         pass
 
-# ─── Listes VPN/Tor/Proxy connues ─────────────────────────────────────────
+# â"€â"€â"€ Listes VPN/Tor/Proxy connues â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 _KNOWN_VPN_ORGS = [
     "nordvpn","expressvpn","surfshark","mullvad","protonvpn","ipvanish",
     "cyberghost","privatevpn","strongvpn","hidemyass","torguard","airvpn",
@@ -277,7 +277,7 @@ _ABUSEIPDB_CACHE: dict = {}    # ip -> {score, reports}
 ABUSEIPDB_API_KEY: str = ""    # Set via config if user has key
 
 def _update_ip_intel(ip: str, geo_data: dict):
-    """Met à jour le profil intel d'une IP"""
+    """Met Ã  jour le profil intel d'une IP"""
     org = (geo_data.get("org") or "").lower()
     is_vpn = any(kw in org for kw in _KNOWN_VPN_ORGS)
     is_tor  = ip in _KNOWN_TOR_EXITS
@@ -318,7 +318,7 @@ def _compute_risk_score(ip: str) -> int:
     if abuse.get("score", 0) > 50: score += 20
     elif abuse.get("score", 0) > 20: score += 10
 
-    # Pays à risque élevé
+    # Pays Ã  risque élevé
     HIGH_RISK = {"KP", "IR", "RU", "NG"}
     MED_RISK  = {"CN", "BR", "IN", "UA"}
     country = intel.get("country", get_country(ip) or "")
@@ -469,11 +469,11 @@ logging.basicConfig(
 )
 log = logging.getLogger("netguard")
 
-# ═══════════════════════════════════════════════════════════════════════════
-# v3.0 — ADVANCED CYBERSECURITY ENGINE
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# v3.0  - ADVANCED CYBERSECURITY ENGINE
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
-# ─── Anomaly Detection ────────────────────────────────────────────────────
+# â"€â"€â"€ Anomaly Detection â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 _anomaly_accum: dict = {}  # ip -> {pkts, bytes, ports: set, protos: defaultdict(int)}
 
 class BaselineProfile:
@@ -502,7 +502,7 @@ class BaselineProfile:
 
 IP_BASELINES: dict = {}
 
-# ─── Behavioral Profiling ────────────────────────────────────────────────
+# â"€â"€â"€ Behavioral Profiling â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 class BehaviorProfile:
     """Profil comportemental par IP"""
     def __init__(self):
@@ -544,7 +544,7 @@ class BehaviorProfile:
 
 IP_BEHAVIOR_PROFILES: dict = {}
 
-# ─── Attack Correlation ──────────────────────────────────────────────────
+# â"€â"€â"€ Attack Correlation â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 ATTACK_CHAINS: dict = {}  # ip -> [{phase, ts, type}]
 PHASE_MAP = {
     "scan": ["scan", "port"],
@@ -556,11 +556,11 @@ PHASE_MAP = {
     "malware": ["malware", "trojan", "rat", "miner", "crypto"],
 }
 CHAIN_PATTERNS = [
-    {"name": "Recon → Exploit → C2",       "phases": ["recon", "exploit", "c2_communication"]},
-    {"name": "Scan → Brute Force → Exploit","phases": ["scan", "brute_force", "exploit"]},
-    {"name": "Scan → Exploit → Malware",    "phases": ["scan", "exploit", "malware"]},
-    {"name": "Recon → DoS",                 "phases": ["recon", "dos"]},
-    {"name": "Brute Force → C2",            "phases": ["brute_force", "c2_communication"]},
+    {"name": "Recon â†' Exploit â†' C2",       "phases": ["recon", "exploit", "c2_communication"]},
+    {"name": "Scan â†' Brute Force â†' Exploit","phases": ["scan", "brute_force", "exploit"]},
+    {"name": "Scan â†' Exploit â†' Malware",    "phases": ["scan", "exploit", "malware"]},
+    {"name": "Recon â†' DoS",                 "phases": ["recon", "dos"]},
+    {"name": "Brute Force â†' C2",            "phases": ["brute_force", "c2_communication"]},
 ]
 
 def _classify_phase(threat_type: str) -> str:
@@ -570,7 +570,7 @@ def _classify_phase(threat_type: str) -> str:
             return phase
     return "other"
 
-# ─── JA3 Fingerprinting ──────────────────────────────────────────────────
+# â"€â"€â"€ JA3 Fingerprinting â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 KNOWN_BAD_JA3 = {
     "72a589da586844d7f0818ce684948eea": "Cobalt Strike",
     "a0e9f5d64349fb13191bc781f81f42e1": "Cobalt Strike Beacon",
@@ -587,7 +587,7 @@ KNOWN_BAD_JA3 = {
 }
 JA3_CACHE: dict = {}
 
-# ─── Threat Intelligence ─────────────────────────────────────────────────
+# â"€â"€â"€ Threat Intelligence â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 VT_CACHE: dict = {}
 VT_RATE = {"last_min": 0, "count": 0}
 OTX_IOC_IPS:     set = set()
@@ -597,16 +597,16 @@ THREAT_FEED_DOMAINS: set = set()
 THREAT_FEED_LAST_UPDATE: float = 0
 _CHECKED_IPS: set = set()  # IPs already submitted to VT/OTX
 
-# ─── Active Response ─────────────────────────────────────────────────────
+# â"€â"€â"€ Active Response â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 QUARANTINED_IPS:  set = set()
 ISOLATED_DEVICES: set = set()
 ALERT_COOLDOWNS:  dict = {}
 WEBHOOK_COOLDOWN: int  = 60
 
-# ─── Forensic ─────────────────────────────────────────────────────────────
+# â"€â"€â"€ Forensic â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 FORENSIC_QUEUE: list = []
 
-# ─── WireGuard VPN ────────────────────────────────────────────────────────
+# â"€â"€â"€ WireGuard VPN â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 WG_SERVER_PRIVKEY: str = ""
 WG_SERVER_PUBKEY:  str = ""
 WG_PEERS: list = []  # [{name, pubkey, privkey, address, allowed_ips, last_handshake, transfer}]
@@ -632,7 +632,7 @@ _ATTACK_PATTERNS = [
     (re.compile(rb"(?:masscan|zgrab|nmap|nikto|sqlmap|dirbuster|gobuster)", re.I),    "Scanner"),
 ]
 
-# ─── Suricata IDS — règles intégrées + Emerging Threats ──────────────────
+# â"€â"€â"€ Suricata IDS  - règles intégrées + Emerging Threats â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 SURICATA_ENABLED: bool = True
 SURICATA_RULES:   list = []   # liste de dicts {sid, msg, pattern, proto, action}
 SURICATA_LOADED:  int  = 0    # nb de règles chargées
@@ -647,7 +647,7 @@ ET_RULESETS = {
     "et_dos":     "https://rules.emergingthreats.net/open/suricata-5.0/rules/emerging-dos.rules",
 }
 
-# 27 règles intégrées — fonctionnent sans internet
+# 27 règles intégrées  - fonctionnent sans internet
 BUILTIN_ET_RULES = [
     # Log4Shell
     {"sid":9000001,"msg":"ET EXPLOIT Apache Log4j RCE Attempt (jndi)","pattern":rb"\$\{jndi:","proto":"TCP","action":"alert","severity":"critical"},
@@ -831,7 +831,7 @@ def suricata_add_custom_rule(msg: str, pattern_str: str, proto: str = "TCP",
             "proto": proto.upper(), "action": action, "severity": severity,
         })
         SURICATA_LOADED = len(SURICATA_RULES)
-        log.info(f"[SURICATA] Règle custom ajoutée: SID {sid} — {msg}")
+        log.info(f"[SURICATA] Règle custom ajoutée: SID {sid}  - {msg}")
         return {"ok": True, "sid": sid}
     except Exception as e:
         return {"ok": False, "error": str(e)}
@@ -866,11 +866,11 @@ SURICATA_RULES = _compile_builtin_rules()
 SURICATA_LOADED = len(SURICATA_RULES)
 print(f"[SURICATA] {SURICATA_LOADED} règles intégrées chargées")
 
-# ══════════════════════════════════════════════════════════════════════════════
-# v4.0 — NEW MODULES: Vulnerability / Backup / Incidents / Training / NAC / IAM
-# ══════════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# v4.0  - NEW MODULES: Vulnerability / Backup / Incidents / Training / NAC / IAM
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
-# ─── Vulnerability Scanner ────────────────────────────────────────────────────
+# â"€â"€â"€ Vulnerability Scanner â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 VULN_SCAN_HISTORY = deque(maxlen=50)
 
 def vuln_scan_ports(target: str, port_range: str = "1-1024") -> dict:
@@ -1037,7 +1037,7 @@ def vuln_system_check() -> dict:
     return {"ok": True, "checks": checks, "timestamp": datetime.now().isoformat()}
 
 
-# ─── Backup & Recovery ────────────────────────────────────────────────────────
+# â"€â"€â"€ Backup & Recovery â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 BACKUP_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "backups")
 BACKUP_SCHEDULE = {"enabled": False, "interval_hours": 24, "last_backup": ""}
 
@@ -1138,7 +1138,7 @@ def backup_delete(filename: str) -> dict:
     return {"ok": False, "error": "File not found"}
 
 
-# ─── Incident Response / Ticketing ────────────────────────────────────────────
+# â"€â"€â"€ Incident Response / Ticketing â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 INCIDENTS = []  # list of ticket dicts
 INCIDENT_COUNTER = 0
 
@@ -1159,7 +1159,7 @@ def incident_create(title: str, description: str, severity: str = "medium",
         "notes": [],
     }
     INCIDENTS.insert(0, ticket)
-    log.info(f"[INCIDENT] Created: {ticket['id']} — {title}")
+    log.info(f"[INCIDENT] Created: {ticket['id']}  - {title}")
     return ticket
 
 def incident_update(ticket_id: str, updates: dict) -> dict:
@@ -1193,7 +1193,7 @@ def incident_delete(ticket_id: str) -> dict:
     return {"ok": True}
 
 
-# ─── Training & Awareness ────────────────────────────────────────────────────
+# â"€â"€â"€ Training & Awareness â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 TRAINING_MODULES = [
     {
         "id": "phishing_101",
@@ -1312,13 +1312,13 @@ def training_phishing_sim(target_email: str) -> dict:
     return {
         "ok": True,
         "sim_id": sim_id,
-        "message": "Phishing simulation created (local mode — no actual email sent)",
+        "message": "Phishing simulation created (local mode  - no actual email sent)",
         "target": target_email,
         "template": "Password Reset Notification",
     }
 
 
-# ─── NAC Enhanced ─────────────────────────────────────────────────────────────
+# â"€â"€â"€ NAC Enhanced â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 NAC_APPROVED = []   # [{"ip": ..., "mac": ..., "name": ..., "approved_at": ...}]
 NAC_DENIED = []     # [{"ip": ..., "mac": ..., "denied_at": ...}]
 NAC_PENDING = []    # [{"ip": ..., "mac": ..., "first_seen": ...}]
@@ -1337,7 +1337,7 @@ def nac_deny_device(ip: str, mac: str):
     log.info(f"[NAC] Device denied: {ip} ({mac})")
 
 
-# ─── IAM Enhanced ─────────────────────────────────────────────────────────────
+# â"€â"€â"€ IAM Enhanced â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 IAM_USERS = {}      # {username: {password_hash, role, email, mfa_enabled, created_at}}
 IAM_SESSIONS = {}   # {session_id: {username, ip, created_at}}
 IAM_ROLES = {
@@ -1438,7 +1438,7 @@ def record_start():
         STATE.record_active = True
         STATE.record_start_time = datetime.now()
         STATE.record_packets = []
-    log.info(f"[RECORD] Démarré → {path}")
+    log.info(f"[RECORD] Démarré â†' {path}")
     return True
 
 def record_stop() -> str:
@@ -1451,7 +1451,7 @@ def record_stop() -> str:
             STATE.record_file.close()
             STATE.record_file = None
         path = STATE.record_file_path
-    log.info(f"[RECORD] Arrêté → {path}")
+    log.info(f"[RECORD] ArrÃªté â†' {path}")
     return path
 
 def record_write_packet(raw_bytes: bytes):
@@ -1562,7 +1562,7 @@ def get_protocol_name(pkt) -> str:
 import subprocess as _subprocess
 
 def _validate_ip(ip: str) -> bool:
-    """Valide qu'une chaîne est une adresse IP légitime (anti-injection)"""
+    """Valide qu'une chaÃ®ne est une adresse IP légitime (anti-injection)"""
     try:
         ipaddress.ip_address(ip)
         return True
@@ -1576,7 +1576,7 @@ def block_ip_os(ip: str, reason: str):
     if not _validate_ip(ip):
         return
     BLOCKED_IPS.add(ip)
-    log.warning(f"[BLOCK] {ip} — {reason}")
+    log.warning(f"[BLOCK] {ip}  - {reason}")
 
     # Toast notification for block
     if HAS_TOAST:
@@ -1656,14 +1656,14 @@ def add_threat(src_ip: str, threat_type: str, description: str, severity: str, r
     # Update risk score
     _compute_risk_score(src_ip)
 
-    # v3.0 — Correlation & Alerts
+    # v3.0  - Correlation & Alerts
     correlate_attack_phase(src_ip, threat_type)
     dispatch_alert(threat)
     # Auto-forensic on critical
     if severity == "critical" and CFG.auto_forensic_enabled:
         threading.Thread(target=generate_forensic_report, args=(src_ip, threat_type), daemon=True).start()
 
-    log.warning(f"[THREAT/{severity.upper()}] {threat_type} — {src_ip} — {description}")
+    log.warning(f"[THREAT/{severity.upper()}] {threat_type}  - {src_ip}  - {description}")
 
     # Toast notification for threat
     if HAS_TOAST:
@@ -1719,10 +1719,10 @@ def detect_dns_tunneling(src_ip: str) -> Optional[str]:
     STATE._dns_tracker[src_ip] = _clean_window(tracker, 5)
     count = len(STATE._dns_tracker[src_ip])
     if count >= CFG.dns_tunnel_threshold:
-        return f"DNS Tunneling probable: {count} requêtes/5s"
+        return f"DNS Tunneling probable: {count} requÃªtes/5s"
     return None
 
-# ─── v3.0 — Anomaly Detection ────────────────────────────────────────────
+# â"€â"€â"€ v3.0  - Anomaly Detection â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 def anomaly_check_ip(ip: str, pkt_rate: int, byte_vol: int, port_count: int):
     """Vérifie les anomalies statistiques pour une IP"""
     if not CFG.anomaly_enabled:
@@ -1789,9 +1789,9 @@ def anomaly_flush():
                               f"Score similarité={score:.2f} (seuil=0.70)", "high")
     _anomaly_accum = {}
 
-# ─── v3.0 — Attack Correlation ───────────────────────────────────────────
+# â"€â"€â"€ v3.0  - Attack Correlation â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 def correlate_attack_phase(ip: str, threat_type: str):
-    """Corrèle les événements d'attaque pour détecter des chaînes multi-étapes"""
+    """Corrèle les événements d'attaque pour détecter des chaÃ®nes multi-étapes"""
     if not CFG.correlation_enabled:
         return
     phase = _classify_phase(threat_type)
@@ -1824,12 +1824,12 @@ def correlate_attack_phase(ip: str, threat_type: str):
                 "severity": "critical",
             }
             STATE.correlation_alerts.appendleft(alert)
-            add_threat(ip, f"Chaîne d'attaque: {pattern['name']}",
-                      f"Phases détectées: {' → '.join(pattern['phases'])}", "critical")
+            add_threat(ip, f"Chaine d attaque: {pattern['name']}",
+                      f"Phases detectees: {' -> '.join(pattern['phases'])}", "critical")
             ATTACK_CHAINS[ip] = []  # Reset after detection
             break
 
-# ─── v3.0 — JA3 Fingerprinting ───────────────────────────────────────────
+# â"€â"€â"€ v3.0  - JA3 Fingerprinting â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 def extract_ja3(raw_payload: bytes) -> str:
     """Extrait le hash JA3 d'un TLS ClientHello"""
     try:
@@ -1930,7 +1930,7 @@ def ja3_check(ip: str, ja3_hash: str):
         STATE.ja3_alerts.appendleft(alert)
         add_threat(ip, f"JA3 Malveillant: {label}", f"Hash={ja3_hash}", "critical")
 
-# ─── v3.0 — Entropy Analysis ─────────────────────────────────────────────
+# â"€â"€â"€ v3.0  - Entropy Analysis â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 def calc_shannon_entropy(data: bytes) -> float:
     """Calcule l'entropie de Shannon (0-8 pour des bytes)"""
     if not data:
@@ -1947,7 +1947,7 @@ def calc_shannon_entropy(data: bytes) -> float:
     return entropy
 
 def entropy_check_dns(ip: str, query_name: str):
-    """Vérifie l'entropie des requêtes DNS (détection C2/tunneling)"""
+    """Vérifie l'entropie des requÃªtes DNS (détection C2/tunneling)"""
     if not CFG.entropy_enabled or not query_name:
         return
     # Analyse le sous-domaine (avant le TLD)
@@ -1991,7 +1991,7 @@ def entropy_check_payload(ip: str, payload: bytes, dst_port: int):
         add_threat(ip, "Payload haute entropie",
                   f"Port={dst_port} Entropie={entropy:.2f} Taille={len(payload)}", "med")
 
-# ─── v3.0 — Threat Intelligence ──────────────────────────────────────────
+# â"€â"€â"€ v3.0  - Threat Intelligence â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 def _fetch_threat_feeds():
     """Télécharge les feeds de menaces publics (thread daemon)"""
     global THREAT_FEED_IPS, THREAT_FEED_LAST_UPDATE
@@ -2137,7 +2137,7 @@ def ioc_match_ip(ip: str) -> list:
         matches.append({"source": "VirusTotal", "detail": f"{VT_CACHE[ip]['malicious']} détections"})
     return matches
 
-# ─── v3.0 — Active Response ──────────────────────────────────────────────
+# â"€â"€â"€ v3.0  - Active Response â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 def _send_discord_alert(threat: dict):
     """Envoie une alerte Discord via webhook (thread)"""
     if not CFG.discord_enabled or not CFG.discord_webhook_url:
@@ -2151,7 +2151,7 @@ def _send_discord_alert(threat: dict):
         colors = {"critical": 0xFF0000, "high": 0xFF4500, "med": 0xFFAA00, "low": 0x00AAFF}
         payload = json.dumps({
             "embeds": [{
-                "title": f"🛡️ NetGuard Alert: {threat.get('type', 'Unknown')}",
+                "title": f"*- NetGuard Alert: {threat.get('type', 'Unknown')}",
                 "description": threat.get("description", ""),
                 "color": colors.get(threat.get("severity", "med"), 0xAAAAAA),
                 "fields": [
@@ -2186,8 +2186,8 @@ def _send_telegram_alert(threat: dict):
         return
     ALERT_COOLDOWNS[key] = now
     try:
-        sev_emoji = {"critical": "🔴", "high": "🟠", "med": "🟡", "low": "🔵"}
-        emoji = sev_emoji.get(threat.get("severity", ""), "⚪")
+        sev_emoji = {"critical": "!", "high": "!", "med": "?", "low": "*"}
+        emoji = sev_emoji.get(threat.get("severity", ""), "âšª")
         text = (f"{emoji} <b>NetGuard Alert</b>\n"
                 f"<b>Type:</b> {threat.get('type', '?')}\n"
                 f"<b>IP:</b> <code>{threat.get('src_ip', '?')}</code>\n"
@@ -2333,9 +2333,9 @@ def generate_forensic_report(ip: str, trigger: str) -> str:
         log.error(f"[FORENSIC] Erreur: {e}")
         return ""
 
-# ═══════════════════════════════════════════════════════════════════════════
-# v3.0 — WIREGUARD VPN SERVER
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# v3.0  - WIREGUARD VPN SERVER
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 def _wg_find_binary(name: str) -> str:
     """Trouve le chemin complet d'un binaire WireGuard (wg, wireguard)"""
@@ -2396,7 +2396,7 @@ def _wg_genpsk_python() -> str:
     return base64.b64encode(os.urandom(32)).decode()
 
 def _wg_genkey() -> tuple:
-    """Génère une paire de clés WireGuard (privkey, pubkey) — essaie wg CLI puis fallback Python"""
+    """Génère une paire de clés WireGuard (privkey, pubkey)  - essaie wg CLI puis fallback Python"""
     try:
         result = _subprocess.run([_wg_cmd(), "genkey"], capture_output=True, text=True, timeout=5)
         privkey = result.stdout.strip()
@@ -2603,9 +2603,9 @@ def wg_start() -> dict:
             log.info(f"[WG] Tunnel {CFG.wg_interface} démarré et vérifié")
             return {"ok": True, "status": "started"}
         else:
-            # Command ran but tunnel not active — likely needs admin
+            # Command ran but tunnel not active  - likely needs admin
             WG_STATUS["running"] = False
-            msg = "Le tunnel n'a pas démarré. Lance NetGuard en tant qu'Administrateur (clic droit → Exécuter en admin)."
+            msg = "Le tunnel n'a pas démarré. Lance NetGuard en tant qu'Administrateur (clic droit â†' Exécuter en admin)."
             log.warning(f"[WG] {msg}")
             return {"error": msg}
 
@@ -2622,7 +2622,7 @@ def wg_start() -> dict:
         return {"error": str(e)}
 
 def wg_stop() -> dict:
-    """Arrête le tunnel WireGuard"""
+    """ArrÃªte le tunnel WireGuard"""
     global WG_STATUS
     config_path = os.path.join(CFG.wg_config_dir, f"{CFG.wg_interface}.conf")
     try:
@@ -2633,7 +2633,7 @@ def wg_stop() -> dict:
                           capture_output=True, text=True, timeout=15)
         WG_STATUS["running"] = False
         WG_STATUS["peers_connected"] = 0
-        log.info(f"[WG] Tunnel {CFG.wg_interface} arrêté")
+        log.info(f"[WG] Tunnel {CFG.wg_interface} arrÃªté")
         return {"ok": True, "status": "stopped"}
     except FileNotFoundError:
         msg = "WireGuard non installé. "
@@ -2725,7 +2725,7 @@ def analyze_packet(pkt):
     flags    = ""
     is_syn   = False
 
-    # v3.0 — Accumulate anomaly data
+    # v3.0  - Accumulate anomaly data
     if src_ip not in _anomaly_accum:
         _anomaly_accum[src_ip] = {"pkts": 0, "bytes": 0, "ports": set(), "protos": defaultdict(int)}
     _anomaly_accum[src_ip]["pkts"] += 1
@@ -2740,7 +2740,7 @@ def analyze_packet(pkt):
         dst_port = pkt[UDP].dport
         src_port = pkt[UDP].sport
 
-    # v3.0 — Behavioral profiling
+    # v3.0  - Behavioral profiling
     if not is_private(src_ip):
         if src_ip not in IP_BEHAVIOR_PROFILES:
             IP_BEHAVIOR_PROFILES[src_ip] = BehaviorProfile()
@@ -2777,7 +2777,7 @@ def analyze_packet(pkt):
             decision = "block"
             reason   = f"Port {dst_port} toujours bloqué"
 
-        # v3.0 — Threat Feed IOC match
+        # v3.0  - Threat Feed IOC match
         if src_ip in THREAT_FEED_IPS:
             decision = "block"
             add_threat(src_ip, "Threat Feed IOC", f"IP trouvée dans les feeds de menaces publics", "high")
@@ -2785,13 +2785,13 @@ def analyze_packet(pkt):
             decision = "block"
             add_threat(src_ip, "OTX IOC", f"IP trouvée dans AlienVault OTX", "high")
 
-        # v3.0 — Threat intel (async, first-time only)
+        # v3.0  - Threat intel (async, first-time only)
         if not is_private(src_ip) and src_ip not in _CHECKED_IPS:
             _CHECKED_IPS.add(src_ip)
             if CFG.virustotal_enabled:
                 threading.Thread(target=_vt_check_ip, args=(src_ip,), daemon=True).start()
 
-        # ── DNS Blackhole ───────────────────────────────────────────────
+        # â"€â"€ DNS Blackhole â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
         if RULES.get("detect_malicious_dns", {}).get("enabled", True) and pkt.haslayer("DNS"):
             try:
                 from scapy.layers.dns import DNS, DNSQR
@@ -2800,11 +2800,11 @@ def analyze_packet(pkt):
                     if dns_blackhole_check(queried):
                         decision = "block"
                         reason   = f"DNS Blackhole: {queried}"
-                        add_threat(src_ip, "DNS Blackhole", f"Requête vers domaine bloqué: {queried}", "high")
+                        add_threat(src_ip, "DNS Blackhole", f"RequÃªte vers domaine bloqué: {queried}", "high")
             except Exception:
                 pass
 
-        # ── Géoblocage
+        # â"€â"€ Géoblocage
         if GEO_BLOCKED_COUNTRIES and not is_private(src_ip):
             country = get_country(src_ip)
             if country and country in GEO_BLOCKED_COUNTRIES:
@@ -2870,7 +2870,7 @@ def analyze_packet(pkt):
                         add_threat(src_ip, f"DPI: {hit['detail']}", f"Payload suspect", "high")
                         auto_block_check(src_ip)
 
-        # ── Suricata IDS ───────────────────────────────────────────────
+        # â"€â"€ Suricata IDS â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
         if SURICATA_ENABLED and decision == "allow":
             payload = b""
             if HAS_SCAPY and pkt.haslayer(Raw):
@@ -2889,7 +2889,7 @@ def analyze_packet(pkt):
                     if hit["severity"] in ("critical", "high"):
                         auto_block_check(src_ip)
 
-        # v3.0 — JA3 Fingerprinting
+        # v3.0  - JA3 Fingerprinting
         if CFG.ja3_enabled and pkt.haslayer(Raw):
             raw = bytes(pkt[Raw].load)
             if len(raw) > 10 and raw[0] == 0x16:
@@ -2897,11 +2897,11 @@ def analyze_packet(pkt):
                 if ja3_hash:
                     ja3_check(src_ip, ja3_hash)
 
-        # v3.0 — Entropy analysis
+        # v3.0  - Entropy analysis
         if CFG.entropy_enabled and pkt.haslayer(Raw):
             entropy_check_payload(src_ip, bytes(pkt[Raw].load), dst_port)
 
-        # v3.0 — DNS entropy
+        # v3.0  - DNS entropy
         if CFG.entropy_enabled and pkt.haslayer(DNS) and pkt[DNS].qr == 0:
             try:
                 qname = pkt[DNS].qd.qname.decode(errors="replace").rstrip(".")
@@ -3000,7 +3000,7 @@ def snapshot_traffic():
         })
         STATE.bytes_in  = 0
         STATE.bytes_out = 0
-    # v3.0 — Anomaly detection flush
+    # v3.0  - Anomaly detection flush
     anomaly_flush()
 
 CLIENTS: set = set()
@@ -3081,7 +3081,7 @@ def build_state_message() -> dict:
             "dns_blackhole_count": len(DNS_BLACKHOLE),
             "dns_blackhole_hits":  sum(DNS_BLACKHOLE_HITS.values()),
             "lan_devices":      LAN_DEVICES,
-            # v3.0 — Advanced Detection
+            # v3.0  - Advanced Detection
             "anomaly_enabled":      CFG.anomaly_enabled,
             "anomaly_alerts":       list(STATE.anomaly_alerts)[:20],
             "profile_enabled":      CFG.profile_enabled,
@@ -3092,7 +3092,7 @@ def build_state_message() -> dict:
             "entropy_enabled":      CFG.entropy_enabled,
             "entropy_alerts":       list(STATE.entropy_alerts)[:20],
             "attack_chains":        {ip: phases for ip, phases in list(ATTACK_CHAINS.items())[:10] if phases},
-            # v3.0 — Threat Intelligence
+            # v3.0  - Threat Intelligence
             "vt_enabled":           CFG.virustotal_enabled,
             "otx_enabled":          CFG.otx_enabled,
             "abuseipdb_enabled":    CFG.abuseipdb_enabled,
@@ -3100,14 +3100,14 @@ def build_state_message() -> dict:
             "threat_feed_count":    len(THREAT_FEED_IPS),
             "threat_feed_last":     THREAT_FEED_LAST_UPDATE,
             "threat_intel_hits":    list(STATE.threat_intel_hits)[:20],
-            # v3.0 — Active Response
+            # v3.0  - Active Response
             "discord_enabled":      CFG.discord_enabled,
             "telegram_enabled":     CFG.telegram_enabled,
             "quarantined_ips":      list(QUARANTINED_IPS),
             "isolated_devices":     list(ISOLATED_DEVICES),
             "webhook_log":          list(STATE.webhook_log)[:20],
             "forensic_reports":     list(STATE.forensic_reports)[:10],
-            # v3.0 — WireGuard VPN
+            # v3.0  - WireGuard VPN
             "wg_enabled":         CFG.wg_enabled,
             "wg_status":          WG_STATUS,
             "wg_peers":           [{k: v for k, v in p.items() if k not in ("privkey", "preshared_key")} for p in WG_PEERS],
@@ -3116,11 +3116,11 @@ def build_state_message() -> dict:
             "wg_address":         CFG.wg_address,
         }
 
-# ═══════════════════════════════════════════════════════════════════════════
-# v2.0.0 — DÉFENSE ACTIVE
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# v2.0.0  - DÃ‰FENSE ACTIVE
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
-# ─── DNS Blackhole ─────────────────────────────────────────────────────────
+# â"€â"€â"€ DNS Blackhole â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 DNS_BLACKHOLE: set = set()  # domaines bloqués
 DNS_BLACKHOLE_HITS: dict = {}  # domaine -> hits
 
@@ -3150,7 +3150,7 @@ def dns_blackhole_check(domain: str) -> bool:
     return False
 
 def dns_blackhole_add(domains: list):
-    """Ajoute des domaines à la blacklist"""
+    """Ajoute des domaines Ã  la blacklist"""
     for d in domains:
         d = d.lower().strip().rstrip(".")
         if d:
@@ -3163,7 +3163,7 @@ def dns_blackhole_remove(domain: str):
 # Init avec les domaines par défaut
 dns_blackhole_add(DEFAULT_BLACKHOLE_DOMAINS)
 
-# ─── Scan LAN ──────────────────────────────────────────────────────────────
+# â"€â"€â"€ Scan LAN â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 LAN_DEVICES: list = []
 LAN_SCAN_RUNNING: bool = False
 
@@ -3247,7 +3247,7 @@ def scan_lan() -> list:
                             hostname = socket.gethostbyaddr(ip)[0]
                         except Exception:
                             pass
-                        return {"ip": ip, "mac": "—", "hostname": hostname, "vendor": "—", "status": "up", "open_ports": []}
+                        return {"ip": ip, "mac": " -", "hostname": hostname, "vendor": " -", "status": "up", "open_ports": []}
                 except Exception:
                     pass
                 return None
@@ -3287,7 +3287,7 @@ def _mac_vendor(mac: str) -> str:
             return v
     return "Inconnu"
 
-# ─── Honeypot ──────────────────────────────────────────────────────────────
+# â"€â"€â"€ Honeypot â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 HONEYPOT_ENABLED: bool = False
 HONEYPOT_HITS: list = []
 HONEYPOT_SERVERS: list = []
@@ -3303,7 +3303,7 @@ class HoneypotServer:
 
     async def handle_client(self, reader, writer):
         ip = writer.get_extra_info('peername')[0]
-        log.warning(f"[HONEYPOT] {self.service_name}:{self.port} — connexion de {ip}")
+        log.warning(f"[HONEYPOT] {self.service_name}:{self.port}  - connexion de {ip}")
 
         # Log l'intrusion
         hit = {
@@ -3329,7 +3329,7 @@ class HoneypotServer:
                 data = await asyncio.wait_for(reader.read(256), timeout=5)
                 if data:
                     hit["data"] = data.decode(errors="replace")[:100]
-                    log.warning(f"[HONEYPOT] Données reçues de {ip}: {hit['data'][:50]}")
+                    log.warning(f"[HONEYPOT] Données reÃ*ues de {ip}: {hit['data'][:50]}")
             except asyncio.TimeoutError:
                 pass
         except Exception:
@@ -3444,7 +3444,7 @@ async def handle_ws_command(ws, msg: dict):
             except Exception as e:
                 await ws.send(json.dumps({"type": "param_error", "error": str(e)}))
 
-    # ── v1.6.0 — Suricata IDS ─────────────────────────────────────────
+    # â"€â"€ v1.6.0  - Suricata IDS â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "toggle_suricata":
         global SURICATA_ENABLED
         SURICATA_ENABLED = not SURICATA_ENABLED
@@ -3523,7 +3523,7 @@ async def handle_ws_command(ws, msg: dict):
         await ws.send(json.dumps({"type": "geo_updated", "countries": list(GEO_BLOCKED_COUNTRIES)}))
         save_settings()
 
-    # ── DNS Blackhole ──────────────────────────────────────────────────────
+    # â"€â"€ DNS Blackhole â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "dns_blackhole_add":
         domains = msg.get("domains", [])
         if isinstance(domains, str):
@@ -3538,7 +3538,7 @@ async def handle_ws_command(ws, msg: dict):
     elif cmd == "dns_blackhole_get":
         await ws.send(json.dumps({"type":"dns_blackhole_updated","domains":sorted(DNS_BLACKHOLE),"hits":DNS_BLACKHOLE_HITS}))
 
-    # ── Scan LAN ───────────────────────────────────────────────────────────
+    # â"€â"€ Scan LAN â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "scan_lan":
         await ws.send(json.dumps({"type":"lan_scan_started","subnet":_get_local_subnet()}))
         def _do_scan():
@@ -3549,7 +3549,7 @@ async def handle_ws_command(ws, msg: dict):
             )
         threading.Thread(target=_do_scan, daemon=True).start()
 
-    # ── Honeypot ───────────────────────────────────────────────────────────
+    # â"€â"€ Honeypot â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "toggle_honeypot":
         global HONEYPOT_ENABLED
         HONEYPOT_ENABLED = not HONEYPOT_ENABLED
@@ -3560,11 +3560,11 @@ async def handle_ws_command(ws, msg: dict):
     elif cmd == "get_honeypot_hits":
         await ws.send(json.dumps({"type":"honeypot_hits","hits":HONEYPOT_HITS[-50:],"enabled":HONEYPOT_ENABLED}))
 
-    # ══════════════════════════════════════════════════════════════════════
-    # v3.0 — Advanced Cybersecurity Commands
-    # ══════════════════════════════════════════════════════════════════════
+    # â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+    # v3.0  - Advanced Cybersecurity Commands
+    # â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
-    # ── Anomaly Detection ─────────────────────────────────────────────────
+    # â"€â"€ Anomaly Detection â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "toggle_anomaly":
         CFG.anomaly_enabled = not CFG.anomaly_enabled
         await ws.send(json.dumps({"type": "anomaly_toggled", "enabled": CFG.anomaly_enabled}))
@@ -3590,7 +3590,7 @@ async def handle_ws_command(ws, msg: dict):
     elif cmd == "get_entropy_alerts":
         await ws.send(json.dumps({"type": "entropy_alerts", "alerts": list(STATE.entropy_alerts)[:50]}))
 
-    # ── Threat Intelligence ───────────────────────────────────────────────
+    # â"€â"€ Threat Intelligence â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "set_api_keys":
         if "vt_key" in msg:
             CFG.virustotal_api_key = msg["vt_key"]
@@ -3631,7 +3631,7 @@ async def handle_ws_command(ws, msg: dict):
         matches = ioc_match_ip(val) if msg.get("ioc_type") == "ip" else []
         await ws.send(json.dumps({"type": "ioc_result", "value": val, "matches": matches}))
 
-    # ── Active Response ───────────────────────────────────────────────────
+    # â"€â"€ Active Response â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "set_discord_webhook":
         CFG.discord_webhook_url = msg.get("url", "")
         CFG.discord_enabled = bool(CFG.discord_webhook_url)
@@ -3689,7 +3689,7 @@ async def handle_ws_command(ws, msg: dict):
             threading.Thread(target=_gen, daemon=True).start()
             await ws.send(json.dumps({"type": "forensic_generating", "ip": ip}))
 
-    # ── WireGuard VPN ─────────────────────────────────────────────────────
+    # â"€â"€ WireGuard VPN â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "wg_start":
         result = wg_start()
         await ws.send(json.dumps({"type": "wg_started", **result}))
@@ -3730,11 +3730,11 @@ async def handle_ws_command(ws, msg: dict):
         save_settings()
         await ws.send(json.dumps({"type": "wg_config_saved"}))
 
-    # ══════════════════════════════════════════════════════════════════════
-    # v4.0 — New Modules: Vulnerability / Backup / Incidents / Training / NAC / IAM
-    # ══════════════════════════════════════════════════════════════════════
+    # â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+    # v4.0  - New Modules: Vulnerability / Backup / Incidents / Training / NAC / IAM
+    # â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
-    # ── Vulnerability Scanner ──────────────────────────────────────────
+    # â"€â"€ Vulnerability Scanner â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "vuln_port_scan":
         target = msg.get("target", "127.0.0.1")
         port_range = msg.get("ports", "1-1024")
@@ -3770,7 +3770,7 @@ async def handle_ws_command(ws, msg: dict):
     elif cmd == "vuln_get_history":
         await ws.send(json.dumps({"type": "vuln_history", "scans": list(VULN_SCAN_HISTORY)}))
 
-    # ── Backup & Recovery ──────────────────────────────────────────────
+    # â"€â"€ Backup & Recovery â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "backup_create":
         name = msg.get("name", "")
         include = msg.get("include", ["settings", "rules", "blocked"])
@@ -3808,7 +3808,7 @@ async def handle_ws_command(ws, msg: dict):
         save_settings()
         await ws.send(json.dumps({"type": "backup_schedule_set", **BACKUP_SCHEDULE}))
 
-    # ── Incident Response / Ticketing ──────────────────────────────────
+    # â"€â"€ Incident Response / Ticketing â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "incident_create":
         ticket = incident_create(
             msg.get("title", ""),
@@ -3838,7 +3838,7 @@ async def handle_ws_command(ws, msg: dict):
         result = incident_delete(msg.get("id", ""))
         await ws.send(json.dumps({"type": "incident_deleted", **result}))
 
-    # ── Training & Awareness ──────────────────────────────────────────
+    # â"€â"€ Training & Awareness â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "training_get_modules":
         await ws.send(json.dumps({"type": "training_modules", "modules": TRAINING_MODULES}))
 
@@ -3855,7 +3855,7 @@ async def handle_ws_command(ws, msg: dict):
         result = training_phishing_sim(msg.get("target_email", ""))
         await ws.send(json.dumps({"type": "training_phishing_started", **result}))
 
-    # ── NAC Enhanced ──────────────────────────────────────────────────
+    # â"€â"€ NAC Enhanced â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "nac_approve_device":
         ip = msg.get("ip", "")
         mac = msg.get("mac", "")
@@ -3877,7 +3877,7 @@ async def handle_ws_command(ws, msg: dict):
         save_settings()
         await ws.send(json.dumps({"type": "nac_policy_set", "policy": NAC_POLICY}))
 
-    # ── IAM Enhanced ──────────────────────────────────────────────────
+    # â"€â"€ IAM Enhanced â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     elif cmd == "iam_create_user":
         result = iam_create_user(
             msg.get("username", ""),
@@ -3907,9 +3907,9 @@ async def handle_ws_command(ws, msg: dict):
         await ws.send(json.dumps({"type": "iam_sessions", "sessions": list(IAM_SESSIONS.values())}))
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# PYWEBVIEW API — Native window mode (direct JS bridge, no WebSocket)
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# PYWEBVIEW API  - Native window mode (direct JS bridge, no WebSocket)
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class _FakeWS:
     """Fake WebSocket that captures responses for pywebview API"""
@@ -3919,7 +3919,7 @@ class _FakeWS:
         self.responses.append(json.loads(data))
 
 class NetGuardAPI:
-    """API exposed to JavaScript via pywebview.api — instant calls, no WebSocket"""
+    """API exposed to JavaScript via pywebview.api  - instant calls, no WebSocket"""
 
     def __init__(self):
         self._window = None
@@ -3935,7 +3935,7 @@ class NetGuardAPI:
         return json.loads(json.dumps(build_state_message(), default=str))
 
     def send_command(self, cmd, params=None):
-        """Generic command handler — routes any command through the existing handler"""
+        """Generic command handler  - routes any command through the existing handler"""
         if params is None:
             params = {}
         msg = {"cmd": cmd, **params}
@@ -3958,7 +3958,7 @@ class NetGuardAPI:
             return fake_ws.responses[-1]
         return {"type": "ack", "cmd": cmd}
 
-    # ── Startup & Tray ────────────────────────────────────────────────
+    # â"€â"€ Startup & Tray â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     def get_startup_state(self):
         if not HAS_STARTUP_UTILS:
             return {"enabled": False, "available": False}
@@ -3985,7 +3985,7 @@ class NetGuardAPI:
             return {}
         return get_all_startup_states()
 
-    # ── Permissions API ──────────────────────────────────────────────
+    # â"€â"€ Permissions API â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     def perm_get_status(self):
         if not self._perm:
             return json.dumps({"enabled": False, "available": False})
@@ -4147,12 +4147,12 @@ def start_capture(interface: str):
 
 async def main_async(interface: str):
     threading.Thread(target=start_capture, args=(interface,), daemon=True).start()
-    # v3.0 — Start threat feeds
+    # v3.0  - Start threat feeds
     if CFG.threat_feeds_enabled:
         _schedule_feed_refresh()
     if CFG.otx_enabled:
         threading.Thread(target=_otx_fetch_pulses, daemon=True).start()
-    # v3.0 — WireGuard
+    # v3.0  - WireGuard
     if CFG.wg_enabled:
         _wg_init_server()
         _wg_load_peers()
@@ -4228,7 +4228,7 @@ def save_settings():
             "wg_dns": CFG.wg_dns,
             "wg_endpoint": CFG.wg_endpoint,
             "wg_interface": CFG.wg_interface,
-            # v4.0 — New Modules
+            # v4.0  - New Modules
             "nac_approved": NAC_APPROVED,
             "nac_denied": NAC_DENIED,
             "nac_policy": NAC_POLICY,
@@ -4244,7 +4244,7 @@ def save_settings():
         }
         with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
             json.dump(settings, f, indent=2, ensure_ascii=False)
-        log.info(f"[SETTINGS] Sauvegardé → {SETTINGS_FILE}")
+        log.info(f"[SETTINGS] Sauvegardé â†' {SETTINGS_FILE}")
     except Exception as e:
         log.error(f"[SETTINGS] Erreur sauvegarde: {e}")
 
@@ -4252,7 +4252,7 @@ def load_settings():
     """Charge les settings depuis le fichier JSON"""
     global GEO_BLOCKED_COUNTRIES, SURICATA_ENABLED, SURICATA_DISABLED_SIDS, SURICATA_CUSTOM_RULES, SURICATA_LOADED
     if not os.path.exists(SETTINGS_FILE):
-        log.info("[SETTINGS] Aucun fichier de settings trouvé — paramètres par défaut")
+        log.info("[SETTINGS] Aucun fichier de settings trouvé  - paramètres par défaut")
         return
     try:
         with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
@@ -4330,7 +4330,7 @@ def load_settings():
         CFG.wg_endpoint     = s.get("wg_endpoint", "")
         CFG.wg_interface    = s.get("wg_interface", "wg0")
 
-        # v4.0 — New Modules
+        # v4.0  - New Modules
         global NAC_APPROVED, NAC_DENIED, NAC_POLICY, BACKUP_SCHEDULE, INCIDENTS, INCIDENT_COUNTER, TRAINING_SCORES
         NAC_APPROVED = s.get("nac_approved", [])
         NAC_DENIED = s.get("nac_denied", [])
@@ -4340,13 +4340,13 @@ def load_settings():
         INCIDENT_COUNTER = len(INCIDENTS)
         TRAINING_SCORES = s.get("training_scores", {})
 
-        log.info(f"[SETTINGS] Chargé — {len(BLOCKED_IPS)} IPs bloquées, {len(GEO_BLOCKED_COUNTRIES)} pays géobloqués")
+        log.info(f"[SETTINGS] Chargé  - {len(BLOCKED_IPS)} IPs bloquées, {len(GEO_BLOCKED_COUNTRIES)} pays géobloqués")
     except Exception as e:
         log.error(f"[SETTINGS] Erreur chargement: {e}")
 
 def _common_init():
     """Common setup for both pywebview and WebSocket modes"""
-    parser = argparse.ArgumentParser(description="NetGuard Pro — Surveillance réseau")
+    parser = argparse.ArgumentParser(description="NetGuard Pro  - Surveillance réseau")
     parser.add_argument("--interface", default="auto")
     parser.add_argument("--port",      type=int, default=8765)
     parser.add_argument("--no-block",  action="store_true")
@@ -4368,7 +4368,7 @@ def _common_init():
 
 
 def main_webview():
-    """Launch with pywebview — native window, direct API calls"""
+    """Launch with pywebview  - native window, direct API calls"""
     interface, args = _common_init()
 
     try:
@@ -4492,7 +4492,7 @@ def main():
     try:
         asyncio.run(main_async(interface))
     except KeyboardInterrupt:
-        log.info("Arrêt de NetGuard Pro — sauvegarde des settings...")
+        log.info("ArrÃªt de NetGuard Pro  - sauvegarde des settings...")
         save_settings()
 
 if __name__ == "__main__":

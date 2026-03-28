@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NetGuardPro Suite — License Manager
+NetGuardPro Suite  - License Manager
 ====================================
 Handles license key generation, validation, activation, and tier enforcement.
 
@@ -37,7 +37,7 @@ from typing import Optional
 #  Configuration
 # ---------------------------------------------------------------------------
 
-# HMAC secret — in production, store this server-side only.
+# HMAC secret  - in production, store this server-side only.
 # This is used for key generation (admin) and validation (client).
 _HMAC_SECRET = b"NGPro-2026-S3cur3-K3y-S1gn1ng-S3cr3t"
 
@@ -56,7 +56,7 @@ _CODE_TO_TIER = {v: k for k, v in _TIER_CODES.items()}
 # Base32 alphabet (RFC 4648, no padding)
 _B32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
 
-# Suite root — two levels up from licensing/
+# Suite root  - two levels up from licensing/
 _SUITE_ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -87,7 +87,7 @@ TIERS = {
     },
     "earlybird": {
         "name": "Early Bird",
-        "price": "$14.99 — Lifetime",
+        "price": "$14.99  - Lifetime",
         "programs": "__all__",
         "max_devices": 10,
         "commercial": True,
@@ -133,7 +133,7 @@ def _get_machine_id() -> str:
                     raw = line
                     break
         else:
-            # Linux / macOS — read machine-id
+            # Linux / macOS  - read machine-id
             for path in ["/etc/machine-id", "/var/lib/dbus/machine-id"]:
                 if os.path.isfile(path):
                     with open(path) as f:
@@ -308,10 +308,10 @@ class LicenseManager:
 
         Returns:
             dict with keys:
-                'valid'   (bool)  — whether the key is structurally valid
-                'tier'    (str)   — tier name if valid
-                'tier_info' (dict) — full tier definition if valid
-                'error'   (str)   — error message if invalid
+                'valid'   (bool)   - whether the key is structurally valid
+                'tier'    (str)    - tier name if valid
+                'tier_info' (dict)  - full tier definition if valid
+                'error'   (str)    - error message if invalid
         """
         parsed = _parse_key(key)
         if parsed is None:
@@ -536,7 +536,7 @@ def _cli_generate(args):
     key = LicenseManager.generate_key(args.tier, args.email)
     print()
     print("=" * 60)
-    print(f"  {LicenseManager.SUITE_NAME} — License Key Generated")
+    print(f"  {LicenseManager.SUITE_NAME}  - License Key Generated")
     print("=" * 60)
     print(f"  Tier:    {TIERS[args.tier]['name']}")
     print(f"  Email:   {args.email}")
@@ -551,9 +551,9 @@ def _cli_validate(args):
     result = mgr.validate_key(args.key)
     print()
     if result["valid"]:
-        print(f"  VALID — Tier: {result['tier_info']['name']}")
+        print(f"  VALID  - Tier: {result['tier_info']['name']}")
     else:
-        print(f"  INVALID — {result['error']}")
+        print(f"  INVALID  - {result['error']}")
     print()
 
 
@@ -566,7 +566,7 @@ def _cli_activate(args):
         print("  ACTIVATION SUCCESSFUL")
         print(f"  {result['message']}")
     else:
-        print(f"  ACTIVATION FAILED — {result['message']}")
+        print(f"  ACTIVATION FAILED  - {result['message']}")
     print()
 
 
@@ -576,7 +576,7 @@ def _cli_info(args):
     info = mgr.get_license_info()
     print()
     print("=" * 60)
-    print(f"  {LicenseManager.SUITE_NAME} — License Status")
+    print(f"  {LicenseManager.SUITE_NAME}  - License Status")
     print("=" * 60)
     print(f"  Status:     {'Active' if info['active'] else 'INACTIVE'}")
     print(f"  Tier:       {info['tier_name']}")
@@ -604,7 +604,7 @@ def _cli_deactivate(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description=f"{LicenseManager.SUITE_NAME} — License Manager CLI",
+        description=f"{LicenseManager.SUITE_NAME}  - License Manager CLI",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Examples:\n"

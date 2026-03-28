@@ -1,16 +1,16 @@
 """
-SentinelOS — File Integrity Monitor (FIM) v1.0
+SentinelOS  - File Integrity Monitor (FIM) v1.0
 Monitors critical system files for unauthorized changes.
 Detects additions, modifications, and deletions.
 
 Port: 8840
 Architecture:
     FIM Agent
-        ├── Baseline Creator — hashes critical files
-        ├── Change Detector — periodic comparison
-        ├── Whitelist — known good changes (Windows Update, etc.)
-        ├── WebSocket Server — serves state to Cortex
-        └── Alert Publisher — publishes fim.* events
+        â"œâ"€â"€ Baseline Creator  - hashes critical files
+        â"œâ"€â"€ Change Detector  - periodic comparison
+        â"œâ"€â"€ Whitelist  - known good changes (Windows Update, etc.)
+        â"œâ"€â"€ WebSocket Server  - serves state to Cortex
+        â""â"€â"€ Alert Publisher  - publishes fim.* events
 """
 
 import os
@@ -27,7 +27,7 @@ from collections import defaultdict
 
 import websockets
 
-# ── Shared modules ──────────────────────────────────────────
+# â"€â"€ Shared modules â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 try:
     from permissions import PermissionManager
     HAS_PERMISSIONS = True
@@ -63,9 +63,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger("SentinelOS.FIM")
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # MONITORED PATHS
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 # Critical directories to monitor (OS-adaptive)
 if IS_WINDOWS:
@@ -126,9 +126,9 @@ WHITELIST_PATTERNS = [
 ]
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # BASELINE MANAGER
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class BaselineManager:
     """Creates and manages file hash baselines."""
@@ -236,9 +236,9 @@ class BaselineManager:
         return True
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # CHANGE DETECTOR
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class ChangeDetector:
     """Detects changes compared to the baseline."""
@@ -316,7 +316,7 @@ class ChangeDetector:
         baseline_info = self.baseline.baseline.get(filepath)
 
         if not baseline_info:
-            # New file — not in baseline
+            # New file  - not in baseline
             new_info = self.baseline._hash_file(filepath)
             if new_info:
                 # Add to baseline
@@ -332,13 +332,13 @@ class ChangeDetector:
                 }
             return None
 
-        # Existing file — check if modified
+        # Existing file  - check if modified
         try:
             current_mtime = os.path.getmtime(filepath)
             if current_mtime == baseline_info.get("mtime", 0):
                 return None  # Not modified
 
-            # mtime changed — verify hash
+            # mtime changed  - verify hash
             current_info = self.baseline._hash_file(filepath)
             if not current_info:
                 return None
@@ -360,7 +360,7 @@ class ChangeDetector:
                     "new_size": current_info["size"],
                     "severity": "warning",
                     "ts": time.time(),
-                    "message": f"File MODIFIED: {os.path.basename(filepath)} ({old_hash}→{new_hash})",
+                    "message": f"File MODIFIED: {os.path.basename(filepath)} ({old_hash}â†'{new_hash})",
                 }
             else:
                 # Hash same, just mtime changed (benign)
@@ -370,9 +370,9 @@ class ChangeDetector:
             return None
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # FIM ENGINE
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class FIMEngine:
     """File Integrity Monitor engine."""
@@ -472,9 +472,9 @@ class FIMEngine:
         self.baseline_mgr.save_baseline()
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # WEBSOCKET SERVER
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 _engine = FIMEngine()
 _ws_clients = set()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SentinelOS — SIEM/SOAR Engine v1.0.0
+SentinelOS  - SIEM/SOAR Engine v1.0.0
 Security Information and Event Management / Security Orchestration, Automation & Response.
 Aggregates events from ALL agents, correlates threats, and automates responses.
 
@@ -22,7 +22,7 @@ Usage: python siem.py [--headless] [--port 8880]
 import os
 import sys
 
-# Fix pythonw (no console) — redirect None stdout/stderr to devnull
+# Fix pythonw (no console)  - redirect None stdout/stderr to devnull
 if sys.stdout is None:
     sys.stdout = open(os.devnull, "w")
 if sys.stderr is None:
@@ -52,7 +52,7 @@ from pathlib import Path
 from collections import deque, defaultdict
 from typing import Optional
 
-# ── Optional dependencies ─────────────────────────────────────────────────
+# â"€â"€ Optional dependencies â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 try:
     import websockets
@@ -67,7 +67,7 @@ try:
 except ImportError:
     HAS_WEBVIEW = False
 
-# ── Shared modules ──────────────────────────────────────────
+# â"€â"€ Shared modules â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 SIEM_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(SIEM_DIR)
@@ -86,9 +86,9 @@ except ImportError:
     HAS_TOAST = False
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # CONFIGURATION
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 VERSION = "1.0.0"
 WS_PORT = 8880
@@ -290,9 +290,9 @@ DEFAULT_PLAYBOOKS = [
 ]
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# EVENT COLLECTOR — connects to all agents via WebSocket
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# EVENT COLLECTOR  - connects to all agents via WebSocket
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class EventCollector:
     """Connects to all agent WebSocket endpoints, fetches state, and normalizes events."""
@@ -319,7 +319,7 @@ class EventCollector:
             }
         t = threading.Thread(target=self._collector_loop, daemon=True)
         t.start()
-        logger.info("[EventCollector] Started — monitoring %d agents", len(AGENT_ENDPOINTS))
+        logger.info("[EventCollector] Started  - monitoring %d agents", len(AGENT_ENDPOINTS))
 
     def stop(self):
         self._running = False
@@ -486,9 +486,9 @@ class EventCollector:
             }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# CORRELATION ENGINE — pattern matching and kill chain mapping
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# CORRELATION ENGINE  - pattern matching and kill chain mapping
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class CorrelationEngine:
     """Loads correlation rules and detects multi-event threat patterns."""
@@ -577,7 +577,7 @@ class CorrelationEngine:
                         self.correlations.append(correlation)
                         self.total_correlations += 1
                         triggered.append(correlation)
-                        logger.warning("[Correlation] TRIGGERED: %s — IP=%s",
+                        logger.warning("[Correlation] TRIGGERED: %s  - IP=%s",
                                        rule["name"], ip)
 
                 # Check multi-agent correlation (same IP on 3+ agents)
@@ -728,9 +728,9 @@ class CorrelationEngine:
             }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# SOAR PLAYBOOK — automated response engine
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# SOAR PLAYBOOK  - automated response engine
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class SOARPlaybook:
     """Automated incident response playbooks. Loads from playbooks.json and executes actions."""
@@ -808,7 +808,7 @@ class SOARPlaybook:
             self.total_executions += 1
             self.active_playbooks[playbook_name] = "idle"
 
-        logger.info("[SOARPlaybook] Executed: %s — %d actions, %.3fs",
+        logger.info("[SOARPlaybook] Executed: %s  - %d actions, %.3fs",
                      playbook_name, len(execution["actions"]), execution["duration"])
         return execution
 
@@ -861,7 +861,7 @@ class SOARPlaybook:
         except Exception as e:
             result["status"] = "error"
             result["message"] = f"Action failed: {e}"
-            logger.error("[SOAR] Action error: %s — %s", action_type, e)
+            logger.error("[SOAR] Action error: %s  - %s", action_type, e)
 
         return result
 
@@ -934,9 +934,9 @@ class SOARPlaybook:
             }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# LOG MANAGER — persistent storage, rotation, search, export
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# LOG MANAGER  - persistent storage, rotation, search, export
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class LogManager:
     """Stores all events in JSON files with rotation, search, and export."""
@@ -963,7 +963,7 @@ class LogManager:
         t.start()
         t2 = threading.Thread(target=self._rotation_loop, daemon=True)
         t2.start()
-        logger.info("[LogManager] Started — log dir: %s", LOG_DIR)
+        logger.info("[LogManager] Started  - log dir: %s", LOG_DIR)
 
     def stop(self):
         self._running = False
@@ -1140,9 +1140,9 @@ class LogManager:
         }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# RISK SCORE CALCULATOR — global risk scoring with trend analysis
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# RISK SCORE CALCULATOR  - global risk scoring with trend analysis
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class RiskScoreCalculator:
     """Calculates a global risk score (0-100) with trend analysis."""
@@ -1157,19 +1157,19 @@ class RiskScoreCalculator:
         now = time.time()
         score = 0
 
-        # Factor 1: Active threats (correlations in last 10 min) — max 35 pts
+        # Factor 1: Active threats (correlations in last 10 min)  - max 35 pts
         recent_corrs = [c for c in correlator.get_correlations(100) if now - c["ts"] < 600]
         severity_weights = {"critical": 15, "high": 8, "medium": 4, "low": 1}
         corr_score = sum(severity_weights.get(c.get("severity", "medium"), 2) for c in recent_corrs)
         score += min(35, corr_score)
 
-        # Factor 2: Alert frequency (events per minute) — max 25 pts
+        # Factor 2: Alert frequency (events per minute)  - max 25 pts
         recent_events = collector.get_events(limit=500, since=now - 300)
         high_sev_events = [e for e in recent_events if e.get("severity") in ("critical", "high")]
         freq_score = min(25, len(high_sev_events) * 2)
         score += freq_score
 
-        # Factor 3: Agent health — max 20 pts
+        # Factor 3: Agent health  - max 20 pts
         health = collector.get_agent_health()
         total_agents = len(health)
         offline_agents = sum(1 for h in health.values() if h["status"] != "online")
@@ -1178,7 +1178,7 @@ class RiskScoreCalculator:
             health_penalty = (offline_agents * 5) + (error_agents * 10)
             score += min(20, health_penalty)
 
-        # Factor 4: Kill chain progression — max 20 pts
+        # Factor 4: Kill chain progression  - max 20 pts
         kc = correlator.get_kill_chain_status()
         active_stages = kc.get("active_count", 0)
         score += min(20, active_stages * 4)
@@ -1228,9 +1228,9 @@ class RiskScoreCalculator:
         }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# SIEM ENGINE — main orchestrator
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# SIEM ENGINE  - main orchestrator
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class SIEMEngine:
     """Main SIEM/SOAR engine combining all components."""
@@ -1341,7 +1341,7 @@ class SIEMEngine:
         }
         self.alerts.append(alert)
         self.total_alerts += 1
-        logger.warning("[ALERT] %s — IP=%s severity=%s",
+        logger.warning("[ALERT] %s  - IP=%s severity=%s",
                         alert["rule_name"], alert["ip"], alert["severity"])
 
     def get_state(self) -> dict:
@@ -1383,9 +1383,9 @@ class SIEMEngine:
         }
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# SIEM API — pywebview js_api for dashboard interaction
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# SIEM API  - pywebview js_api for dashboard interaction
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class SIEMAPI:
     """API exposed to the SIEM dashboard via pywebview."""
@@ -1393,7 +1393,7 @@ class SIEMAPI:
     def __init__(self, engine: SIEMEngine):
         self.engine = engine
 
-    # ─── State ────────────────────────────────────────────────────────
+    # â"€â"€â"€ State â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def get_state(self) -> str:
         """Get complete SIEM state."""
@@ -1429,7 +1429,7 @@ class SIEMAPI:
         threats = self.engine.correlator.get_top_threat_ips(limit=limit)
         return json.dumps({"threats": threats}, default=str)
 
-    # ─── Playbook Controls ────────────────────────────────────────────
+    # â"€â"€â"€ Playbook Controls â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def get_playbooks(self) -> str:
         """Get all playbooks and their status."""
@@ -1448,7 +1448,7 @@ class SIEMAPI:
         log = self.engine.playbook.get_execution_log(limit=limit)
         return json.dumps({"executions": log, "count": len(log)}, default=str)
 
-    # ─── Log Search & Export ──────────────────────────────────────────
+    # â"€â"€â"€ Log Search & Export â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def search_logs(self, query: str, limit: int = 100) -> str:
         """Search across all stored logs."""
@@ -1468,7 +1468,7 @@ class SIEMAPI:
             data = self.engine.log_manager.export_json(events)
         return json.dumps({"format": fmt, "data": data, "count": len(events)}, default=str)
 
-    # ─── Correlation Rules ────────────────────────────────────────────
+    # â"€â"€â"€ Correlation Rules â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def get_rules(self) -> str:
         """Get all correlation rules."""
@@ -1485,7 +1485,7 @@ class SIEMAPI:
         except json.JSONDecodeError:
             return json.dumps({"error": "Invalid JSON"})
 
-    # ─── Alerts ───────────────────────────────────────────────────────
+    # â"€â"€â"€ Alerts â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def acknowledge_alert(self, alert_id: str) -> str:
         """Acknowledge an alert."""
@@ -1495,7 +1495,7 @@ class SIEMAPI:
                 return json.dumps({"success": True, "alert_id": alert_id})
         return json.dumps({"error": f"Alert not found: {alert_id}"})
 
-    # ─── Permission management ────────────────────────────────────────
+    # â"€â"€â"€ Permission management â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def perm_get_status(self) -> str:
         if self.engine._perm:
@@ -1533,9 +1533,9 @@ class SIEMAPI:
         return json.dumps({"error": "Permissions module not available"})
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # WEBSOCKET SERVER
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 _engine = SIEMEngine()
 _ws_clients: set = set()
@@ -1608,7 +1608,7 @@ async def handle_ws(websocket, path=None):
                             alert["acknowledged"] = True
                     response = {"type": "alert_ack", "alert_id": alert_id}
 
-                # ── Permission management commands ─────────────────────
+                # â"€â"€ Permission management commands â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
                 elif cmd == "perm_get_status":
                     if _engine._perm:
                         response = {
@@ -1683,9 +1683,9 @@ async def broadcast_loop():
         await asyncio.sleep(5)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # MAIN
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 def main():
     headless = "--headless" in sys.argv
@@ -1700,7 +1700,7 @@ def main():
                 pass
 
     logger.info("=" * 60)
-    logger.info("  SIEM/SOAR Engine v%s — NetGuardPro Suite", VERSION)
+    logger.info("  SIEM/SOAR Engine v%s  - NetGuardPro Suite", VERSION)
     logger.info("  WebSocket port: %d", port)
     logger.info("  Mode: %s", "headless" if headless else "GUI")
     logger.info("  Platform: %s", "Windows" if IS_WINDOWS else sys.platform)
@@ -1715,7 +1715,7 @@ def main():
     if headless or not HAS_WEBVIEW:
         # Headless mode: just run WebSocket server
         if not HAS_WS:
-            logger.error("[SIEM] websockets not installed — cannot start server")
+            logger.error("[SIEM] websockets not installed  - cannot start server")
             return
 
         loop = asyncio.new_event_loop()
@@ -1770,7 +1770,7 @@ def main():
         else:
             try:
                 window = webview.create_window(
-                    "SIEM/SOAR — NetGuardPro Suite",
+                    "SIEM/SOAR  - NetGuardPro Suite",
                     dashboard_path,
                     js_api=api,
                     width=1400,

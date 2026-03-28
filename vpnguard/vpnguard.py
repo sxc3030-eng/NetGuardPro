@@ -1607,7 +1607,7 @@ def main_webview():
     dashboard_path = str(BASE_DIR / "vpnguard_dashboard.html")
 
     window = webview.create_window(
-        f"VPN Guard Pro — NetGuardPro Suite",
+        f"VPN Guard Pro - NetGuardPro Suite",
         dashboard_path,
         js_api=api,
         width=1360,

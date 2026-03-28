@@ -1,5 +1,5 @@
 """
-SentinelOS — Alert Manager v1.0
+SentinelOS  - Alert Manager v1.0
 Centralized alert routing to Telegram, Discord, and other channels.
 Subscribes to AgentBus events and sends notifications based on severity.
 
@@ -20,9 +20,9 @@ from collections import defaultdict
 logger = logging.getLogger("SentinelOS.AlertManager")
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # ALERT MANAGER
-# ═══════════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class AlertManager:
     """Centralized alert routing and notification system."""
@@ -52,7 +52,7 @@ class AlertManager:
         logger.info("[AlertManager] Initialized")
 
     def _on_event(self, event):
-        """Handle bus events — queue for alerting if severity >= warning."""
+        """Handle bus events  - queue for alerting if severity >= warning."""
         if event.severity in ("warning", "critical"):
             self._queue_alert(event)
 
@@ -123,17 +123,17 @@ class AlertManager:
             return
 
         # Build message
-        severity_emoji = {"info": "ℹ️", "warning": "⚠️", "critical": "🚨"}
-        header = "🛡️ *SentinelOS Alert*\n\n" if lang == "en" else "🛡️ *Alerte SentinelOS*\n\n"
+        severity_emoji = {"info": "â„¹ï¸-", "warning": "âš ï¸-", "critical": "ðŸš¨"}
+        header = "ðŸ›¡ï¸- *SentinelOS Alert*\n\n" if lang == "en" else "ðŸ›¡ï¸- *Alerte SentinelOS*\n\n"
         lines = [header]
 
         for a in alerts[:10]:  # Max 10 per message
-            emoji = severity_emoji.get(a["severity"], "ℹ️")
+            emoji = severity_emoji.get(a["severity"], "â„¹ï¸-")
             source = a["source"]
             channel = a["channel"]
             data = a["data"] or {}
             msg = data.get("message", channel)
-            lines.append(f"{emoji} *{source}* — {msg}\n")
+            lines.append(f"{emoji} *{source}*  - {msg}\n")
 
         if len(alerts) > 10:
             remaining = len(alerts) - 10
@@ -179,16 +179,16 @@ class AlertManager:
             msg = data.get("message", a["channel"])
             sev = a["severity"].upper()
             fields.append({
-                "name": f"{'🚨' if a['severity']=='critical' else '⚠️'} {a['source']}",
-                "value": f"{msg}\n`{a['channel']}` — {sev}",
+                "name": f"{'ðŸš¨' if a['severity']=='critical' else 'âš ï¸-'} {a['source']}",
+                "value": f"{msg}\n`{a['channel']}`  - {sev}",
                 "inline": False,
             })
 
         embed = {
-            "title": f"🛡️ {title}",
+            "title": f"ðŸ›¡ï¸- {title}",
             "color": color,
             "fields": fields,
-            "footer": {"text": f"SentinelOS v1.0 — {len(alerts)} alert(s)"},
+            "footer": {"text": f"SentinelOS v1.0  - {len(alerts)} alert(s)"},
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         }
 
@@ -201,10 +201,10 @@ class AlertManager:
         except Exception as e:
             logger.error(f"[AlertManager] Discord send error: {e}")
 
-    # ─── API Methods ──────────────────────────────────────────────────
+    # â"€â"€â"€ API Methods â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def get_config(self) -> dict:
-        """Get alert configuration (safe — no tokens exposed)."""
+        """Get alert configuration (safe  - no tokens exposed)."""
         return {
             "telegram_configured": bool(self.settings.get("telegram_bot_token")),
             "telegram_chat_id": self.settings.get("telegram_chat_id", "")[:4] + "..." if self.settings.get("telegram_chat_id") else "",
@@ -237,7 +237,7 @@ class AlertManager:
             import requests
             resp = requests.post(
                 f"https://api.telegram.org/bot{token}/sendMessage",
-                json={"chat_id": chat_id, "text": "🛡️ SentinelOS — Test alert OK!"},
+                json={"chat_id": chat_id, "text": "ðŸ›¡ï¸- SentinelOS  - Test alert OK!"},
                 timeout=10,
             )
             return resp.status_code == 200
@@ -253,7 +253,7 @@ class AlertManager:
             import requests
             resp = requests.post(
                 url,
-                json={"content": "🛡️ SentinelOS — Test alert OK!"},
+                json={"content": "ðŸ›¡ï¸- SentinelOS  - Test alert OK!"},
                 timeout=10,
             )
             return resp.status_code in (200, 204)

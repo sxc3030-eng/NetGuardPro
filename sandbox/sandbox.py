@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Sandbox v1.0.0 — Automated File Analysis Engine
+Sandbox v1.0.0  - Automated File Analysis Engine
 Part of NetGuardPro Suite
 
 Static analysis of suspicious files in an isolated environment.
@@ -27,7 +27,7 @@ import threading
 import time
 import uuid
 
-# Fix pythonw (no console) — redirect None stdout/stderr to devnull
+# Fix pythonw (no console)  - redirect None stdout/stderr to devnull
 if sys.stdout is None:
     sys.stdout = open(os.devnull, "w")
 if sys.stderr is None:
@@ -37,7 +37,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-# ─── Logging ────────────────────────────────────────────────────────────
+# â"€â"€â"€ Logging â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -45,34 +45,34 @@ logging.basicConfig(
 )
 logger = logging.getLogger("Sandbox")
 
-# ─── Optional imports ───────────────────────────────────────────────────
+# â"€â"€â"€ Optional imports â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 HAS_WS = False
 try:
     import websockets
     HAS_WS = True
 except ImportError:
-    logger.info("websockets not installed — WebSocket mode unavailable")
+    logger.info("websockets not installed  - WebSocket mode unavailable")
 
 HAS_WEBVIEW = False
 try:
     import webview
     HAS_WEBVIEW = True
 except ImportError:
-    logger.info("pywebview not installed — native window unavailable")
+    logger.info("pywebview not installed  - native window unavailable")
 
 HAS_YARA = False
 try:
     import yara
     HAS_YARA = True
 except ImportError:
-    logger.info("yara-python not installed — YARA scanning disabled")
+    logger.info("yara-python not installed  - YARA scanning disabled")
 
 HAS_PEFILE = False
 try:
     import pefile
     HAS_PEFILE = True
 except ImportError:
-    logger.info("pefile not installed — PE analysis disabled")
+    logger.info("pefile not installed  - PE analysis disabled")
 
 HAS_PERMISSIONS = False
 try:
@@ -89,7 +89,7 @@ try:
 except ImportError:
     pass
 
-# ─── Paths ──────────────────────────────────────────────────────────────
+# â"€â"€â"€ Paths â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 BASE_DIR = Path(__file__).parent.resolve()
 SUITE_DIR = BASE_DIR.parent
 QUARANTINE_DIR = BASE_DIR / "quarantine"
@@ -103,14 +103,14 @@ for d in [QUARANTINE_DIR, REPORTS_DIR, SIGNATURES_DIR]:
 VERSION = "1.0.0"
 WS_PORT = 8890
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # SUSPICIOUS PATTERN DATABASE
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 SUSPICIOUS_PATTERNS = {
     "shell_commands": {
         "weight": 15,
-        "mitre": "T1059 — Command and Scripting Interpreter",
+        "mitre": "T1059  - Command and Scripting Interpreter",
         "patterns": [
             b"cmd.exe", b"powershell", b"/bin/sh", b"/bin/bash",
             b"command.com", b"wscript", b"cscript", b"mshta",
@@ -118,7 +118,7 @@ SUSPICIOUS_PATTERNS = {
     },
     "process_injection": {
         "weight": 25,
-        "mitre": "T1055 — Process Injection",
+        "mitre": "T1055  - Process Injection",
         "patterns": [
             b"CreateRemoteThread", b"VirtualAllocEx", b"WriteProcessMemory",
             b"NtWriteVirtualMemory", b"RtlCreateUserThread",
@@ -127,7 +127,7 @@ SUSPICIOUS_PATTERNS = {
     },
     "persistence": {
         "weight": 20,
-        "mitre": "T1547 — Boot or Logon Autostart Execution",
+        "mitre": "T1547  - Boot or Logon Autostart Execution",
         "patterns": [
             b"HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
             b"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
@@ -137,7 +137,7 @@ SUSPICIOUS_PATTERNS = {
     },
     "network_indicators": {
         "weight": 10,
-        "mitre": "T1071 — Application Layer Protocol",
+        "mitre": "T1071  - Application Layer Protocol",
         "patterns": [
             b"URLDownloadToFile", b"InternetOpenUrl", b"HttpSendRequest",
             b"WinHttpOpen", b"socket", b"WSAStartup", b"connect(",
@@ -145,7 +145,7 @@ SUSPICIOUS_PATTERNS = {
     },
     "obfuscation": {
         "weight": 15,
-        "mitre": "T1027 — Obfuscated Files or Information",
+        "mitre": "T1027  - Obfuscated Files or Information",
         "patterns": [
             b"base64", b"fromCharCode", b"String.fromCharCode",
             b"eval(", b"exec(", b"atob(", b"btoa(",
@@ -154,7 +154,7 @@ SUSPICIOUS_PATTERNS = {
     },
     "crypto_ransomware": {
         "weight": 20,
-        "mitre": "T1486 — Data Encrypted for Impact",
+        "mitre": "T1486  - Data Encrypted for Impact",
         "patterns": [
             b"CryptEncrypt", b"CryptGenKey", b"AES", b"RSA",
             b"encrypt", b"decrypt", b"bitcoin", b".onion",
@@ -163,7 +163,7 @@ SUSPICIOUS_PATTERNS = {
     },
     "credential_tools": {
         "weight": 25,
-        "mitre": "T1003 — OS Credential Dumping",
+        "mitre": "T1003  - OS Credential Dumping",
         "patterns": [
             b"mimikatz", b"lazagne", b"procdump", b"lsass",
             b"sekurlsa", b"SAM database", b"hashdump",
@@ -214,9 +214,9 @@ SCRIPT_EXTENSIONS = {
     ".cmd": "batch",
 }
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # FILE RECEIVER
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class FileReceiver:
     """Accepts files via path, base64, or drag-and-drop. Copies to quarantine."""
@@ -298,9 +298,9 @@ class FileReceiver:
                     break
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # HASH CHECKER
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class HashChecker:
     """Computes MD5, SHA1, SHA256 and checks against known-bad databases."""
@@ -356,9 +356,9 @@ class HashChecker:
             return None
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # STRING EXTRACTOR
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class StringExtractor:
     """Extracts ASCII/Unicode strings and searches for suspicious patterns."""
@@ -438,9 +438,9 @@ class StringExtractor:
         return iocs
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # ENTROPY ANALYZER
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class EntropyAnalyzer:
     """Shannon entropy analysis per block and whole file."""
@@ -502,12 +502,12 @@ class EntropyAnalyzer:
         }
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # PE ANALYZER (Windows PE files)
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class PEAnalyzer:
-    """Analyzes PE (Portable Executable) files — imports, sections, packers."""
+    """Analyzes PE (Portable Executable) files  - imports, sections, packers."""
 
     PACKER_SIGNATURES = {
         b"UPX0": "UPX",
@@ -531,7 +531,7 @@ class PEAnalyzer:
 
     @classmethod
     def analyze(cls, file_path: str) -> Optional[dict]:
-        """Full PE analysis — returns None if not a PE or pefile unavailable."""
+        """Full PE analysis  - returns None if not a PE or pefile unavailable."""
         if not HAS_PEFILE:
             # Fallback: raw header inspection
             return cls._raw_pe_check(file_path)
@@ -620,7 +620,7 @@ class PEAnalyzer:
             "exports": [],
             "suspicious_imports": [],
             "packer_detected": [],
-            "note": "Limited analysis — install pefile for full PE inspection",
+            "note": "Limited analysis  - install pefile for full PE inspection",
         }
 
         # Check for packer signatures in raw header
@@ -646,9 +646,9 @@ class PEAnalyzer:
         return result
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # SCRIPT ANALYZER
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class ScriptAnalyzer:
     """Analyzes script files for dangerous calls and obfuscation."""
@@ -733,9 +733,9 @@ class ScriptAnalyzer:
         return result
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # YARA SCANNER
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class YARAScanner:
     """Scans files against YARA rules in sandbox/signatures/."""
@@ -748,7 +748,7 @@ class YARAScanner:
     def _load_rules(self):
         """Load and compile all .yar files from signatures directory."""
         if not HAS_YARA:
-            logger.info("YARA not available — scanner disabled")
+            logger.info("YARA not available  - scanner disabled")
             return
 
         yar_files = list(SIGNATURES_DIR.glob("*.yar")) + list(SIGNATURES_DIR.glob("*.yara"))
@@ -792,9 +792,9 @@ class YARAScanner:
         self._load_rules()
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # REPORT GENERATOR
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class ReportGenerator:
     """Generates comprehensive analysis reports with verdicts and scores."""
@@ -806,7 +806,7 @@ class ReportGenerator:
                  iocs: dict) -> dict:
         """Generate the full analysis report."""
 
-        # ── Risk score calculation ──────────────────────────────────────
+        # â"€â"€ Risk score calculation â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
         risk_score = 0
 
         # String-based score
@@ -852,7 +852,7 @@ class ReportGenerator:
         # Clamp
         risk_score = min(risk_score, 100)
 
-        # ── Verdict ─────────────────────────────────────────────────────
+        # â"€â"€ Verdict â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
         if risk_score >= 70:
             verdict = "malicious"
         elif risk_score >= 30:
@@ -860,7 +860,7 @@ class ReportGenerator:
         else:
             verdict = "clean"
 
-        # ── MITRE techniques ────────────────────────────────────────────
+        # â"€â"€ MITRE techniques â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
         mitre_techniques = []
         seen_mitre = set()
         for category, data in strings_found.items():
@@ -869,15 +869,15 @@ class ReportGenerator:
                 seen_mitre.add(mitre_id)
                 mitre_techniques.append(mitre_id)
         if pe_info and pe_info.get("packer_detected"):
-            t = "T1027.002 — Software Packing"
+            t = "T1027.002  - Software Packing"
             if t not in seen_mitre:
                 mitre_techniques.append(t)
         if script_info and script_info.get("obfuscation_indicators"):
-            t = "T1027 — Obfuscated Files or Information"
+            t = "T1027  - Obfuscated Files or Information"
             if t not in seen_mitre:
                 mitre_techniques.append(t)
 
-        # ── File info ───────────────────────────────────────────────────
+        # â"€â"€ File info â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
         mime_type, _ = mimetypes.guess_type(file_info.get("original_name", ""))
 
         report = {
@@ -911,12 +911,12 @@ class ReportGenerator:
         return report
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # SANDBOX ENGINE
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class SandboxEngine:
-    """Main engine — orchestrates submission, analysis, and reporting."""
+    """Main engine  - orchestrates submission, analysis, and reporting."""
 
     def __init__(self):
         self.receiver = FileReceiver()
@@ -1037,7 +1037,7 @@ class SandboxEngine:
                 self.reports[file_id] = report
 
             self.receiver.update_status(file_id, "completed")
-            logger.info(f"Analysis complete: {entry['original_name']} — verdict={report['verdict']} score={report['risk_score']}")
+            logger.info(f"Analysis complete: {entry['original_name']}  - verdict={report['verdict']} score={report['risk_score']}")
 
             if HAS_TOAST and report["verdict"] == "malicious":
                 try:
@@ -1166,19 +1166,19 @@ class SandboxEngine:
             await asyncio.sleep(3)
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # GLOBAL ENGINE
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 ENGINE = SandboxEngine()
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # PYWEBVIEW JS API
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 class SandboxAPI:
-    """pywebview JavaScript API — called from the dashboard."""
+    """pywebview JavaScript API  - called from the dashboard."""
 
     def __init__(self):
         self._window = None
@@ -1232,7 +1232,7 @@ class SandboxAPI:
     def get_queue(self) -> list:
         return ENGINE.get_queue()
 
-    # ─── Permission methods ─────────────────────────────────────────────
+    # â"€â"€â"€ Permission methods â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def perm_get_state(self) -> dict:
         if not self._perm:
@@ -1266,9 +1266,9 @@ class SandboxAPI:
         return {"success": ok, "user": user}
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # STATE BROADCASTER (pywebview mode)
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 def _pywebview_state_broadcast(api: SandboxAPI):
     """Background thread: push state to pywebview window periodically."""
@@ -1284,12 +1284,12 @@ def _pywebview_state_broadcast(api: SandboxAPI):
         time.sleep(interval)
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # WEBSOCKET SERVER (fallback mode)
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 async def ws_handler(websocket):
-    """WebSocket connection handler — fallback when pywebview unavailable."""
+    """WebSocket connection handler  - fallback when pywebview unavailable."""
     ENGINE.clients.add(websocket)
     remote = websocket.remote_address
     logger.info(f"Client connected: {remote}")
@@ -1312,9 +1312,9 @@ async def ws_handler(websocket):
         logger.info(f"Client disconnected: {remote}")
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 # MAIN
-# ═══════════════════════════════════════════════════════════════════════
+# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
 
 def format_size(size: int) -> str:
     for unit in ["B", "KB", "MB", "GB", "TB"]:
@@ -1325,12 +1325,12 @@ def format_size(size: int) -> str:
 
 
 def main_webview():
-    """Launch with pywebview — native window, direct API calls."""
+    """Launch with pywebview  - native window, direct API calls."""
 
     print(f"""
 +======================================================+
 |        Sandbox v{VERSION}                                 |
-|        File Analysis Engine — NetGuardPro Suite       |
+|        File Analysis Engine  - NetGuardPro Suite       |
 +======================================================+
 |  Mode    : Native window (pywebview)                  |
 |  YARA    : {'ON ' if HAS_YARA else 'OFF'}                                        |
@@ -1374,7 +1374,7 @@ async def main_async():
     print(f"""
 +======================================================+
 |        Sandbox v{VERSION}                                 |
-|        File Analysis Engine — NetGuardPro Suite       |
+|        File Analysis Engine  - NetGuardPro Suite       |
 +======================================================+
 |  Mode      : WebSocket (fallback)                     |
 |  WebSocket : ws://localhost:{port}                     |
@@ -1405,7 +1405,7 @@ def main():
         sys.argv.remove("--headless")
 
     if not headless and HAS_WEBVIEW:
-        logger.info("pywebview detected — launching native window")
+        logger.info("pywebview detected  - launching native window")
         main_webview()
     elif HAS_WS:
         logger.info("Launching in WebSocket mode")

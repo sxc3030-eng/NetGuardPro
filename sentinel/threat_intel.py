@@ -1,5 +1,5 @@
 """
-SentinelOS — Threat Intelligence Feed v1.0
+SentinelOS  - Threat Intelligence Feed v1.0
 Fetches and aggregates threat data from public sources.
 Provides IP reputation, known malware hashes, and threat indicators.
 
@@ -202,7 +202,7 @@ class ThreatIntelFeed:
         t.start()
         logger.info("[ThreatIntel] Auto-update started")
 
-    # ─── Lookup Methods ───────────────────────────────────────────────
+    # â"€â"€â"€ Lookup Methods â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def is_malicious_ip(self, ip: str) -> bool:
         """Check if an IP is in the threat database."""
@@ -215,7 +215,7 @@ class ThreatIntelFeed:
             return url in self._malicious_urls
 
     def check_ip(self, ip: str) -> dict:
-        """Full check on an IP — returns threat info."""
+        """Full check on an IP  - returns threat info."""
         is_bad = self.is_malicious_ip(ip)
         # Check which feeds flagged this IP
         sources = []
@@ -231,7 +231,7 @@ class ThreatIntelFeed:
             "total_known_threats": len(self._malicious_ips),
         }
 
-    # ─── Stats ────────────────────────────────────────────────────────
+    # â"€â"€â"€ Stats â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     def get_stats(self) -> dict:
         return {

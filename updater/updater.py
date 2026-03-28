@@ -1,5 +1,5 @@
 """
-NetGuardPro Suite — Auto-Updater v1.0.0
+NetGuardPro Suite  - Auto-Updater v1.0.0
 Checks GitHub Releases for new versions and applies updates.
 
 Flow:
@@ -324,7 +324,7 @@ class AutoUpdater:
         actual_sha = sha.hexdigest()
         if expected_sha256 and actual_sha != expected_sha256.lower():
             self.status = "error"
-            self.error = "SHA256 checksum mismatch — download may be corrupted."
+            self.error = "SHA256 checksum mismatch  - download may be corrupted."
             self.logger.error(
                 "SHA256 mismatch: expected %s, got %s",
                 expected_sha256,
@@ -617,7 +617,7 @@ class AutoUpdater:
 
 
 # ---------------------------------------------------------------------------
-# UpdaterAPI — pywebview js_api integration for Cortex dashboard
+# UpdaterAPI  - pywebview js_api integration for Cortex dashboard
 # ---------------------------------------------------------------------------
 
 class UpdaterAPI:
