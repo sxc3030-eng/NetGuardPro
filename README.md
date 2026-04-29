@@ -267,3 +267,11 @@ Looking for Linux? Check out **[Optimus](https://github.com/sxc3030-eng/Optimus)
 Made by [@sxc3030-eng](https://github.com/sxc3030-eng)
 
 </div>
+
+---
+
+### Method
+
+Architecture-first, AI-paired. Designed and shipped over a focused **2-week sprint in March 2026** with **Claude (Opus 4.6)** as paired implementation and audit partner. Each of the 14 programs (firewall/IDS, antivirus scanner, VPN, SIEM/SOAR, honeypot, file-integrity monitor, and more) was cross-audited on every commit: code review, dependency check, threat-model review on the WebSocket bus and shared permissions layer.
+
+---
