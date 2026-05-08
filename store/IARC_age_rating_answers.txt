@@ -1,0 +1,57 @@
+══════════════════════════════════════════════════
+IARC AGE RATING — QUESTIONNAIRE ANSWERS
+══════════════════════════════════════════════════
+
+Use these answers when filling out the IARC questionnaire
+on Partner Center during app submission.
+
+EXPECTED RATING: PEGI 3 / Everyone
+
+──────────────────────────────────────────────────
+QUESTION → ANSWER
+──────────────────────────────────────────────────
+
+Does the app contain violence?
+→ NO
+
+Does the app contain sexual content?
+→ NO
+
+Does the app contain profanity or crude humor?
+→ NO
+
+Does the app contain controlled substances (drugs, alcohol, tobacco)?
+→ NO
+
+Does the app contain gambling or simulated gambling?
+→ NO
+
+Does the app contain horror or fear-inducing content?
+→ NO
+
+Does the app allow users to interact or communicate with each other?
+→ NO
+
+Does the app share user location with other users?
+→ NO
+
+Does the app allow users to make purchases?
+→ NO (license activation via external PayPal, not in-app)
+
+Does the app collect personal information?
+→ NO (all data stays local, see privacy policy)
+
+Does the app contain user-generated content?
+→ NO
+
+Does the app connect to the internet?
+→ YES (for IP geolocation lookups and threat feed checks only)
+
+Does the app contain advertising?
+→ NO
+
+NOTE: NetGuard Pro is a cybersecurity/network security tool.
+It analyzes network packets for threat detection.
+It does NOT contain any violent, sexual, or inappropriate content.
+The "threats" and "attacks" terminology refers to network security
+concepts (port scans, malware, intrusion attempts), not physical violence.

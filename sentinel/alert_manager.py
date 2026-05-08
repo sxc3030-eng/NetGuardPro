@@ -20,9 +20,9 @@ from collections import defaultdict
 logger = logging.getLogger("SentinelOS.AlertManager")
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # ALERT MANAGER
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class AlertManager:
     """Centralized alert routing and notification system."""
@@ -123,12 +123,12 @@ class AlertManager:
             return
 
         # Build message
-        severity_emoji = {"info": "â„¹ï¸-", "warning": "âš ï¸-", "critical": "ðŸš¨"}
+        severity_emoji = {"info": "--", "warning": "--", "critical": "ðŸš¨"}
         header = "ðŸ›¡ï¸- *SentinelOS Alert*\n\n" if lang == "en" else "ðŸ›¡ï¸- *Alerte SentinelOS*\n\n"
         lines = [header]
 
         for a in alerts[:10]:  # Max 10 per message
-            emoji = severity_emoji.get(a["severity"], "â„¹ï¸-")
+            emoji = severity_emoji.get(a["severity"], "--")
             source = a["source"]
             channel = a["channel"]
             data = a["data"] or {}
@@ -179,7 +179,7 @@ class AlertManager:
             msg = data.get("message", a["channel"])
             sev = a["severity"].upper()
             fields.append({
-                "name": f"{'ðŸš¨' if a['severity']=='critical' else 'âš ï¸-'} {a['source']}",
+                "name": f"{'ðŸš¨' if a['severity']=='critical' else '--'} {a['source']}",
                 "value": f"{msg}\n`{a['channel']}`  - {sev}",
                 "inline": False,
             })
@@ -201,7 +201,7 @@ class AlertManager:
         except Exception as e:
             logger.error(f"[AlertManager] Discord send error: {e}")
 
-    # â"€â"€â"€ API Methods â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - API Methods -
 
     def get_config(self) -> dict:
         """Get alert configuration (safe  - no tokens exposed)."""

@@ -1,0 +1,58 @@
+══════════════════════════════════════════════════
+MICROSOFT STORE LISTING — FRANÇAIS
+══════════════════════════════════════════════════
+
+NOM D'AFFICHAGE : NetGuard Pro
+
+TITRE COURT (max 50 car.) :
+NetGuard Pro — Cybersécurité tout-en-un
+
+DESCRIPTION COURTE (max 150 car.) :
+Suite de cybersécurité complète : IDS/IPS, pare-feu intelligent, carte des menaces en temps réel, VPN WireGuard, anti-malware et 14 modules de protection.
+
+DESCRIPTION LONGUE :
+NetGuard Pro est une suite de cybersécurité professionnelle tout-en-un pour Windows. Protégez votre réseau avec un système de détection d'intrusions (IDS/IPS) en temps réel, un pare-feu intelligent et une carte mondiale des menaces.
+
+Fonctionnalités principales :
+
+• IDS/IPS en temps réel — Analyse chaque paquet réseau avec classification des menaces sur 10 niveaux, du trafic normal aux attaques critiques.
+
+• Pare-feu intelligent — Blocage automatique des IP malveillantes, protection contre les scans de ports, DDoS et brute force.
+
+• Carte mondiale des menaces — Visualisez en direct la provenance géographique de chaque connexion avec géolocalisation précise au niveau ville.
+
+• VPN WireGuard intégré — Créez et gérez vos tunnels VPN directement depuis le dashboard.
+
+• Dashboard professionnel — Interface Wireshark-like avec filtres avancés, vue hexadécimale, statistiques protocoles et graphiques I/O.
+
+• 14 modules de sécurité :
+  - SentinelOS : orchestrateur central
+  - CleanGuard : anti-malware et nettoyage système
+  - MailShield : sécurité email (SPF/DKIM/DMARC)
+  - VPN Guard : gestion VPN WireGuard
+  - HoneyPot : détection d'intrusions par leurre
+  - FIM : surveillance d'intégrité des fichiers
+  - Session Recorder : enregistrement des sessions
+  - StrikeBack : réponse active aux menaces
+  - Sandbox : analyse comportementale
+  - SIEM : intégration centralisée des logs
+  - RedTeam : outils de test de pénétration
+  - Mobile Gateway : protection mobile
+  - Network Mapper : cartographie réseau
+
+• Respect de la vie privée — Aucune télémétrie, aucun tracking. Toutes les données restent sur votre ordinateur.
+
+• Interface bilingue — Français et anglais.
+
+Configuration requise :
+- Windows 10/11 (64-bit)
+- 4 Go RAM minimum
+- 200 Mo d'espace disque
+- Connexion réseau
+
+MOTS-CLÉS :
+cybersécurité, firewall, pare-feu, IDS, IPS, antivirus, anti-malware, VPN, WireGuard, réseau, sécurité, protection, menaces, intrusion, surveillance
+
+CATÉGORIE : Sécurité
+
+SOUS-CATÉGORIE : Protection du PC

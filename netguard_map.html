@@ -236,6 +236,21 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);heig
       <span style="font-size:11px;color:var(--text2);display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:var(--blue);border:1px solid var(--blue);display:inline-block"></span>Sélectionné</span>
     </div>
 
+    <!-- Legende des niveaux de menace -->
+    <div id="threat-legend" style="position:absolute;bottom:14px;left:14px;background:var(--bg2)cc;border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-size:10px;display:flex;flex-direction:column;gap:2px;backdrop-filter:blur(6px)">
+      <div style="font-weight:600;font-size:11px;color:var(--text);margin-bottom:3px">Niveau de menace</div>
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#3dffb4;display:inline-block"></span><span style="color:#3dffb4">1</span><span style="color:var(--text2)">Normal</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#6decb9;display:inline-block"></span><span style="color:#6decb9">2</span><span style="color:var(--text2)">Connu</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#a0d8b0;display:inline-block"></span><span style="color:#a0d8b0">3</span><span style="color:var(--text2)">Routine</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#c8e06e;display:inline-block"></span><span style="color:#c8e06e">4</span><span style="color:var(--text2)">Info</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#ffe066;display:inline-block"></span><span style="color:#ffe066">5</span><span style="color:var(--text2)">Attention</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#ffb347;display:inline-block"></span><span style="color:#ffb347">6</span><span style="color:var(--text2)">Suspect</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#ff8c42;display:inline-block"></span><span style="color:#ff8c42">7</span><span style="color:var(--text2)">Alerte</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#ff6b6b;display:inline-block"></span><span style="color:#ff6b6b">8</span><span style="color:var(--text2)">Menace</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#ff4d6a;display:inline-block"></span><span style="color:#ff4d6a">9</span><span style="color:var(--text2)">Danger</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#ff1744;display:inline-block"></span><span style="color:#ff1744">10</span><span style="color:var(--text2)">Critique</span></div>
+    </div>
+
     <!-- Boutons zoom -->
     <div style="position:absolute;bottom:14px;right:14px;display:flex;flex-direction:column;gap:6px">
       <button id="btn-zoom-in" style="width:32px;height:32px;background:var(--bg2);border:1px solid var(--border2);color:var(--text2);border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.15s" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--text2)'">+</button>
@@ -751,42 +766,121 @@ function closeIPPanel() {
   document.getElementById('ip-panel').classList.remove('open');
 }
 
+// ── 10-level threat color grading ─────────────────────────────────────────
+// 1=safe → 10=critical. Based on reason/status/hits, NOT just block/allow.
+const THREAT_COLORS = [
+  '#3dffb4', // 1 - Normal (vert clair) — trafic standard
+  '#6decb9', // 2 - Connu (vert) — service cloud/CDN reconnu
+  '#a0d8b0', // 3 - Routine (vert pale) — DNS, NTP, updates
+  '#c8e06e', // 4 - Info (jaune-vert) — nouveau contact, pas de menace
+  '#ffe066', // 5 - Attention (jaune) — port inhabituel, pays lointain
+  '#ffb347', // 6 - Suspect (orange) — scan potentiel, comportement anormal
+  '#ff8c42', // 7 - Alerte (orange fonce) — brute force detecte, P2P
+  '#ff6b6b', // 8 - Menace (rouge clair) — threat feed, IOC
+  '#ff4d6a', // 9 - Danger (rouge) — malware, C2, exploit
+  '#ff1744', // 10 - Critique (rouge vif) — attaque active, bloque
+];
+const THREAT_LABELS = [
+  'Normal','Connu','Routine','Info','Attention',
+  'Suspect','Alerte','Menace','Danger','Critique'
+];
+
+function getThreatLevel(ip, data) {
+  if (selectedIPs.has(ip)) return {level: 0, color: '#4d9fff', label: 'Selection'};
+
+  const reason = (data.reason || '').toLowerCase();
+  const status = data.status || 'allow';
+  const hits = data.hits || 0;
+  const org = (data.org || '').toLowerCase();
+
+  // Niveau 10 — Critique : attaque active bloquee
+  if (blockedIPs.has(ip) && (reason.includes('flood') || reason.includes('malware') || reason.includes('exploit') || reason.includes('c2')))
+    return {level: 10, color: THREAT_COLORS[9], label: THREAT_LABELS[9]};
+
+  // Niveau 9 — Danger : menace confirmee
+  if (reason.includes('malware') || reason.includes('c2') || reason.includes('exploit') || reason.includes('chaine d'))
+    return {level: 9, color: THREAT_COLORS[8], label: THREAT_LABELS[8]};
+
+  // Niveau 8 — Menace : IOC/threat feed
+  if (reason.includes('threat feed') || reason.includes('otx') || reason.includes('virustotal') || reason.includes('abuseipdb'))
+    return {level: 8, color: THREAT_COLORS[7], label: THREAT_LABELS[7]};
+
+  // Niveau 7 — Alerte : brute force, P2P, blackhole DNS
+  if (reason.includes('brute') || reason.includes('p2p') || reason.includes('blackhole') || reason.includes('tunneling'))
+    return {level: 7, color: THREAT_COLORS[6], label: THREAT_LABELS[6]};
+
+  // Niveau 6 — Suspect : scan de ports, port sensible, geoblocage
+  if (reason.includes('scan') || reason.includes('sensible') || reason.includes('geo') || status === 'block')
+    return {level: 6, color: THREAT_COLORS[5], label: THREAT_LABELS[5]};
+
+  // Niveau 5 — Attention : warn, pays inhabituel, beaucoup de hits
+  if (status === 'warn' || hits > 50)
+    return {level: 5, color: THREAT_COLORS[4], label: THREAT_LABELS[4]};
+
+  // Niveau 4 — Info : nouvelle IP externe, premier contact
+  if (hits <= 2 && !org)
+    return {level: 4, color: THREAT_COLORS[3], label: THREAT_LABELS[3]};
+
+  // Niveau 3 — Routine : DNS, NTP, updates, petits volumes
+  if (data.dport && [53,123,443,80].includes(data.dport))
+    return {level: 3, color: THREAT_COLORS[2], label: THREAT_LABELS[2]};
+
+  // Niveau 2 — Connu : cloud/CDN/grandes entreprises
+  if (org && (org.includes('google') || org.includes('cloudflare') || org.includes('amazon') || org.includes('microsoft') || org.includes('akamai') || org.includes('fastly') || org.includes('apple')))
+    return {level: 2, color: THREAT_COLORS[1], label: THREAT_LABELS[1]};
+
+  // Niveau 1 — Normal
+  return {level: 1, color: THREAT_COLORS[0], label: THREAT_LABELS[0]};
+}
+
 // ── Dots on map ───────────────────────────────────────────────────────────
-// Keep track of dot order for max 50 rule
-let dotOrder = []; // ordered list of IPs with dots
+let dotOrder = [];
 
 function addOrUpdateDot(ip, data) {
   if (!mapReady || data.lon == null || data.lat == null) return;
   const [px, py] = projection([data.lon, data.lat]);
   if (!px || !py) return;
 
-  const color = blockedIPs.has(ip) ? '#ff4d6a' : selectedIPs.has(ip) ? '#4d9fff' : data.status==='block' ? '#ff4d6a' : data.status==='warn' ? '#ffb347' : '#3dffb4';
-  const r = blockedIPs.has(ip) ? 4 : selectedIPs.has(ip) ? 4 : 3;
+  const threat = getThreatLevel(ip, data);
+  const color = threat.color;
+  data._threatLevel = threat.level;
+  data._threatLabel = threat.label;
+  const r = threat.level >= 8 ? 5 : threat.level >= 6 ? 4 : 3;
 
-  // Ripple animé — toujours affiché
-  g.append('circle').attr('cx',px).attr('cy',py).attr('r',r)
-    .attr('fill','none').attr('stroke',color).attr('stroke-width',1.5).attr('opacity',.8)
-    .transition().duration(900).attr('r',r+12).attr('opacity',0).remove();
+  // Ripple pulse anime — flash visible a chaque update
+  const ripple = g.append('circle').attr('cx',px).attr('cy',py).attr('r',r)
+    .attr('fill','none').attr('stroke',color).attr('stroke-width', threat.level >= 6 ? 2 : 1.2).attr('opacity',.9);
+  ripple.transition().duration(800).attr('r',r + 14).attr('opacity',0).remove();
 
-  // Si le point existe déjà, juste mettre à jour la couleur
+  // Second ripple pour menaces hautes
+  if (threat.level >= 7) {
+    const ripple2 = g.append('circle').attr('cx',px).attr('cy',py).attr('r',r)
+      .attr('fill','none').attr('stroke',color).attr('stroke-width',1).attr('opacity',.5);
+    ripple2.transition().delay(200).duration(1000).attr('r',r + 20).attr('opacity',0).remove();
+  }
+
+  // Si le point existe deja, flash + mise a jour couleur
   if (dotElements[ip]) {
-    dotElements[ip].attr('fill', color).attr('opacity', .85);
-    // Déplacer en fin de liste (plus récent)
+    const el = dotElements[ip];
+    el.attr('fill', color);
+    // Pulse: opacity flash pour montrer activite
+    el.attr('opacity', 1).transition().duration(600).attr('opacity', .85);
+    el.attr('r', r + 2).transition().duration(400).attr('r', r);
     dotOrder = dotOrder.filter(x => x !== ip);
     dotOrder.push(ip);
     return;
   }
 
-  // Nouveau point — vérifier la limite de 50
-  if (dotOrder.length >= 200) {
+  // Limite de points
+  if (dotOrder.length >= 300) {
     const oldest = dotOrder.shift();
     if (dotElements[oldest] && !blockedIPs.has(oldest) && !selectedIPs.has(oldest)) {
-      dotElements[oldest].transition().duration(800).attr('opacity', 0).remove();
+      dotElements[oldest].transition().duration(500).attr('opacity', 0).remove();
       delete dotElements[oldest];
     }
   }
 
-  // Créer le nouveau point persistant
+  // Nouveau point persistant
   const dot = g.append('circle')
     .attr('cx', px).attr('cy', py)
     .attr('r', r)
@@ -810,8 +904,7 @@ function addOrUpdateDot(ip, data) {
       }
     });
 
-  // Fade in
-  dot.transition().duration(400).attr('opacity', .9);
+  dot.transition().duration(300).attr('opacity', .9);
 
   dotElements[ip] = dot;
   dotOrder.push(ip);
@@ -820,8 +913,8 @@ function addOrUpdateDot(ip, data) {
 function redrawDots() {
   Object.entries(ipData).forEach(([ip, data]) => {
     if (dotElements[ip]) {
-      const color = blockedIPs.has(ip) ? '#ff4d6a' : selectedIPs.has(ip) ? '#4d9fff' : data.status==='block' ? '#ff4d6a' : '#3dffb4';
-      dotElements[ip].attr('fill', color);
+      const threat = getThreatLevel(ip, data);
+      dotElements[ip].attr('fill', threat.color);
     }
   });
 }
@@ -896,20 +989,26 @@ function getIPCoords(ip, data) {
 }
 
 // My machine's approximate location (will be set from first local IP or FR default)
-let localCoords = COUNTRY_COORDS['FR'] ? [COUNTRY_COORDS['FR'][0], COUNTRY_COORDS['FR'][1]] : [2.35, 48.85];
+let localCoords = COUNTRY_COORDS['CA'] ? [COUNTRY_COORDS['CA'][0], COUNTRY_COORDS['CA'][1]] : [-75.7, 45.4];
 
 function drawInteraction(pkt) {
   if (!mapReady) return;
   const srcIP = pkt.src;
   const dstIP = pkt.dst;
-  if (!srcIP) return;
+  if (!srcIP && !dstIP) return;
 
-  const srcData = ipData[srcIP] || {};
-  const srcCoords = getIPCoords(srcIP, srcData);
+  // Source: if private, use local coords (outgoing traffic)
+  let srcCoords;
+  if (!srcIP || isPrivate(srcIP)) {
+    srcCoords = localCoords;
+  } else {
+    const srcData = ipData[srcIP] || {};
+    srcCoords = getIPCoords(srcIP, srcData);
+  }
 
-  // Destination: if private, use local coords
+  // Destination: if private, use local coords (incoming traffic)
   let dstCoords;
-  if (isPrivate(dstIP)) {
+  if (!dstIP || isPrivate(dstIP)) {
     dstCoords = localCoords;
   } else {
     const dstData = ipData[dstIP] || {};
@@ -917,48 +1016,79 @@ function drawInteraction(pkt) {
   }
 
   if (!srcCoords || !dstCoords) return;
+  // Skip if both are local (no arc to draw)
+  if (srcCoords === localCoords && dstCoords === localCoords) return;
 
-  const color = pkt.status === 'block' ? '#ff4d6a' : pkt.status === 'warn' ? '#ffb347' : '#3dffb455';
-  drawArc(srcCoords, dstCoords, color, pkt.status);
+  // Use threat level color for arcs too
+  const mainIP = (srcIP && !isPrivate(srcIP)) ? srcIP : dstIP;
+  const mainData = ipData[mainIP] || {status: pkt.status, reason: pkt.reason};
+  if (pkt.dport) mainData.dport = pkt.dport;
+  const threat = getThreatLevel(mainIP || '', mainData);
+  drawArc(srcCoords, dstCoords, threat.color, pkt.status);
 }
 
 function showTooltip(event, ip, data) {
   const tt = document.getElementById('tooltip');
   document.getElementById('tt-ip').textContent = ip;
   document.getElementById('tt-loc').textContent = (data.city ? data.city + ', ' : '') + (COUNTRY_NAMES[data.country]||data.country||'');
-  document.getElementById('tt-org').textContent = data.org ? '🏢 ' + data.org : '';
+  document.getElementById('tt-org').textContent = data.org ? data.org : '';
   const st = document.getElementById('tt-status');
-  const isBlocked = blockedIPs.has(ip);
-  st.textContent = isBlocked ? '🚫 BLOQUÉ' : data.status==='warn' ? '⚠ ALERTE' : '✓ PERMIS';
-  st.style.background = isBlocked ? '#3d1220' : data.status==='warn' ? '#3d2800' : '#0d3326';
-  st.style.color = isBlocked ? '#ff4d6a' : data.status==='warn' ? '#ffb347' : '#3dffb4';
+  const threat = getThreatLevel(ip, data);
+  const lvl = threat.level;
+  st.textContent = `${lvl}/10 — ${threat.label}` + (data.reason ? ` | ${data.reason}` : '');
+  st.style.background = threat.color + '22';
+  st.style.color = threat.color;
   tt.style.display = 'block';
   tt.style.left = (event.clientX+12)+'px';
   tt.style.top = (event.clientY-10)+'px';
 }
 
 // ── WebSocket ─────────────────────────────────────────────────────────────
+let _wsRecvCount = 0, _wsPktCount = 0, _wsExtCount = 0;
 function connectWS() {
   ws = new WebSocket(WS_URL);
   ws.onopen = () => {
     document.getElementById('dot').classList.remove('off');
-    document.getElementById('conn-status').textContent = 'Connecté — En direct';
+    document.getElementById('conn-status').textContent = 'Connecte — En direct';
+    console.log('[Map] WebSocket connecte a ' + WS_URL);
     ws.send(JSON.stringify({cmd:'get_state'}));
   };
   ws.onclose = () => {
     document.getElementById('dot').classList.add('off');
     document.getElementById('conn-status').textContent = 'Reconnexion…';
+    console.log('[Map] WebSocket deconnecte, reconnexion dans 3s...');
     setTimeout(connectWS, 3000);
   };
-  ws.onmessage = e => { try { handleMsg(JSON.parse(e.data)); } catch(_){} };
+  ws.onerror = (e) => {
+    console.error('[Map] WebSocket erreur:', e);
+  };
+  ws.onmessage = e => {
+    try {
+      const msg = JSON.parse(e.data);
+      _wsRecvCount++;
+      if (msg.recent_packets) _wsPktCount = msg.recent_packets.length;
+      if (msg.recent_packets) _wsExtCount = msg.recent_packets.filter(p => p.src && !isPrivate(p.src)).length;
+      handleMsg(msg);
+      // Update live counter in titlebar
+      const cs = document.getElementById('conn-status');
+      if (cs && msg.type === 'state') {
+        const dots = Object.keys(dotElements).length;
+        cs.textContent = `En direct — ${msg.packets_total||0} paquets | ${dots} IPs sur carte`;
+      }
+    } catch(err){ console.error('[Map] Parse error:', err); }
+  };
 }
 
 function isPrivate(ip) {
   if (!ip) return true;
-  return ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('127.') ||
-         ip.startsWith('172.16.') || ip.startsWith('172.17.') || ip.startsWith('172.18.') ||
-         ip.startsWith('172.19.') || ip.startsWith('172.2') || ip.startsWith('172.3') ||
-         ip === '0.0.0.0' || ip === '255.255.255.255';
+  if (ip === '0.0.0.0' || ip === '255.255.255.255') return true;
+  if (ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('127.')) return true;
+  // 172.16.0.0 - 172.31.255.255 (private range)
+  if (ip.startsWith('172.')) {
+    const oct2 = parseInt(ip.split('.')[1]);
+    if (oct2 >= 16 && oct2 <= 31) return true;
+  }
+  return false;
 }
 
 // Assign geo coords to an IP using all available fallbacks
@@ -1005,32 +1135,43 @@ function handleMsg(msg) {
     const isNewData = pktKey !== lastSeenPktKey;
     lastSeenPktKey = pktKey;
 
-    // Traiter chaque paquet
+    // Traiter chaque paquet — src ET dst
+    let arcCount = 0;
     pkts.forEach((pkt, i) => {
-      const ip = pkt.src;
-      if (!ip || isPrivate(ip)) return;
+      const srcIP = pkt.src;
+      const dstIP = pkt.dst;
 
-      const d = assignGeo(ip, pkt);
-      d.hits++;
-      if (d.lat != null) addOrUpdateDot(ip, d);
+      // Traiter source (si publique)
+      if (srcIP && !isPrivate(srcIP)) {
+        const d = assignGeo(srcIP, pkt);
+        d.hits++;
+        if (d.lat != null) addOrUpdateDot(srcIP, d);
+      }
 
-      // Draw interaction arc for newest packets (max 5 per update to avoid lag)
-      if (isNewData && i < 5 && Date.now() - arcThrottle > 200) {
-        drawInteraction(pkt);
+      // Stocker le port destination pour le grading
+      if (srcIP && ipData[srcIP] && pkt.dport) ipData[srcIP].dport = pkt.dport;
+
+      // Dessiner arc pour tout paquet avec au moins une IP publique
+      if (isNewData && arcCount < 10 && Date.now() - arcThrottle > 100) {
+        const hasPubSrc = srcIP && !isPrivate(srcIP);
+        const hasPubDst = dstIP && !isPrivate(dstIP);
+        if (hasPubSrc || hasPubDst) {
+          drawInteraction(pkt);
+          arcCount++;
+        }
       }
     });
-    if (isNewData) arcThrottle = Date.now();
+    if (isNewData && arcCount > 0) arcThrottle = Date.now();
 
     // Also process destination IPs (outgoing connections)
     pkts.forEach(pkt => {
       const dstIP = pkt.dst;
       if (!dstIP || isPrivate(dstIP)) return;
-      if (!ipData[dstIP]) {
-        const d = assignGeo(dstIP, null);
-        d.hits = (d.hits || 0) + 1;
-        d.status = 'allow';
-        if (d.lat != null) addOrUpdateDot(dstIP, d);
-      }
+      const d = assignGeo(dstIP, null);
+      d.hits = (d.hits || 0) + 1;
+      d.status = d.status || 'allow';
+      if (pkt.dport) d.dport = pkt.dport;
+      if (d.lat != null) addOrUpdateDot(dstIP, d);
     });
 
     // Afficher aussi les top_ips du backend (now includes geo data)

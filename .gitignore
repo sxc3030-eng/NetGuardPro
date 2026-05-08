@@ -43,3 +43,14 @@ credentials.json
 # Python embedded runtime (download during build)
 python_embed/
 dist/
+
+# === Added 2026-05-08 — secrets / private keys (never commit) ===
+vpnguard/configs/
+vpnguard/profiles/profiles.json
+*.private.key
+*_keys.json
+*/server_keys.json
+
+# Accidental dev artifacts
+tree
+fix_mojibake*.py

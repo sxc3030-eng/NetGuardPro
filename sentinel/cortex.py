@@ -5,16 +5,16 @@ correlates threats, and serves the unified dashboard.
 
 Architecture:
     cortex.py (port 8900)
-        â"œâ"€â"€ AgentConnector Ã- 6 â†' WebSocket clients to each agent
-        â"œâ"€â"€ AgentManager       â†' subprocess management
-        â"œâ"€â"€ ThreatCorrelator   â†' cross-agent threat scoring
-        â"œâ"€â"€ PlaybookEngine     â†' SOAR automated responses
-        â"œâ"€â"€ ThreatIntelFeed    â†' threat intelligence feeds
-        â"œâ"€â"€ AlertManager       â†' Telegram/Discord notifications
-        â"œâ"€â"€ ChatEngine         â†' contextual security advice
-        â"œâ"€â"€ AgentBus           â†' inter-agent pub/sub
-        â"œâ"€â"€ WebSocket server   â†' serves dashboard state
-        â""â"€â"€ pywebview          â†' native window
+        |-- AgentConnector x 6 -> WebSocket clients to each agent
+        |-- AgentManager       -> subprocess management
+        |-- ThreatCorrelator   -> cross-agent threat scoring
+        |-- PlaybookEngine     -> SOAR automated responses
+        |-- ThreatIntelFeed    -> threat intelligence feeds
+        |-- AlertManager       -> Telegram/Discord notifications
+        |-- ChatEngine         -> contextual security advice
+        |-- AgentBus           -> inter-agent pub/sub
+        |-- WebSocket server   -> serves dashboard state
+        |-- pywebview          -> native window
 """
 
 import os
@@ -32,24 +32,28 @@ import asyncio
 import logging
 import subprocess
 import threading
-import psutil
+try:
+    import psutil
+except ImportError:
+    psutil = None
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
 import websockets
 
-# Add parent dir so we can import shared modules
+# Add parent dir and sentinel dir so we can import shared modules
 SENTINEL_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(SENTINEL_DIR)
 sys.path.insert(0, BASE_DIR)
+sys.path.insert(0, SENTINEL_DIR)
 
 from agent_bus import AgentBus
 from playbook_engine import PlaybookEngine
 from threat_intel import ThreatIntelFeed
 from alert_manager import AlertManager
 
-# â"€â"€ Shared modules â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+# - Shared modules -
 try:
     from permissions import PermissionManager
     HAS_PERMISSIONS = True
@@ -62,9 +66,9 @@ try:
 except ImportError:
     HAS_TOAST = False
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # CONFIGURATION
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 VERSION = "2.0.0"
 CORTEX_PORT = 8900
@@ -185,9 +189,9 @@ AGENTS = {
 }
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # SETTINGS
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def load_settings() -> dict:
     defaults = {
@@ -220,9 +224,9 @@ def save_settings(settings: dict):
 SETTINGS = load_settings()
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # AGENT CONNECTOR  - WebSocket client to each agent
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class AgentConnector:
     """Connects to a single agent's WebSocket and receives its state."""
@@ -240,7 +244,7 @@ class AgentConnector:
         self._running = False
 
     async def connect_loop(self):
-        """Main loop: connect â†' listen â†' reconnect on failure.
+        """Main loop: connect -> listen -> reconnect on failure.
         Uses exponential backoff + port check to avoid spamming connections."""
         self._running = True
         self._retry_delay = 10  # Start at 10s, back off to 30s max
@@ -408,9 +412,9 @@ class AgentConnector:
         }
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # AGENT MANAGER  - Process management for all agents
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class AgentManager:
     """Launches and manages agent processes."""
@@ -530,9 +534,9 @@ class AgentManager:
         return proc is not None and proc.poll() is None
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # THREAT CORRELATOR  - Cross-agent threat scoring
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class ThreatCorrelator:
     """Correlates events from all agents into a global threat score."""
@@ -709,14 +713,14 @@ class ThreatCorrelator:
         return "F"
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # CHAT ENGINE  - Contextual security advice (bilingual FR/EN)
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class ChatEngine:
     """Generates contextual security advice based on agent states."""
 
-    # Knowledge base: keyword â†' (fr_response, en_response, suggestions_fr, suggestions_en)
+    # Knowledge base: keyword -> (fr_response, en_response, suggestions_fr, suggestions_en)
     KNOWLEDGE = {
         "netguard": {
             "status": {
@@ -1283,9 +1287,9 @@ class ChatEngine:
         return self._chat_history.get(agent_key, [])[-limit:]
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # CORTEX API  - pywebview JavaScript bridge
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class CortexAPI:
     """API exposed to the dashboard via pywebview."""
@@ -1311,7 +1315,7 @@ class CortexAPI:
     def set_loop(self, loop):
         self._loop = loop
 
-    # â"€â"€â"€ Global State â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Global State -
 
     def get_global_state(self) -> str:
         """Get complete state of all agents + metrics."""
@@ -1363,7 +1367,7 @@ class CortexAPI:
         summary["process"] = self.manager.get_status(agent_key)
         return json.dumps(summary, default=str)
 
-    # â"€â"€â"€ Agent Commands â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Agent Commands -
 
     def send_agent_command(self, agent_key: str, cmd: str, params_json: str = "{}") -> str:
         """Send a command to a specific agent."""
@@ -1386,7 +1390,7 @@ class CortexAPI:
             return json.dumps({"success": result})
         return json.dumps({"error": "Event loop not available"})
 
-    # â"€â"€â"€ Agent Lifecycle â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Agent Lifecycle -
 
     def start_agent(self, agent_key: str) -> str:
         if self._perm and self._perm.is_enabled() and self._perm.locked:
@@ -1455,7 +1459,7 @@ class CortexAPI:
             logger.error(f"[Cortex] Failed to open {agent_key} window: {e}")
             return json.dumps({"error": str(e)})
 
-    # â"€â"€â"€ Threat Info â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Threat Info -
 
     def get_threat_level(self) -> str:
         self.correlator.calculate_threat_level(self.connectors)
@@ -1467,7 +1471,7 @@ class CortexAPI:
     def get_timeline(self, limit: int = 100) -> str:
         return json.dumps(self.bus.get_timeline(limit), default=str)
 
-    # â"€â"€â"€ Settings â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Settings -
 
     def get_settings(self) -> str:
         return json.dumps(SETTINGS)
@@ -1482,7 +1486,7 @@ class CortexAPI:
         except Exception as e:
             return json.dumps({"error": str(e)})
 
-    # â"€â"€â"€ Chat â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Chat -
 
     def chat_message(self, agent_key: str, message: str, lang: str = "fr") -> str:
         """Process a chat message and return a contextual response."""
@@ -1506,7 +1510,7 @@ class CortexAPI:
             return json.dumps([])
         return json.dumps(self.chat.get_history(agent_key, limit), default=str)
 
-    # â"€â"€â"€ Playbooks (SOAR) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Playbooks (SOAR) -
 
     def get_playbooks(self, lang: str = "fr") -> str:
         """Get all SOAR playbooks."""
@@ -1527,7 +1531,7 @@ class CortexAPI:
             return json.dumps([])
         return json.dumps(self.playbook.get_execution_log(limit), default=str)
 
-    # â"€â"€â"€ Threat Intelligence â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Threat Intelligence -
 
     def get_threat_intel_stats(self) -> str:
         """Get threat intelligence feed statistics."""
@@ -1548,7 +1552,7 @@ class CortexAPI:
         threading.Thread(target=self.threat_intel.update_feeds, daemon=True).start()
         return json.dumps({"success": True, "message": "Update started"})
 
-    # â"€â"€â"€ Alert Manager â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Alert Manager -
 
     def get_alert_config(self) -> str:
         """Get alert notification configuration."""
@@ -1587,7 +1591,7 @@ class CortexAPI:
             return json.dumps([])
         return json.dumps(self.alert_mgr.get_log(limit), default=str)
 
-    # â"€â"€â"€ Permissions â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Permissions -
 
     def perm_get_status(self):
         if not self._perm:
@@ -1619,7 +1623,7 @@ class CortexAPI:
         result = self._perm.unlock(pw)
         return json.dumps(result)
 
-    # â"€â"€â"€ Diagnostics â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Diagnostics -
 
     def get_diagnostics(self) -> str:
         diag = {
@@ -1642,9 +1646,9 @@ class CortexAPI:
         return json.dumps(diag, default=str)
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # WEBSOCKET SERVER  - Serves dashboard + external clients
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 _ws_clients = set()
 
@@ -1746,7 +1750,7 @@ async def handle_ws_command(ws, msg: dict):
         result = _api.chat_history(agent, limit)
         await ws.send(result)
 
-    # â"€â"€â"€ Playbook commands â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Playbook commands -
     elif cmd == "get_playbooks":
         lang = msg.get("lang", "fr")
         result = _api.get_playbooks(lang)
@@ -1762,7 +1766,7 @@ async def handle_ws_command(ws, msg: dict):
         result = _api.get_playbook_log(limit)
         await ws.send(result)
 
-    # â"€â"€â"€ Threat Intel commands â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Threat Intel commands -
     elif cmd == "get_threat_intel":
         result = _api.get_threat_intel_stats()
         await ws.send(result)
@@ -1776,7 +1780,7 @@ async def handle_ws_command(ws, msg: dict):
         result = _api.update_threat_feeds()
         await ws.send(result)
 
-    # â"€â"€â"€ Alert Manager commands â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Alert Manager commands -
     elif cmd == "get_alert_config":
         result = _api.get_alert_config()
         await ws.send(result)
@@ -1799,7 +1803,7 @@ async def handle_ws_command(ws, msg: dict):
         result = _api.get_alert_log(limit)
         await ws.send(result)
 
-    # â"€â"€â"€ Permission commands â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Permission commands -
     elif cmd == "perm_get_status":
         result = _api.perm_get_status()
         await ws.send(result)
@@ -1839,9 +1843,9 @@ async def broadcast_state():
         await asyncio.sleep(max(SETTINGS.get("state_poll_interval", 10), 8))
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # STATE POLLING  - Request state from agents periodically
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 async def poll_agent_states(connectors: dict):
     """Periodically request get_state from all connected agents."""
@@ -1856,9 +1860,9 @@ async def poll_agent_states(connectors: dict):
         await asyncio.sleep(max(SETTINGS.get("state_poll_interval", 10), 8))
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # MAIN  - Start everything
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 _START_TIME = time.time()
 _api = None  # Will be set in main
@@ -1948,7 +1952,7 @@ def main():
     # Give WebSocket server time to start
     time.sleep(1)
 
-    # â"€â"€â"€ Open Dashboard directly â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Open Dashboard directly -
     dashboard_path = os.path.join(SENTINEL_DIR, "sentinel_dashboard.html")
 
     if not os.path.exists(dashboard_path):

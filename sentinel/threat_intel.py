@@ -202,7 +202,7 @@ class ThreatIntelFeed:
         t.start()
         logger.info("[ThreatIntel] Auto-update started")
 
-    # â"€â"€â"€ Lookup Methods â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Lookup Methods -
 
     def is_malicious_ip(self, ip: str) -> bool:
         """Check if an IP is in the threat database."""
@@ -231,7 +231,7 @@ class ThreatIntelFeed:
             "total_known_threats": len(self._malicious_ips),
         }
 
-    # â"€â"€â"€ Stats â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Stats -
 
     def get_stats(self) -> dict:
         return {

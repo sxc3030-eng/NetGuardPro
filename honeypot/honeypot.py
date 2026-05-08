@@ -6,15 +6,22 @@ Creates fake services and trap files to detect attackers.
 Port: 8830
 Architecture:
     HoneyPot Agent
-        â"œâ"€â"€ Trap Files  - monitored bait files (passwords.txt, etc.)
-        â"œâ"€â"€ Fake Services  - fake SSH/HTTP/FTP listeners
-        â"œâ"€â"€ Interaction Logger  - logs all attacker activity
-        â"œâ"€â"€ WebSocket Server  - serves state to Cortex
-        â""â"€â"€ Agent Bus integration  - publishes honeypot.* events
+        -"œ-"€-"€ Trap Files  - monitored bait files (passwords.txt, etc.)
+        -"œ-"€-"€ Fake Services  - fake SSH/HTTP/FTP listeners
+        -"œ-"€-"€ Interaction Logger  - logs all attacker activity
+        -"œ-"€-"€ WebSocket Server  - serves state to Cortex
+        -""-"€-"€ Agent Bus integration  - publishes honeypot.* events
 """
 
 import os
 import sys
+
+# Fix pythonw (no console) — redirect None stdout/stderr to devnull
+if sys.stdout is None:
+    sys.stdout = open(os.devnull, 'w')
+if sys.stderr is None:
+    sys.stderr = open(os.devnull, 'w')
+
 import json
 import time
 import asyncio
@@ -28,7 +35,18 @@ from collections import defaultdict
 
 import websockets
 
-# â"€â"€ Shared modules â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+try:
+    import webview
+    HAS_WEBVIEW = True
+except ImportError:
+    HAS_WEBVIEW = False
+
+# Setup
+HONEYPOT_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(HONEYPOT_DIR)
+sys.path.insert(0, BASE_DIR)
+
+# - Shared modules -
 try:
     from permissions import PermissionManager
     HAS_PERMISSIONS = True
@@ -40,11 +58,6 @@ try:
     HAS_TOAST = True
 except ImportError:
     HAS_TOAST = False
-
-# Setup
-HONEYPOT_DIR = os.path.dirname(os.path.abspath(__file__))
-BASE_DIR = os.path.dirname(HONEYPOT_DIR)
-sys.path.insert(0, BASE_DIR)
 
 VERSION = "1.0.0"
 WS_PORT = 8830
@@ -65,9 +78,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger("SentinelOS.HoneyPot")
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # TRAP FILE MANAGER
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Bait files that attract attackers
 TRAP_FILES = [
@@ -189,9 +202,9 @@ class TrapFileManager:
         ]
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # FAKE SERVICE LISTENER
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class FakeServiceListener:
     """Listens on common ports to detect scanning/intrusion attempts."""
@@ -293,9 +306,9 @@ class FakeServiceListener:
         self._running = False
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # HONEYPOT ENGINE
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class HoneyPotEngine:
     """Main honeypot engine combining traps + fake services."""
@@ -333,7 +346,7 @@ class HoneyPotEngine:
                     "data": {"message": alert["message"], "file": alert.get("file", "")},
                 })
                 if HAS_TOAST:
-                    toast_honeypot("HoneyPot", alert.get("file", ""), alert.get("type", ""), alert.get("message", ""))
+                    toast_honeypot("HoneyPot", alert.get("type", ""), alert.get("file", ""))
 
             # Check fake service connections
             for conn in self.services.connections:
@@ -387,9 +400,9 @@ class HoneyPotEngine:
         self.services.stop()
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # WEBSOCKET SERVER
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 _engine = HoneyPotEngine()
 _ws_clients = set()
@@ -411,7 +424,7 @@ async def handle_ws(websocket, path=None):
                         "alerts": _engine.alerts[-limit:],
                     }, default=str))
 
-                # â"€â"€ Permission commands â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+                # - Permission commands -
                 elif cmd == "perm_get_status":
                     if _engine._perm:
                         await websocket.send(json.dumps({
@@ -509,6 +522,7 @@ async def broadcast_loop():
 
 
 def main():
+    headless = "--headless" in sys.argv
     logger.info("=" * 50)
     logger.info(f"  SentinelOS HoneyPot Agent v{VERSION}")
     logger.info(f"  WebSocket port: {WS_PORT}")
@@ -517,21 +531,51 @@ def main():
     _engine.start()
 
     loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
 
-    async def run():
-        server = await websockets.serve(handle_ws, "localhost", WS_PORT)
-        logger.info(f"[HoneyPot] WebSocket server on ws://localhost:{WS_PORT}")
-        asyncio.create_task(broadcast_loop())
-        await asyncio.Future()  # Run forever
-
-    try:
+    def ws_thread():
+        asyncio.set_event_loop(loop)
+        async def run():
+            server = await websockets.serve(handle_ws, "localhost", WS_PORT)
+            logger.info(f"[HoneyPot] WebSocket server on ws://localhost:{WS_PORT}")
+            asyncio.create_task(broadcast_loop())
+            await asyncio.Future()
         loop.run_until_complete(run())
-    except KeyboardInterrupt:
-        pass
-    finally:
-        _engine.stop()
-        logger.info("[HoneyPot] Shutdown.")
+
+    if not headless and HAS_WEBVIEW:
+        t = threading.Thread(target=ws_thread, daemon=True)
+        t.start()
+        try:
+            dashboard = os.path.join(HONEYPOT_DIR, "honeypot_dashboard.html")
+            webview.create_window(
+                "HoneyPot Agent - NetGuardPro Suite",
+                dashboard,
+                width=1100,
+                height=750,
+            )
+            webview.start()
+        except Exception as e:
+            logger.error(f"[HoneyPot] pywebview error: {e}")
+            try:
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                pass
+        finally:
+            _engine.stop()
+    else:
+        asyncio.set_event_loop(loop)
+        async def run():
+            server = await websockets.serve(handle_ws, "localhost", WS_PORT)
+            logger.info(f"[HoneyPot] WebSocket server on ws://localhost:{WS_PORT}")
+            asyncio.create_task(broadcast_loop())
+            await asyncio.Future()
+        try:
+            loop.run_until_complete(run())
+        except KeyboardInterrupt:
+            pass
+        finally:
+            _engine.stop()
+            logger.info("[HoneyPot] Shutdown.")
 
 
 if __name__ == "__main__":

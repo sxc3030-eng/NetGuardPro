@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetGuard Pro — Politique de confidentialité / Privacy Policy</title>
+<style>
+  :root { --bg: #0f0f13; --bg2: #16161d; --text: #e0e0ea; --text2: #9090a8; --green: #3dffb4; --border: #ffffff12; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.7; }
+  .container { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+  h1 { color: var(--green); font-size: 28px; margin-bottom: 8px; }
+  h2 { color: var(--green); font-size: 20px; margin: 32px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  h3 { color: var(--text); font-size: 16px; margin: 20px 0 8px; }
+  p, li { color: var(--text2); font-size: 15px; margin-bottom: 10px; }
+  ul { padding-left: 24px; }
+  .date { color: var(--text2); font-size: 13px; margin-bottom: 24px; }
+  .badge { display: inline-block; background: #3dffb418; color: var(--green); padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
+  a { color: var(--green); }
+  .lang-toggle { text-align: right; margin-bottom: 20px; }
+  .lang-toggle button { background: var(--bg2); color: var(--text2); border: 1px solid var(--border); padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  .lang-toggle button.active { color: var(--green); border-color: var(--green); }
+  .section-en { display: none; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .logo { width: 48px; height: 48px; vertical-align: middle; margin-right: 12px; }
+  .footer { text-align: center; color: var(--text2); font-size: 12px; margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="lang-toggle">
+  <button class="active" onclick="showLang('fr')">Français</button>
+  <button onclick="showLang('en')">English</button>
+</div>
+
+<!-- ═══════════════ FRANÇAIS ═══════════════ -->
+<div id="section-fr" class="section-fr">
+
+<h1>Politique de confidentialité</h1>
+<div class="badge">NetGuard Pro v3.0.0</div>
+<div class="date">Dernière mise à jour : 28 mars 2026</div>
+
+<h2>1. Introduction</h2>
+<p>NetGuard Pro est une suite de cybersécurité locale pour Windows développée par NetGuard. Cette politique décrit comment l'application traite vos données. <strong>NetGuard Pro fonctionne entièrement en local sur votre ordinateur.</strong></p>
+
+<h2>2. Données collectées</h2>
+<h3>Données traitées localement (jamais transmises)</h3>
+<ul>
+  <li><strong>Paquets réseau</strong> — analysés en temps réel par le moteur IDS/IPS pour détecter les menaces. Les données brutes restent sur votre machine.</li>
+  <li><strong>Adresses IP</strong> — les IP source et destination du trafic réseau sont analysées localement pour la détection d'intrusions.</li>
+  <li><strong>Journaux de sécurité</strong> — les alertes, menaces détectées et actions du pare-feu sont enregistrées dans des fichiers locaux.</li>
+  <li><strong>Configuration</strong> — vos préférences, règles et paramètres sont stockés dans des fichiers JSON locaux.</li>
+  <li><strong>Identifiants</strong> — le mot de passe administrateur du dashboard est stocké sous forme de hash SHA-256 en local.</li>
+</ul>
+
+<h3>Requêtes externes (optionnelles)</h3>
+<ul>
+  <li><strong>Géolocalisation d'IP</strong> — l'application peut interroger des services tiers (ipwho.is, ip-api.com, ipapi.co) pour localiser les IP sources de trafic. Seules les adresses IP publiques sont envoyées à ces services.</li>
+  <li><strong>Flux de menaces</strong> — consultation de listes publiques de menaces (abuseipdb.com) pour enrichir la détection. Seules les IP suspectes sont vérifiées.</li>
+  <li><strong>Mises à jour</strong> — vérification optionnelle des nouvelles versions disponibles.</li>
+</ul>
+
+<h3>Données NON collectées</h3>
+<ul>
+  <li>Aucune donnée personnelle (nom, email, téléphone)</li>
+  <li>Aucune télémétrie ni analytics</li>
+  <li>Aucun suivi publicitaire</li>
+  <li>Aucun envoi de données à nos serveurs</li>
+  <li>Aucun cookie tiers</li>
+</ul>
+
+<h2>3. Stockage des données</h2>
+<p>Toutes les données sont stockées exclusivement sur votre ordinateur dans le répertoire d'installation (<code>C:\Program Files\NetGuard Pro</code>) :</p>
+<ul>
+  <li><code>netguard_settings.json</code> — configuration</li>
+  <li><code>netguard_users.json</code> — comptes utilisateurs (hachés)</li>
+  <li><code>logs/</code> — journaux de sécurité</li>
+  <li><code>captures/</code> — captures réseau</li>
+  <li><code>reports/</code> — rapports de sécurité</li>
+</ul>
+<p>Aucune donnée n'est transmise à un serveur distant ou au cloud.</p>
+
+<h2>4. Partage de données</h2>
+<p>NetGuard Pro <strong>ne partage aucune donnée</strong> avec des tiers. Les seules communications réseau sont les requêtes de géolocalisation d'IP décrites ci-dessus, qui ne contiennent aucune information personnelle.</p>
+
+<h2>5. Sécurité</h2>
+<p>L'application utilise :</p>
+<ul>
+  <li>Hachage SHA-256 pour les mots de passe</li>
+  <li>Tokens de session avec expiration automatique (24h)</li>
+  <li>Communication locale uniquement (localhost)</li>
+  <li>Aucun port ouvert vers l'extérieur par défaut</li>
+</ul>
+
+<h2>6. Droits de l'utilisateur</h2>
+<p>Vous pouvez à tout moment :</p>
+<ul>
+  <li>Supprimer tous les journaux et captures via le dashboard</li>
+  <li>Réinitialiser la configuration aux valeurs par défaut</li>
+  <li>Désinstaller complètement l'application (supprime toutes les données)</li>
+  <li>Désactiver les requêtes de géolocalisation dans les paramètres</li>
+</ul>
+
+<h2>7. Enfants</h2>
+<p>NetGuard Pro est un outil de cybersécurité professionnel destiné aux utilisateurs de 16 ans et plus. L'application ne collecte aucune donnée sur les enfants.</p>
+
+<h2>8. Modifications</h2>
+<p>Cette politique peut être mise à jour lors de nouvelles versions. La date de dernière modification est indiquée en haut de cette page.</p>
+
+<h2>9. Contact</h2>
+<p>Pour toute question concernant cette politique :<br>
+Email : <a href="mailto:privacy@netguardpro.com">privacy@netguardpro.com</a></p>
+
+</div>
+
+<!-- ═══════════════ ENGLISH ═══════════════ -->
+<div id="section-en" class="section-en">
+
+<h1>Privacy Policy</h1>
+<div class="badge">NetGuard Pro v3.0.0</div>
+<div class="date">Last updated: March 28, 2026</div>
+
+<h2>1. Introduction</h2>
+<p>NetGuard Pro is a local cybersecurity suite for Windows developed by NetGuard. This policy describes how the application handles your data. <strong>NetGuard Pro runs entirely locally on your computer.</strong></p>
+
+<h2>2. Data Collected</h2>
+<h3>Data processed locally (never transmitted)</h3>
+<ul>
+  <li><strong>Network packets</strong> — analyzed in real-time by the IDS/IPS engine to detect threats. Raw data stays on your machine.</li>
+  <li><strong>IP addresses</strong> — source and destination IPs from network traffic are analyzed locally for intrusion detection.</li>
+  <li><strong>Security logs</strong> — alerts, detected threats, and firewall actions are recorded in local files.</li>
+  <li><strong>Configuration</strong> — your preferences, rules, and settings are stored in local JSON files.</li>
+  <li><strong>Credentials</strong> — the dashboard admin password is stored as a local SHA-256 hash.</li>
+</ul>
+
+<h3>External requests (optional)</h3>
+<ul>
+  <li><strong>IP geolocation</strong> — the app may query third-party services (ipwho.is, ip-api.com, ipapi.co) to locate traffic source IPs. Only public IP addresses are sent to these services.</li>
+  <li><strong>Threat feeds</strong> — public threat lists (abuseipdb.com) are queried to enhance detection. Only suspicious IPs are checked.</li>
+  <li><strong>Updates</strong> — optional check for new available versions.</li>
+</ul>
+
+<h3>Data NOT collected</h3>
+<ul>
+  <li>No personal data (name, email, phone)</li>
+  <li>No telemetry or analytics</li>
+  <li>No advertising tracking</li>
+  <li>No data sent to our servers</li>
+  <li>No third-party cookies</li>
+</ul>
+
+<h2>3. Data Storage</h2>
+<p>All data is stored exclusively on your computer in the installation directory (<code>C:\Program Files\NetGuard Pro</code>):</p>
+<ul>
+  <li><code>netguard_settings.json</code> — configuration</li>
+  <li><code>netguard_users.json</code> — user accounts (hashed)</li>
+  <li><code>logs/</code> — security logs</li>
+  <li><code>captures/</code> — network captures</li>
+  <li><code>reports/</code> — security reports</li>
+</ul>
+<p>No data is transmitted to a remote server or cloud.</p>
+
+<h2>4. Data Sharing</h2>
+<p>NetGuard Pro <strong>does not share any data</strong> with third parties. The only network communications are the IP geolocation requests described above, which contain no personal information.</p>
+
+<h2>5. Security</h2>
+<p>The application uses:</p>
+<ul>
+  <li>SHA-256 hashing for passwords</li>
+  <li>Session tokens with automatic expiration (24h)</li>
+  <li>Local communication only (localhost)</li>
+  <li>No externally-facing ports by default</li>
+</ul>
+
+<h2>6. User Rights</h2>
+<p>You can at any time:</p>
+<ul>
+  <li>Delete all logs and captures via the dashboard</li>
+  <li>Reset configuration to default values</li>
+  <li>Completely uninstall the application (deletes all data)</li>
+  <li>Disable geolocation requests in settings</li>
+</ul>
+
+<h2>7. Children</h2>
+<p>NetGuard Pro is a professional cybersecurity tool intended for users aged 16 and older. The application does not collect any data about children.</p>
+
+<h2>8. Changes</h2>
+<p>This policy may be updated with new releases. The last modification date is shown at the top of this page.</p>
+
+<h2>9. Contact</h2>
+<p>For any questions about this policy:<br>
+Email: <a href="mailto:privacy@netguardpro.com">privacy@netguardpro.com</a></p>
+
+</div>
+
+<div class="footer">
+  &copy; 2026 NetGuard — Tous droits réservés / All rights reserved
+</div>
+
+</div>
+
+<script>
+function showLang(lang) {
+  document.getElementById('section-fr').style.display = lang === 'fr' ? 'block' : 'none';
+  document.getElementById('section-en').style.display = lang === 'en' ? 'block' : 'none';
+  document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

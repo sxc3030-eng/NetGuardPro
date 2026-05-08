@@ -29,12 +29,22 @@ if sys.stderr is None:
     sys.stderr = open(os.devnull, 'w')
 
 # Fix Windows console encoding
-if sys.platform == "win32":
+IS_WINDOWS = sys.platform == "win32"
+if IS_WINDOWS:
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
         sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     except Exception:
         pass
+
+# Patch subprocess to always hide console windows on Windows
+if IS_WINDOWS:
+    _orig_subprocess_run = subprocess.run
+    def _patched_run(*args, **kwargs):
+        if "creationflags" not in kwargs:
+            kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+        return _orig_subprocess_run(*args, **kwargs)
+    subprocess.run = _patched_run
 
 try:
     import websockets

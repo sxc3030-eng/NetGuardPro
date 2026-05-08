@@ -320,9 +320,9 @@ def run_tests():
     print()
     print("=" * 70)
     if result.wasSuccessful():
-        print("  âœ… ALL TESTS PASSED!")
+        print("  - ALL TESTS PASSED!")
     else:
-        print(f"  â-Œ {len(result.failures)} failures, {len(result.errors)} errors")
+        print(f"  --Œ {len(result.failures)} failures, {len(result.errors)} errors")
     print("=" * 70)
 
     return result.wasSuccessful()

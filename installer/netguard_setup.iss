@@ -122,13 +122,15 @@ Source: "..\netguard.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\license_manager.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\startup_utils.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\netguard_tray.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\netguard_auth.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\netguard_settings.json"; DestDir: "{app}"; Flags: ignoreversion onlyifdoesntexist
 Source: "..\netguard_users.json"; DestDir: "{app}"; Flags: ignoreversion onlyifdoesntexist
 Source: "..\netguard_license.json"; DestDir: "{app}"; Flags: ignoreversion onlyifdoesntexist
 ; All HTML dashboards
 Source: "..\*.html"; DestDir: "{app}"; Flags: ignoreversion
-; Icon
+; Icons
 Source: "..\netguard_icon.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\icons\*.ico"; DestDir: "{app}\icons"; Flags: ignoreversion
 ; Sentinel
 Source: "..\sentinel\*"; DestDir: "{app}\sentinel"; Components: sentinel; Flags: ignoreversion recursesubdirs createallsubdirs
 ; VPN Guard
@@ -145,6 +147,20 @@ Source: "..\fim\*"; DestDir: "{app}\fim"; Components: fim; Flags: ignoreversion 
 Source: "..\recorder\*"; DestDir: "{app}\recorder"; Components: recorder; Flags: ignoreversion recursesubdirs createallsubdirs
 ; StrikeBack
 Source: "..\strikeback\*"; DestDir: "{app}\strikeback"; Components: strikeback; Flags: ignoreversion recursesubdirs createallsubdirs
+; Sandbox
+Source: "..\sandbox\*"; DestDir: "{app}\sandbox"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "__pycache__,*.pyc"
+; SIEM
+Source: "..\siem\*"; DestDir: "{app}\siem"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "__pycache__,*.pyc"
+; RedTeam
+Source: "..\redteam\*"; DestDir: "{app}\redteam"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "__pycache__,*.pyc"
+; Help Agent
+Source: "..\help_agent\*"; DestDir: "{app}\help_agent"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "__pycache__,*.pyc"
+; Mobile Gateway
+Source: "..\mobile_gateway\*"; DestDir: "{app}\mobile_gateway"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "__pycache__,*.pyc"
+; Updater
+Source: "..\updater\*"; DestDir: "{app}\updater"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "__pycache__,*.pyc"
+; Desktop app
+Source: "..\netguardpro_desktop\*"; DestDir: "{app}\netguardpro_desktop"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "__pycache__,*.pyc"
 ; WireGuard configs
 Source: "..\wireguard\*"; DestDir: "{app}\wireguard"; Components: vpnguard; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
 ; Reports & captures dirs
@@ -155,22 +171,49 @@ Source: "..\launchers\*"; DestDir: "{app}\launchers"; Flags: ignoreversion recur
 Source: "README_INSTALL.txt"; DestDir: "{app}"; DestName: "README.txt"; Flags: ignoreversion
 
 [Dirs]
-Name: "{app}\captures"
-Name: "{app}\reports"
-Name: "{app}\backups"
-Name: "{app}\logs"
+Name: "{app}"; Permissions: users-modify
+Name: "{app}\captures"; Permissions: users-modify
+Name: "{app}\reports"; Permissions: users-modify
+Name: "{app}\backups"; Permissions: users-modify
+Name: "{app}\logs"; Permissions: users-modify
+Name: "{app}\sentinel\logs"; Permissions: users-modify
+Name: "{app}\cleanguard\logs"; Permissions: users-modify
+Name: "{app}\vpnguard\logs"; Permissions: users-modify
+Name: "{app}\mailshield\logs"; Permissions: users-modify
+Name: "{app}\honeypot\logs"; Permissions: users-modify
+Name: "{app}\strikeback\logs"; Permissions: users-modify
+Name: "{app}\fim\logs"; Permissions: users-modify
+Name: "{app}\recorder\logs"; Permissions: users-modify
+Name: "{app}\siem\logs"; Permissions: users-modify
+Name: "{app}\sandbox\logs"; Permissions: users-modify
+Name: "{app}\redteam\logs"; Permissions: users-modify
 
 [Icons]
-Name: "{group}\NetGuard Pro"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\netguard.py"""; WorkingDir: "{app}"; IconFilename: "{app}\netguard_icon.ico"; Comment: "Lancer NetGuard Pro"
-Name: "{group}\NetGuard Pro Dashboard"; Filename: "{app}\netguard_dashboard.html"; IconFilename: "{app}\netguard_icon.ico"
+Name: "{group}\NetGuard Pro"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\netguard.py"""; WorkingDir: "{app}"; IconFilename: "{app}\icons\04_firewall.ico"; Comment: "Lancer NetGuard Pro"
 Name: "{group}\Guide d'utilisation"; Filename: "{app}\netguard_help.html"
-Name: "{group}\Desinstaller NetGuard Pro"; Filename: "{uninstallexe}"; IconFilename: "{app}\netguard_icon.ico"
-Name: "{autodesktop}\NetGuard Pro"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\netguard.py"""; WorkingDir: "{app}"; IconFilename: "{app}\netguard_icon.ico"; Tasks: desktopicon
+Name: "{group}\Desinstaller NetGuard Pro"; Filename: "{uninstallexe}"; IconFilename: "{app}\icons\04_firewall.ico"
+Name: "{autodesktop}\NetGuard Pro"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\netguard.py"""; WorkingDir: "{app}"; IconFilename: "{app}\icons\04_firewall.ico"; Tasks: desktopicon
+Name: "{autodesktop}\SentinelOS"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\sentinel\cortex.py"""; WorkingDir: "{app}\sentinel"; IconFilename: "{app}\icons\02_antivirus_shield.ico"; Tasks: desktopicon
+Name: "{autodesktop}\CleanGuard Pro"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\cleanguard\cleanguard.py"""; WorkingDir: "{app}\cleanguard"; IconFilename: "{app}\icons\03_cleaner_virus.ico"; Tasks: desktopicon
+Name: "{autodesktop}\VPN Guard Pro"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\vpnguard\vpnguard.py"""; WorkingDir: "{app}\vpnguard"; IconFilename: "{app}\icons\06_vpn_mail.ico"; Tasks: desktopicon
+Name: "{autodesktop}\MailShield Pro"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\mailshield\mailshield.py"""; WorkingDir: "{app}\mailshield"; IconFilename: "{app}\icons\06_vpn_mail.ico"; Tasks: desktopicon
+Name: "{autodesktop}\HoneyPot Agent"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\honeypot\honeypot.py"""; WorkingDir: "{app}\honeypot"; IconFilename: "{app}\icons\02_antivirus_shield.ico"; Tasks: desktopicon
+Name: "{autodesktop}\File Integrity Monitor"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\fim\file_integrity_monitor.py"""; WorkingDir: "{app}\fim"; IconFilename: "{app}\icons\02_antivirus_shield.ico"; Tasks: desktopicon
+Name: "{autodesktop}\StrikeBack"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\strikeback\strikeback.py"""; WorkingDir: "{app}\strikeback"; IconFilename: "{app}\icons\04_firewall.ico"; Tasks: desktopicon
+Name: "{autodesktop}\Session Recorder"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\recorder\recorder.py"""; WorkingDir: "{app}\recorder"; IconFilename: "{app}\icons\01_netguard_windows.ico"; Tasks: desktopicon
+Name: "{autodesktop}\SIEM Monitor"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\siem\siem.py"""; WorkingDir: "{app}\siem"; IconFilename: "{app}\icons\05_globe_network.ico"; Tasks: desktopicon
+Name: "{autodesktop}\RedTeam Toolkit"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\redteam\redteam.py"""; WorkingDir: "{app}\redteam"; IconFilename: "{app}\icons\04_firewall.ico"; Tasks: desktopicon
+Name: "{autodesktop}\Sandbox Analyzer"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\sandbox\sandbox.py"""; WorkingDir: "{app}\sandbox"; IconFilename: "{app}\icons\03_cleaner_virus.ico"; Tasks: desktopicon
+Name: "{autodesktop}\NetGuard Tray"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\netguard_tray.py"""; WorkingDir: "{app}"; IconFilename: "{app}\icons\04_firewall.ico"; Tasks: desktopicon
+Name: "{autodesktop}\Network Mapper && Firewall"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\sentinel\sentinel_mapper.py"""; WorkingDir: "{app}\sentinel"; IconFilename: "{app}\icons\05_globe_network.ico"; Tasks: desktopicon
+; NetGuard Dashboard removed - use "NetGuard Pro" shortcut which launches the backend + dashboard together
 
 [Run]
+; Grant write permissions to all users on the install directory
+Filename: "icacls"; Parameters: """{app}"" /grant *S-1-5-32-545:(OI)(CI)M /T /Q"; StatusMsg: "Configuration des permissions..."; Flags: runhidden waituntilterminated
 ; Install Python dependencies silently
 Filename: "{app}\python\python.exe"; Parameters: "-m pip install --no-warn-script-location --no-build-isolation --quiet setuptools wheel"; WorkingDir: "{app}"; StatusMsg: "{cm:InstallingDeps}"; Flags: runhidden waituntilterminated
-Filename: "{app}\python\python.exe"; Parameters: "-m pip install --no-warn-script-location --no-build-isolation --quiet websockets scapy pywebview pystray Pillow psutil requests watchdog pefile"; WorkingDir: "{app}"; StatusMsg: "{cm:InstallingDeps}"; Flags: runhidden waituntilterminated
+Filename: "{app}\python\python.exe"; Parameters: "-m pip install --no-warn-script-location --no-build-isolation --quiet websockets scapy pywebview pystray Pillow psutil requests watchdog pefile msal cryptography"; WorkingDir: "{app}"; StatusMsg: "{cm:InstallingDeps}"; Flags: runhidden waituntilterminated
 ; Configure firewall rules
 Filename: "netsh"; Parameters: "advfirewall firewall add rule name=""NetGuard Pro"" dir=in action=allow program=""{app}\python\pythonw.exe"" enable=yes"; StatusMsg: "{cm:ConfiguringFirewall}"; Tasks: firewall; Flags: runhidden waituntilterminated
 Filename: "netsh"; Parameters: "advfirewall firewall add rule name=""NetGuard Pro WS"" dir=in action=allow protocol=TCP localport=8765 enable=yes"; Tasks: firewall; Flags: runhidden waituntilterminated

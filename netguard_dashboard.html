@@ -18,7 +18,7 @@
   --purple:#b47dff;--purpledim:#2a1a4d;
   --cyan:#00d4ff;
 }
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
 .titlebar{background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .titlebar-left{display:flex;align-items:center;gap:10px}
@@ -26,9 +26,10 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .status-dot.offline{background:var(--red);box-shadow:0 0 6px var(--red);animation:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.main{display:grid;grid-template-columns:220px 1fr;flex:1;overflow:hidden;min-height:0}
-.sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;height:100%}
-.content{display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.main{display:grid;grid-template-columns:220px 1fr;flex:1;overflow:hidden}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--text3) var(--bg2)}
+.sidebar::-webkit-scrollbar{width:6px}.sidebar::-webkit-scrollbar-track{background:var(--bg2)}.sidebar::-webkit-scrollbar-thumb{background:var(--text3);border-radius:3px}.sidebar::-webkit-scrollbar-thumb:hover{background:var(--text2)}
+.content{overflow-y:auto;overflow-x:hidden}
 
 .nav-section{padding:16px 16px 6px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;transition:.15s;font-size:13px;color:var(--text2);user-select:none}
@@ -315,7 +316,7 @@ tr:hover td{background:var(--bg4)22}
       <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.1 3.1l1.4 1.4M11.5 11.5l1.4 1.4M3.1 12.9l1.4-1.4M11.5 4.5l1.4-1.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       <span data-t="nav_config">Configuration</span>
     </div>
-    <div class="nav-item" onclick="window.open('netguard_map.html','ng_map','width=1200,height=800')" style="cursor:pointer">
+    <div class="nav-item" onclick="openMap()" style="cursor:pointer">
       <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5c-2 2-3 4-3 6.5s1 4.5 3 6.5M8 1.5c2 2 3 4 3 6.5s-1 4.5-3 6.5M1.5 8h13" stroke="currentColor" stroke-width="1"/></svg>
       <span data-t="nav_map">Carte mondiale</span>
       <span style="margin-left:auto;font-size:10px;opacity:.5">⤢</span>
@@ -528,9 +529,9 @@ tr:hover td{background:var(--bg4)22}
           <div class="panel-body">
             <canvas id="traffic-canvas" style="width:100%;height:80px;display:block"></canvas>
             <div style="display:flex;gap:14px;margin-top:6px">
-              <span style="font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--green);display:inline-block"></span>Entrant</span>
-              <span style="font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--blue);display:inline-block"></span>Sortant</span>
-              <span style="font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--red);display:inline-block"></span>Bloqué</span>
+              <span style="font-size:10px;color:var(--blue);display:flex;align-items:center;gap:4px"><span style="width:14px;height:3px;background:var(--blue);display:inline-block;border-radius:1px"></span>Entrant</span>
+              <span style="font-size:10px;color:var(--green);display:flex;align-items:center;gap:4px"><span style="width:14px;height:3px;background:var(--green);display:inline-block;border-radius:1px"></span>Sortant</span>
+              <span style="font-size:10px;color:var(--red);display:flex;align-items:center;gap:4px"><span style="width:14px;height:3px;background:var(--red);display:inline-block;border-radius:1px"></span>Bloqué</span>
             </div>
           </div>
           <div class="panel-resize"></div>
@@ -549,6 +550,13 @@ tr:hover td{background:var(--bg4)22}
           </div>
           <div class="panel-body">
             <canvas id="perf-chart" style="width:100%;height:80px;display:block"></canvas>
+            <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap">
+              <span style="font-size:10px;color:#4d9fff;display:flex;align-items:center;gap:4px"><span style="width:14px;height:3px;background:#4d9fff;display:inline-block;border-radius:1px"></span>Paquets/s</span>
+              <span style="font-size:10px;color:#3dffb4;display:flex;align-items:center;gap:4px"><span style="width:14px;height:3px;background:#3dffb4;display:inline-block;border-radius:1px"></span>BW Entrant</span>
+              <span style="font-size:10px;color:#ff4d6a;display:flex;align-items:center;gap:4px"><span style="width:14px;height:3px;background:#ff4d6a;display:inline-block;border-radius:1px"></span>BW Sortant</span>
+              <span style="font-size:10px;color:#ffb347;display:flex;align-items:center;gap:4px"><span style="width:14px;height:3px;background:#ffb347;display:inline-block;border-radius:1px"></span>Bloqués</span>
+              <span style="font-size:10px;color:#b47dff;display:flex;align-items:center;gap:4px"><span style="width:14px;height:3px;background:#b47dff;display:inline-block;border-radius:1px"></span>Latence</span>
+            </div>
           </div>
           <div class="panel-resize"></div>
         </div>
@@ -658,6 +666,11 @@ tr:hover td{background:var(--bg4)22}
               <button class="popout-btn" onclick="panelPopout('threats')" title="Nouvelle fenêtre">⤢</button>
             </div>
           </div>
+          <!-- Mini threat legend -->
+          <div style="display:flex;height:8px;margin:0 12px 4px 12px;border-radius:3px;overflow:hidden;border:1px solid var(--border)" title="Échelle: 1=Normal → 10=Critique">
+            <div style="flex:1;background:#3dffb4"></div><div style="flex:1;background:#6decb9"></div><div style="flex:1;background:#a0d8b0"></div><div style="flex:1;background:#c8e06e"></div><div style="flex:1;background:#ffe066"></div><div style="flex:1;background:#ffb347"></div><div style="flex:1;background:#ff8c42"></div><div style="flex:1;background:#ff6b6b"></div><div style="flex:1;background:#ff4d6a"></div><div style="flex:1;background:#ff1744"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:0 12px 4px;font-size:7px;color:var(--text3)"><span>1 Normal</span><span>5 Attention</span><span>10 Critique</span></div>
           <div class="panel-body compact" id="dash-threats-compact" style="max-height:200px;overflow-y:auto"></div>
           <div class="panel-resize"></div>
         </div>
@@ -841,6 +854,29 @@ tr:hover td{background:var(--bg4)22}
           </div>
         </div>
 
+        <!-- Threat Level Legend Bar -->
+        <div id="threat-legend-bar" style="display:flex;align-items:center;gap:0;padding:4px 12px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto">
+          <span style="font-size:9px;color:var(--text3);font-weight:600;margin-right:8px;white-space:nowrap;text-transform:uppercase;letter-spacing:.05em">Niveaux :</span>
+          <div style="display:flex;flex:1;height:22px;border-radius:4px;overflow:hidden;border:1px solid var(--border)">
+            <div style="flex:1;background:#3dffb4;display:flex;align-items:center;justify-content:center" title="1/10 — Normal"><span style="font-size:8px;font-weight:700;color:#0a1a12">1</span></div>
+            <div style="flex:1;background:#6decb9;display:flex;align-items:center;justify-content:center" title="2/10 — Connu"><span style="font-size:8px;font-weight:700;color:#0a1a12">2</span></div>
+            <div style="flex:1;background:#a0d8b0;display:flex;align-items:center;justify-content:center" title="3/10 — Routine"><span style="font-size:8px;font-weight:700;color:#0a1a12">3</span></div>
+            <div style="flex:1;background:#c8e06e;display:flex;align-items:center;justify-content:center" title="4/10 — Info"><span style="font-size:8px;font-weight:700;color:#1a1a0a">4</span></div>
+            <div style="flex:1;background:#ffe066;display:flex;align-items:center;justify-content:center" title="5/10 — Attention"><span style="font-size:8px;font-weight:700;color:#1a1a0a">5</span></div>
+            <div style="flex:1;background:#ffb347;display:flex;align-items:center;justify-content:center" title="6/10 — Suspect"><span style="font-size:8px;font-weight:700;color:#1a0e00">6</span></div>
+            <div style="flex:1;background:#ff8c42;display:flex;align-items:center;justify-content:center" title="7/10 — Alerte"><span style="font-size:8px;font-weight:700;color:#1a0800">7</span></div>
+            <div style="flex:1;background:#ff6b6b;display:flex;align-items:center;justify-content:center" title="8/10 — Menace"><span style="font-size:8px;font-weight:700;color:#fff">8</span></div>
+            <div style="flex:1;background:#ff4d6a;display:flex;align-items:center;justify-content:center" title="9/10 — Danger"><span style="font-size:8px;font-weight:700;color:#fff">9</span></div>
+            <div style="flex:1;background:#ff1744;display:flex;align-items:center;justify-content:center" title="10/10 — Critique"><span style="font-size:8px;font-weight:700;color:#fff">10</span></div>
+          </div>
+          <div style="display:flex;gap:2px;margin-left:8px;font-size:8px;color:var(--text3);white-space:nowrap">
+            <span style="color:#3dffb4">Normal</span><span>·</span>
+            <span style="color:#ffe066">Attention</span><span>·</span>
+            <span style="color:#ff8c42">Alerte</span><span>·</span>
+            <span style="color:#ff1744">Critique</span>
+          </div>
+        </div>
+
         <!-- Packet Table -->
         <div style="overflow:auto;flex:1;min-height:0">
           <table>
@@ -900,6 +936,7 @@ tr:hover td{background:var(--bg4)22}
           <span>ICMP: <span id="ws-icmp" style="color:var(--amber)">0</span></span>
           <span id="ws-filter-label" style="color:var(--green)"></span>
           <span style="flex:1"></span>
+          <div id="ws-threat-bar" style="display:flex;width:120px;height:10px;border-radius:4px;overflow:hidden;background:var(--bg);border:1px solid var(--border)" title="Repartition des niveaux de menace"></div>
           <span id="ws-time-mode" class="ws-time-badge">Absolute</span>
           <span id="ws-capture-duration" class="ws-time-badge">0s</span>
         </div>
@@ -912,6 +949,22 @@ tr:hover td{background:var(--bg4)22}
         <div class="card-header">
           <span class="card-title" data-t="threats_all">Toutes les menaces détectées</span>
           <button class="btn btn-red" onclick="sendCmd({cmd:'clear_threats'})" data-t="btn_clear_all">Effacer tout</button>
+        </div>
+        <!-- Threat Level Legend Bar -->
+        <div style="display:flex;align-items:center;gap:0;padding:8px 16px;background:var(--bg2);border-bottom:1px solid var(--border)">
+          <span style="font-size:10px;color:var(--text3);font-weight:600;margin-right:10px;white-space:nowrap">Échelle de menace :</span>
+          <div style="display:flex;flex:1;height:26px;border-radius:5px;overflow:hidden;border:1px solid var(--border)">
+            <div style="flex:1;background:#3dffb4;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0" title="1/10 — Normal"><span style="font-size:9px;font-weight:700;color:#0a1a12">1</span><span style="font-size:6px;color:#0a1a12;font-weight:600">Normal</span></div>
+            <div style="flex:1;background:#6decb9;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0" title="2/10 — Connu"><span style="font-size:9px;font-weight:700;color:#0a1a12">2</span><span style="font-size:6px;color:#0a1a12;font-weight:600">Connu</span></div>
+            <div style="flex:1;background:#a0d8b0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0" title="3/10 — Routine"><span style="font-size:9px;font-weight:700;color:#0a1a12">3</span><span style="font-size:6px;color:#0a1a12;font-weight:600">Routine</span></div>
+            <div style="flex:1;background:#c8e06e;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0" title="4/10 — Info"><span style="font-size:9px;font-weight:700;color:#1a1a0a">4</span><span style="font-size:6px;color:#1a1a0a;font-weight:600">Info</span></div>
+            <div style="flex:1;background:#ffe066;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0" title="5/10 — Attention"><span style="font-size:9px;font-weight:700;color:#1a1a0a">5</span><span style="font-size:6px;color:#1a1a0a;font-weight:600">Attention</span></div>
+            <div style="flex:1;background:#ffb347;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0" title="6/10 — Suspect"><span style="font-size:9px;font-weight:700;color:#1a0e00">6</span><span style="font-size:6px;color:#1a0e00;font-weight:600">Suspect</span></div>
+            <div style="flex:1;background:#ff8c42;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0" title="7/10 — Alerte"><span style="font-size:9px;font-weight:700;color:#1a0800">7</span><span style="font-size:6px;color:#1a0800;font-weight:600">Alerte</span></div>
+            <div style="flex:1;background:#ff6b6b;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0" title="8/10 — Menace"><span style="font-size:9px;font-weight:700;color:#fff">8</span><span style="font-size:6px;color:#fff;font-weight:600">Menace</span></div>
+            <div style="flex:1;background:#ff4d6a;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0" title="9/10 — Danger"><span style="font-size:9px;font-weight:700;color:#fff">9</span><span style="font-size:6px;color:#fff;font-weight:600">Danger</span></div>
+            <div style="flex:1;background:#ff1744;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0" title="10/10 — Critique"><span style="font-size:9px;font-weight:700;color:#fff">10</span><span style="font-size:6px;color:#fff;font-weight:600">Critique</span></div>
+          </div>
         </div>
         <div id="threats-full"></div>
       </div>
@@ -1018,7 +1071,7 @@ tr:hover td{background:var(--bg4)22}
           </div>
           <div style="display:flex;gap:6px">
             <button class="btn" onclick="dcExportHistory()" style="font-size:11px">📥 Exporter</button>
-            <button class="btn" onclick="window.open('netguard_history.html','ng_history','width=1200,height=800')" style="font-size:11px">⤢ Ouvrir complet</button>
+            <button class="btn" onclick="openExternal('netguard_history.html')" style="font-size:11px">⤢ Ouvrir complet</button>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px">
@@ -1042,7 +1095,7 @@ tr:hover td{background:var(--bg4)22}
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
           <span style="font-size:15px;font-weight:600">Analyse de données</span>
           <div style="display:flex;gap:6px">
-            <button class="btn" onclick="window.open('netguard_analyze.html','ng_analyze','width=1300,height=850')" style="font-size:11px">⤢ Ouvrir outil complet</button>
+            <button class="btn" onclick="openExternal('netguard_analyze.html')" style="font-size:11px">⤢ Ouvrir outil complet</button>
           </div>
         </div>
         <div class="card">
@@ -2384,6 +2437,21 @@ let ws, lastState = null, paused = false, currentFilter = 'all', currentLang = l
 let inHistory = [], outHistory = [], blockHistory = [], selectedGeoCountries = new Set();
 let nativeMode = false;
 
+function openMap() {
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.open_map_browser) {
+    window.pywebview.api.open_map_browser();
+  } else {
+    openExternal('netguard_map.html');
+  }
+}
+
+function openMapInWindow() {
+  // Fallback: ouvrir dans une fenetre pywebview native
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.open_map_pywebview) {
+    window.pywebview.api.open_map_pywebview();
+  }
+}
+
 // ── Connection (pywebview native or WebSocket fallback) ──────────────────
 function initConnection() {
   if (window.pywebview && window.pywebview.api) {
@@ -2649,8 +2717,9 @@ function handleMsg(msg) {
   else if (msg.type === 'ip_quarantined') { showToast('IP ' + msg.ip + ' quarantined', '#ff9800'); }
   else if (msg.type === 'ip_unquarantined') { showToast('IP ' + msg.ip + ' released', '#00c853'); }
   else if (msg.type === 'wg_started') {
-    if (msg.ok) showToast('WireGuard VPN started!', '#00c853');
-    else showToast('WireGuard error: ' + (msg.error||''), '#ff5252');
+    if (msg.ok) showToast('VPN WireGuard active!', '#00c853');
+    else if (msg.relaunch) showToast('Redemarrage en mode admin pour le VPN...', '#4d9fff');
+    else showToast(msg.error||'Erreur VPN', '#ff9800');
   }
   else if (msg.type === 'wg_stopped') {
     if (msg.ok) showToast('WireGuard VPN stopped', '#ff9800');
@@ -2865,6 +2934,11 @@ function render(s) {
   // Logs
   buildLogsFromState(s);
   filterLogs();
+
+  // Onboarding: check server-side setting on first state message
+  if (window._checkOnboardingFromState) {
+    window._checkOnboardingFromState(!!s.onboarding_dismissed);
+  }
 }
 
 function fmtBytes(b) {
@@ -3144,26 +3218,27 @@ function renderPackets(pkts, tbodyId, limit) {
     });
   }
 
-  const sc = {allow:'status-allow',block:'status-block',warn:'status-warn'};
-  const sl = {allow:'✓','block':'✗',warn:'⚠'};
+  // ── Unified 10-level threat color system ──
+  const TLCOLORS = ['','#3dffb4','#6decb9','#a0d8b0','#c8e06e','#ffe066','#ffb347','#ff8c42','#ff6b6b','#ff4d6a','#ff1744'];
+  const TLLABELS = ['','Normal','Connu','Routine','Info','Attention','Suspect','Alerte','Menace','Danger','Critique'];
+
   const pc = {TCP:'pkt-proto-tcp',UDP:'pkt-proto-udp',ICMP:'pkt-proto-icmp',DNS:'pkt-proto-dns',HTTP:'pkt-proto-http',HTTPS:'pkt-proto-https'};
-  const bc = wsColorize ? {
-    TCP:'rgba(77,159,255,.06)',UDP:'rgba(61,255,180,.06)',ICMP:'rgba(255,179,71,.06)',
-    DNS:'rgba(0,212,255,.06)',HTTP:'rgba(180,125,255,.06)',block:'rgba(255,77,106,.1)'
-  } : {};
 
   const displayedPkts = filtered.slice(0, limit);
   wsPktCounter = 0;
 
   el.innerHTML = displayedPkts.map((p, i) => {
     wsPktCounter++;
-    const bgColor = p.status === 'block' ? bc.block : (bc[p.proto] || '');
+    const tl = p.threat_level || (p.status === 'block' ? 7 : p.status === 'warn' ? 5 : 1);
+    const tlColor = TLCOLORS[tl] || TLCOLORS[1];
+    const tlLabel = TLLABELS[tl] || TLLABELS[1];
+    const bgColor = wsColorize ? `${tlColor}${tl >= 6 ? '18' : '0a'}` : '';
     const bgStyle = bgColor ? `background:${bgColor}` : '';
     return `
     <tr class="pkt-row" onclick="wsSelectPacket(${i}, this)" style="${bgStyle}">
       <td style="color:var(--text3);font-size:10px">${i+1}</td>
       <td style="color:var(--text3)">${p.t||''}</td>
-      <td class="${sc[p.status]||''}" style="cursor:pointer" onclick="event.stopPropagation();wsFilterIP('${p.src}')" title="Click to filter">${p.src||''}</td>
+      <td style="color:${tlColor};cursor:pointer" onclick="event.stopPropagation();wsFilterIP('${p.src}')" title="Click to filter">${p.src||''}</td>
       <td style="color:var(--text3);font-size:10px">${p.location||p.country||''}</td>
       <td style="color:var(--text3)" onclick="event.stopPropagation();wsFilterIP('${p.dst}')" title="Click to filter">${p.dst||''}</td>
       <td style="color:var(--text3);font-size:10px">${p.sport||''}</td>
@@ -3171,7 +3246,7 @@ function renderPackets(pkts, tbodyId, limit) {
       <td class="${wsColorize?(pc[p.proto]||''):''}" style="font-weight:600">${p.proto||''}</td>
       <td style="color:var(--text3);font-size:10px">${p.flags||''}</td>
       <td style="color:var(--text3)">${p.size||''}</td>
-      <td class="${sc[p.status]||''}" style="font-size:10px">${sl[p.status]||''} ${p.status||''}</td>
+      <td style="color:${tlColor};font-size:10px;font-weight:600" title="${tlLabel}"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${tlColor};margin-right:4px"></span>${tl}/10</td>
       <td style="color:var(--text3);max-width:250px;overflow:hidden;text-overflow:ellipsis;font-size:10px">${p.reason||_wsInfoString(p)}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="12" class="empty-msg">No packets matching filter</td></tr>';
@@ -3191,6 +3266,20 @@ function renderPackets(pkts, tbodyId, limit) {
   setText('ws-dns', dns);
   const fl = document.getElementById('ws-filter-label');
   if (fl) fl.textContent = wsDisplayFilter ? 'Filter: ' + wsDisplayFilter : '';
+
+  // Threat level distribution bar
+  const tlBar = document.getElementById('ws-threat-bar');
+  if (tlBar) {
+    const counts = new Array(11).fill(0);
+    pkts.forEach(p => { const l = p.threat_level || 1; counts[l]++; });
+    const t = pkts.length || 1;
+    tlBar.innerHTML = TLLABELS.slice(1).map((label, idx) => {
+      const lvl = idx + 1;
+      const pct = (counts[lvl] / t * 100);
+      if (pct < 0.5) return '';
+      return `<div title="${label}: ${counts[lvl]}" style="width:${Math.max(pct, 2)}%;height:100%;background:${TLCOLORS[lvl]};opacity:.8"></div>`;
+    }).join('');
+  }
 
   // Auto-scroll
   if (wsAutoScroll && tbodyId === 'pkts-full-body') {
@@ -3369,35 +3458,11 @@ function dashRenderIDSMini(alerts) {
 
 // ── Enhanced Popout System ────────────────────────────────────────────────
 function popoutData(type) {
-  const w = Math.round(window.screen.width * 0.65);
-  const h = Math.round(window.screen.height * 0.8);
-  const l = Math.round(window.screen.width * 0.17);
-  const t = Math.round(window.screen.height * 0.1);
-  const win = window.open('', 'ng_data_' + type, `width=${w},height=${h},left=${l},top=${t}`);
-  if (!win) return;
-
-  const css = `<style>
-    @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Outfit',sans-serif;background:#0f0f13;color:#e8e8f0;padding:16px;overflow:auto}
-    h2{font-size:18px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-    table{width:100%;border-collapse:collapse;font-size:11px;font-family:'Geist Mono',monospace}
-    th{padding:8px 10px;color:#5a5a72;font-weight:500;text-align:left;font-family:'Outfit';font-size:10px;text-transform:uppercase;border-bottom:1px solid #ffffff0f;position:sticky;top:0;background:#16161d;z-index:1}
-    td{padding:6px 10px;border-bottom:1px solid #ffffff08;white-space:nowrap}
-    tr:hover td{background:#22222f}
-    .c-red{color:#ff4d6a}.c-green{color:#3dffb4}.c-blue{color:#4d9fff}.c-amber{color:#ffb347}.c-purple{color:#b47dff}.c-cyan{color:#00d4ff}
-    .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600}
-    .tag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:11px;margin:2px}
-    .tag-red{background:rgba(255,82,82,.15);color:#ff5252}
-    .tag-blue{background:rgba(33,150,243,.15);color:#2196f3}
-    .tag-green{background:rgba(0,200,83,.15);color:#00c853}
-    .empty{text-align:center;padding:40px;color:#5a5a72}
-    .search{width:100%;padding:8px 12px;background:#1c1c26;border:1px solid #ffffff1a;border-radius:6px;color:#e8e8f0;font-size:13px;margin-bottom:12px}
-  </style>`;
+  // Use inline fullscreen overlay instead of window.open (pywebview compatible)
 
   let html = '';
   const s = lastState;
-  if (!s) { win.document.write(css + '<div class="empty">No data available</div>'); return; }
+  if (!s) { showToast('Aucune donnée disponible', 'var(--amber)'); return; }
 
   if (type === 'liveips') {
     const ips = [];
@@ -3508,25 +3573,96 @@ function popoutData(type) {
       </table></div>`;
   }
 
-  win.document.write(`<!DOCTYPE html><html><head><title>NetGuard Pro — ${type}</title>${css}</head><body>${html}
-    <script>function filterRows(q){document.querySelectorAll('.data-row').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none'})}<\/script>
-  </body></html>`);
-  win.document.close();
+  // Show in fullscreen overlay
+  let overlay = document.getElementById('popout-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'popout-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:#0f0f13;overflow:auto;display:none;flex-direction:column';
+    const popStyle = document.createElement('style');
+    popStyle.textContent = '#popout-content h2{font-size:18px;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:#e8e8f0} #popout-content table{width:100%;border-collapse:collapse;font-size:11px;font-family:"Geist Mono",monospace} #popout-content th{padding:8px 10px;color:#5a5a72;font-weight:500;text-align:left;font-size:10px;text-transform:uppercase;border-bottom:1px solid #ffffff0f;position:sticky;top:40px;background:#16161d;z-index:1} #popout-content td{padding:6px 10px;border-bottom:1px solid #ffffff08;white-space:nowrap} #popout-content tr:hover td{background:#22222f} #popout-content .c-red{color:#ff4d6a} #popout-content .c-green{color:#3dffb4} #popout-content .c-blue{color:#4d9fff} #popout-content .c-amber{color:#ffb347} #popout-content .c-purple{color:#b47dff} #popout-content .c-cyan{color:#00d4ff} #popout-content .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600} #popout-content .tag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:11px;margin:2px} #popout-content .tag-red{background:rgba(255,82,82,.15);color:#ff5252} #popout-content .tag-blue{background:rgba(33,150,243,.15);color:#2196f3} #popout-content .tag-green{background:rgba(0,200,83,.15);color:#00c853} #popout-content .empty{text-align:center;padding:40px;color:#5a5a72} #popout-content .search{width:100%;padding:8px 12px;background:#1c1c26;border:1px solid #ffffff1a;border-radius:6px;color:#e8e8f0;font-size:13px;margin-bottom:12px} #popout-content .chain-card{background:#1c1c26!important}';
+    document.head.appendChild(popStyle);
+    overlay.innerHTML = '<div id="popout-toolbar" style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:#16161d;border-bottom:1px solid #ffffff1a;position:sticky;top:0;z-index:1"><span id="popout-title" style="font-size:14px;font-weight:600;color:#e8e8f0"></span><button onclick="closePopoutOverlay()" style="background:#ff4d6a22;color:#ff4d6a;border:1px solid #ff4d6a44;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600">✕ Fermer</button></div><div id="popout-content" style="padding:16px;flex:1"></div>';
+    document.body.appendChild(overlay);
+  }
+  overlay.querySelector('#popout-title').textContent = 'NetGuard Pro — ' + type;
+  overlay.querySelector('#popout-content').innerHTML = html;
+  overlay.style.display = 'flex';
+  // Wire up search filter inside overlay
+  const searchInput = overlay.querySelector('.search');
+  if (searchInput) {
+    searchInput.oninput = function() {
+      const q = this.value.toLowerCase();
+      overlay.querySelectorAll('.data-row').forEach(r => { r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none'; });
+    };
+  }
 }
+
+function closePopoutOverlay() {
+  const overlay = document.getElementById('popout-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+function _showPopoutOverlay(html, title) {
+  let overlay = document.getElementById('popout-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'popout-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:#0f0f13;overflow:auto;display:none;flex-direction:column';
+    overlay.innerHTML = '<div id="popout-toolbar" style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:#16161d;border-bottom:1px solid #ffffff1a;position:sticky;top:0;z-index:1"><span id="popout-title" style="font-size:14px;font-weight:600;color:#e8e8f0"></span><button onclick="closePopoutOverlay()" style="background:#ff4d6a22;color:#ff4d6a;border:1px solid #ff4d6a44;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600">✕ Fermer</button></div><div id="popout-content" style="padding:16px;flex:1"></div>';
+    document.body.appendChild(overlay);
+  }
+  overlay.querySelector('#popout-title').textContent = 'NetGuard Pro — ' + (title || '');
+  overlay.querySelector('#popout-content').innerHTML = html;
+  overlay.style.display = 'flex';
+}
+function openExternal(url) {
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.open_in_browser) {
+    window.pywebview.api.open_in_browser(url);
+  } else {
+    var a = document.createElement('a'); a.href = url; a.target = '_blank'; a.click();
+  }
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closePopoutOverlay();
+});
+
+function _threatToLevel(t) {
+  // Map severity + type to unified 10-level scale
+  const type = (t.type||'').toLowerCase();
+  const desc = (t.description||'').toLowerCase();
+  const sev = t.severity || 'low';
+  if (sev === 'critical') {
+    if (type.includes('flood') || type.includes('malware') || type.includes('c2') || type.includes('chaine')) return 10;
+    return 9;
+  }
+  if (sev === 'high') {
+    if (type.includes('brute') || type.includes('blackhole') || type.includes('tunnel')) return 8;
+    if (type.includes('scan') || type.includes('ids')) return 7;
+    return 7;
+  }
+  if (sev === 'med') return 6;
+  return 5;
+}
+const _TLC = ['','#3dffb4','#6decb9','#a0d8b0','#c8e06e','#ffe066','#ffb347','#ff8c42','#ff6b6b','#ff4d6a','#ff1744'];
+const _TLL = ['','Normal','Connu','Routine','Info','Attention','Suspect','Alerte','Menace','Danger','Critique'];
 
 function renderThreats(threats, elId, limit) {
   const el = document.getElementById(elId);
   if (!el) return;
-  if (!threats || !threats.length) { el.innerHTML = '<div class="empty-msg">Aucune menace détectée</div>'; return; }
-  const sc = {high:'sev-high',med:'sev-med',low:'sev-low',critical:'sev-critical'};
-  el.innerHTML = threats.slice(0, limit).map(t => `
+  if (!threats || !threats.length) { el.innerHTML = '<div class="empty-msg" style="color:var(--green)">Aucune menace detectee - Systeme securise</div>'; return; }
+  el.innerHTML = threats.slice(0, limit).map(t => {
+    const lvl = _threatToLevel(t);
+    const color = _TLC[lvl];
+    const label = _TLL[lvl];
+    return `
     <div class="threat-item">
-      <span class="threat-sev ${sc[t.severity]||'sev-low'}">${t.severity||'?'}</span>
+      <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:${color}22;color:${color};min-width:60px"><span style="width:7px;height:7px;border-radius:50%;background:${color}"></span>${lvl}/10</span>
       <span class="threat-type">${t.type||''}</span>
       <span class="threat-ip">${t.src_ip||''}</span>
       <span class="threat-desc">${t.description||''}</span>
       <span style="font-size:10px;color:var(--text3)">${(t.timestamp||'').replace('T',' ').slice(0,19)}</span>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function renderRules(rules) {
@@ -4222,32 +4358,76 @@ function renderTimeline(events) {
     </div>`).join('') || '<div class="empty-msg">Aucun événement</div>';
 }
 
+function riskCategory(score) {
+  if (score >= 86) return { label: 'Critique',  color: '#ff1a4d', bg: '#4d0010', icon: '!!', grade: 'F' };
+  if (score >= 66) return { label: 'Eleve',     color: '#ff4d6a', bg: '#3d1220', icon: '!',  grade: 'D' };
+  if (score >= 46) return { label: 'Modere',    color: '#ffb347', bg: '#3d2800', icon: '~',  grade: 'C' };
+  if (score >= 21) return { label: 'Info',       color: '#4d9fff', bg: '#1a3a6e', icon: 'i',  grade: 'B' };
+  return              { label: 'Normal',    color: '#3dffb4', bg: '#0d3326', icon: '-',  grade: 'A' };
+}
+
+function computeGlobalGrade(scores) {
+  const vals = Object.values(scores);
+  if (!vals.length) return { grade: 'A', label: 'Excellent', color: '#3dffb4', bg: '#0d3326', score: 0 };
+  // Global = average of top 5 scores (not max), so a few info-level IPs don't tank the grade
+  const sorted = vals.sort((a,b) => b - a);
+  const top5 = sorted.slice(0, Math.min(5, sorted.length));
+  const avg = Math.round(top5.reduce((a,b) => a+b, 0) / top5.length);
+  if (avg >= 80) return { grade: 'F', label: 'Critique',    color: '#ff1a4d', bg: '#4d0010', score: avg };
+  if (avg >= 60) return { grade: 'D', label: 'Eleve',       color: '#ff4d6a', bg: '#3d1220', score: avg };
+  if (avg >= 40) return { grade: 'C', label: 'Modere',      color: '#ffb347', bg: '#3d2800', score: avg };
+  if (avg >= 20) return { grade: 'B', label: 'Surveillance', color: '#4d9fff', bg: '#1a3a6e', score: avg };
+  return                { grade: 'A', label: 'Excellent',   color: '#3dffb4', bg: '#0d3326', score: avg };
+}
+
 function renderRiskScores(scores, intel) {
-  // Update top IPs with risk scores
   const el = document.getElementById('top-ips-chart');
   if (!el || !scores) return;
   const entries = Object.entries(scores).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  if (!entries.length) return;
-  document.getElementById('top-ips-total').textContent = entries.length + ' IPs à risque';
-  el.innerHTML = entries.map(([ ip, score], i) => {
-    const color = score >= 70 ? 'var(--red)' : score >= 40 ? 'var(--amber)' : 'var(--blue)';
+
+  // Global security grade
+  const g = computeGlobalGrade(scores);
+  document.getElementById('top-ips-total').innerHTML =
+    `<span style="font-size:16px;font-weight:800;color:${g.color};background:${g.bg};padding:2px 10px;border-radius:6px;margin-right:6px">${g.grade}</span>` +
+    `<span style="color:${g.color};font-weight:600">${g.label}</span>` +
+    `<span style="color:var(--text3);margin-left:6px">(${entries.length} IPs)</span>`;
+
+  if (!entries.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--green);padding:20px;font-size:13px">Aucune IP suspecte detectee - Tout va bien</div>';
+    return;
+  }
+
+  // Legend bar
+  let html = `<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <span style="font-size:9px;padding:2px 8px;border-radius:4px;background:#0d3326;color:#3dffb4">0-20 Normal</span>
+    <span style="font-size:9px;padding:2px 8px;border-radius:4px;background:#1a3a6e;color:#4d9fff">21-45 Info</span>
+    <span style="font-size:9px;padding:2px 8px;border-radius:4px;background:#3d2800;color:#ffb347">46-65 Modere</span>
+    <span style="font-size:9px;padding:2px 8px;border-radius:4px;background:#3d1220;color:#ff4d6a">66-85 Eleve</span>
+    <span style="font-size:9px;padding:2px 8px;border-radius:4px;background:#4d0010;color:#ff1a4d">86+ Critique</span>
+  </div>`;
+
+  html += entries.map(([ip, score], i) => {
+    const cat = riskCategory(score);
     const info = intel && intel[ip] ? intel[ip] : {};
     const tags = [];
-    if (info.vpn) tags.push('<span style="font-size:9px;padding:1px 5px;background:#3d2800;color:#ffb347;border-radius:3px">VPN</span>');
+    if (info.vpn) tags.push('<span style="font-size:9px;padding:1px 5px;background:#1a3a6e;color:#4d9fff;border-radius:3px">VPN</span>');
     if (info.tor) tags.push('<span style="font-size:9px;padding:1px 5px;background:#3d1220;color:#ff4d6a;border-radius:3px">TOR</span>');
+    if (info.country) tags.push('<span style="font-size:9px;padding:1px 5px;background:var(--bg4);color:var(--text3);border-radius:3px">' + info.country + '</span>');
     const isBlocked = lastState && lastState.blocked_ips && lastState.blocked_ips.includes(ip);
     return `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
         <span style="font-size:10px;color:var(--text3);width:16px;text-align:right;font-family:'Geist Mono',monospace">${i+1}</span>
         <span style="font-family:'Geist Mono',monospace;font-size:11px;color:var(--text2);min-width:115px">${ip}</span>
         <div style="flex:1;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden">
-          <div style="width:${score}%;height:100%;background:${color};border-radius:3px;transition:.3s"></div>
+          <div style="width:${score}%;height:100%;background:${cat.color};border-radius:3px;transition:.3s"></div>
         </div>
-        <span style="font-size:12px;font-weight:700;font-family:'Geist Mono',monospace;color:${color};min-width:36px;text-align:right">${score}</span>
+        <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:${cat.bg};color:${cat.color};min-width:60px;text-align:center">${score} ${cat.label}</span>
         <div style="display:flex;gap:3px">${tags.join('')}</div>
-        <span style="font-size:9px;padding:1px 6px;border-radius:3px;font-weight:700;${isBlocked?'background:var(--reddim);color:var(--red)':'background:var(--bg4);color:var(--text3)'}">${isBlocked?'BLOQUÉ':'actif'}</span>
+        ${isBlocked?'<span style="font-size:9px;padding:1px 6px;border-radius:3px;font-weight:700;background:var(--reddim);color:var(--red)">BLOQUE</span>':''}
       </div>`;
   }).join('');
+
+  el.innerHTML = html;
 }
 
 // ── i18n Translation Dictionary ────────────────────────────────────────────
@@ -5974,12 +6154,6 @@ function dcOpenRecording(idx) {
   const rec = saved[idx];
   if (!rec) return;
 
-  // Open in a new window with full details
-  const w = Math.round(window.screen.width * 0.75);
-  const h = Math.round(window.screen.height * 0.85);
-  const win = window.open('', 'ng_recording_' + idx, `width=${w},height=${h},left=${Math.round(window.screen.width*0.12)},top=${Math.round(window.screen.height*0.07)}`);
-  if (!win) return;
-
   const dur = Math.floor((rec.duration || 0) / 1000);
   const m = Math.floor(dur / 60), s = dur % 60;
   const date = new Date(rec.timestamp);
@@ -5989,84 +6163,30 @@ function dcOpenRecording(idx) {
   const threats = rec.threats || [];
   const snapshots = rec.snapshots || [];
 
-  const css = `<style>
-    @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Outfit',sans-serif;background:#0f0f13;color:#e8e8f0;padding:20px;overflow:auto}
-    h2{font-size:18px;margin-bottom:12px}h3{font-size:14px;margin:16px 0 8px;color:#9090a8}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-    .stat{background:#16161d;border:1px solid #ffffff0f;border-radius:8px;padding:12px;text-align:center}
-    .stat-val{font-size:22px;font-weight:700;font-family:'Geist Mono',monospace}
-    .stat-lbl{font-size:10px;color:#5a5a72;margin-top:4px;text-transform:uppercase}
-    table{width:100%;border-collapse:collapse;font-size:11px;font-family:'Geist Mono',monospace}
-    th{padding:8px 10px;color:#5a5a72;font-weight:500;text-align:left;font-family:'Outfit';font-size:10px;text-transform:uppercase;border-bottom:1px solid #ffffff0f;position:sticky;top:0;background:#16161d}
-    td{padding:5px 10px;border-bottom:1px solid #ffffff08}tr:hover td{background:#22222f}
-    .tabs{display:flex;gap:2px;border-bottom:1px solid #ffffff0f;margin-bottom:12px}
-    .tab{padding:8px 16px;font-size:12px;color:#5a5a72;cursor:pointer;border-bottom:2px solid transparent}
-    .tab:hover{color:#e8e8f0}.tab.active{color:#4d9fff;border-bottom-color:#4d9fff}
-    .c-red{color:#ff4d6a}.c-green{color:#3dffb4}.c-blue{color:#4d9fff}.c-amber{color:#ffb347}
-    .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600}
-    .search{width:100%;padding:8px 12px;background:#1c1c26;border:1px solid #ffffff1a;border-radius:6px;color:#e8e8f0;font-size:13px;margin-bottom:8px}
-    .section{display:none}.section.active{display:block}
-    .timeline-bar{display:flex;align-items:flex-end;gap:1px;height:60px;margin:12px 0}
-    .timeline-bar div{flex:1;background:#4d9fff;border-radius:2px 2px 0 0;min-width:2px;transition:.2s}
-  </style>`;
-
   // Build timeline from snapshots
   let timelineHtml = '';
   if (snapshots.length > 1) {
-    const maxPkts = Math.max(...snapshots.map(s => s.packets_total || 0), 1);
-    timelineHtml = `<div class="timeline-bar">${snapshots.map(s => {
-      const h = Math.max(Math.round((s.packets_total || 0) / maxPkts * 100), 2);
-      return `<div style="height:${h}%" title="${s.ts}: ${s.packets_total} pkts"></div>`;
-    }).join('')}</div>`;
+    const maxPkts = Math.max(...snapshots.map(sn => sn.packets_total || 0), 1);
+    timelineHtml = '<div style="display:flex;align-items:flex-end;gap:1px;height:60px;margin:12px 0">' + snapshots.map(sn => {
+      const ht = Math.max(Math.round((sn.packets_total || 0) / maxPkts * 100), 2);
+      return '<div style="flex:1;background:#4d9fff;border-radius:2px 2px 0 0;min-width:2px;height:' + ht + '%" title="' + sn.ts + ': ' + sn.packets_total + ' pkts"></div>';
+    }).join('') + '</div>';
   }
 
-  win.document.write(`<!DOCTYPE html><html><head><title>NetGuard Pro — Session ${date.toLocaleDateString('fr-FR')}</title>${css}</head><body>
-    <h2>⏺ Session du ${date.toLocaleDateString('fr-FR')} ${date.toLocaleTimeString('fr-FR')}</h2>
-    <p style="color:#5a5a72;margin-bottom:16px">Durée: ${m}m${String(s).padStart(2,'0')}s</p>
+  const recHtml = '<h2>Session du ' + date.toLocaleDateString('fr-FR') + ' ' + date.toLocaleTimeString('fr-FR') + '</h2>'
+    + '<p style="color:#5a5a72;margin-bottom:16px">Durée: ' + m + 'm' + String(s).padStart(2,'0') + 's</p>'
+    + '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">'
+    + '<div style="background:#16161d;border:1px solid #ffffff0f;border-radius:8px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:700;color:#4d9fff">' + (stats.totalPackets||0) + '</div><div style="font-size:10px;color:#5a5a72;margin-top:4px;text-transform:uppercase">Paquets</div></div>'
+    + '<div style="background:#16161d;border:1px solid #ffffff0f;border-radius:8px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:700;color:#ff4d6a">' + (stats.blockedPackets||0) + '</div><div style="font-size:10px;color:#5a5a72;margin-top:4px;text-transform:uppercase">Bloqués</div></div>'
+    + '<div style="background:#16161d;border:1px solid #ffffff0f;border-radius:8px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:700;color:#ffb347">' + (stats.threats||0) + '</div><div style="font-size:10px;color:#5a5a72;margin-top:4px;text-transform:uppercase">Menaces</div></div>'
+    + '<div style="background:#16161d;border:1px solid #ffffff0f;border-radius:8px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:700;color:#3dffb4">' + (stats.uniqueIPs||0) + '</div><div style="font-size:10px;color:#5a5a72;margin-top:4px;text-transform:uppercase">IPs uniques</div></div>'
+    + '</div>'
+    + (timelineHtml ? '<h3 style="font-size:14px;margin:16px 0 8px;color:#9090a8">Timeline</h3>' + timelineHtml : '')
+    + '<div style="max-height:calc(100vh - 300px);overflow-y:auto"><table><tr><th>#</th><th>Time</th><th>Source</th><th>Dest</th><th>Proto</th><th>Port</th><th>Size</th><th>Status</th></tr>'
+    + packets.slice(0,2000).map(function(p, i) { return '<tr><td>' + (i+1) + '</td><td>' + (p.t||'') + '</td><td class="c-' + (p.status==='block'?'red':'green') + '">' + (p.src||'') + '</td><td>' + (p.dst||'') + '</td><td class="c-blue">' + (p.proto||'') + '</td><td>' + (p.dport||'') + '</td><td>' + (p.size||'') + '</td><td class="c-' + (p.status==='block'?'red':'green') + '">' + (p.status||'') + '</td></tr>'; }).join('')
+    + '</table></div>';
 
-    <div class="stats">
-      <div class="stat"><div class="stat-val c-blue">${stats.totalPackets || 0}</div><div class="stat-lbl">Paquets capturés</div></div>
-      <div class="stat"><div class="stat-val c-red">${stats.blockedPackets || 0}</div><div class="stat-lbl">Bloqués</div></div>
-      <div class="stat"><div class="stat-val c-amber">${stats.threats || 0}</div><div class="stat-lbl">Menaces</div></div>
-      <div class="stat"><div class="stat-val c-green">${stats.uniqueIPs || 0}</div><div class="stat-lbl">IPs uniques</div></div>
-    </div>
-
-    ${timelineHtml ? '<h3>Timeline d\'activité</h3>' + timelineHtml : ''}
-
-    <div class="tabs">
-      <div class="tab active" onclick="showSec('packets',this)">Paquets (${packets.length})</div>
-      <div class="tab" onclick="showSec('actions',this)">Actions (${actions.length})</div>
-      <div class="tab" onclick="showSec('threats',this)">Menaces (${threats.length})</div>
-    </div>
-
-    <div class="section active" id="sec-packets">
-      <input class="search" placeholder="Filtrer les paquets..." oninput="filterRows(this.value,'sec-packets')">
-      <div style="max-height:500px;overflow-y:auto">
-      <table><tr><th>#</th><th>Time</th><th>Source</th><th>Dest</th><th>Proto</th><th>Port</th><th>Size</th><th>Status</th><th>Reason</th></tr>
-      ${packets.slice(0,2000).map((p,i) => `<tr class="dr"><td>${i+1}</td><td>${p.t||''}</td><td class="c-${p.status==='block'?'red':'green'}">${p.src||''}</td><td>${p.dst||''}</td><td class="c-blue">${p.proto||''}</td><td>${p.dport||''}</td><td>${p.size||''}</td><td class="c-${p.status==='block'?'red':'green'}">${p.status||''}</td><td>${p.reason||''}</td></tr>`).join('')}
-      </table></div>
-    </div>
-
-    <div class="section" id="sec-actions">
-      <table><tr><th>Time</th><th>Type</th><th>Detail</th></tr>
-      ${actions.map(a => `<tr><td>${(a.ts||'').replace('T',' ').slice(11,19)}</td><td style="color:#b47dff">${a.type}</td><td>${a.detail||''}</td></tr>`).join('')}
-      </table>
-    </div>
-
-    <div class="section" id="sec-threats">
-      <table><tr><th>Time</th><th>Severity</th><th>Type</th><th>IP</th><th>Description</th></tr>
-      ${threats.map(t => `<tr><td>${(t.timestamp||'').replace('T',' ').slice(0,19)}</td><td class="c-${t.severity==='critical'||t.severity==='high'?'red':'amber'}" style="font-weight:700;text-transform:uppercase">${t.severity||''}</td><td>${t.type||''}</td><td>${t.src_ip||''}</td><td>${t.description||''}</td></tr>`).join('')}
-      </table>
-    </div>
-
-    <script>
-    function showSec(id,el){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById('sec-'+id).classList.add('active');el.classList.add('active')}
-    function filterRows(q,secId){document.querySelectorAll('#'+secId+' .dr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none'})}
-    <\\/script>
-  </body></html>`);
-  win.document.close();
+  _showPopoutOverlay(recHtml, 'Session Recording');
 }
 
 function dcExportRecording(idx) {
@@ -6206,37 +6326,20 @@ function dcExportThreatReport() {
   if (!lastState) { showToast('Aucune donnée', 'var(--amber)'); return; }
   const threats = lastState.threats || [];
   const blocked = lastState.blocked_ips || [];
-  const win = window.open('', 'ng_threat_report', 'width=900,height=700');
-  if (!win) return;
-  win.document.write(`<!DOCTYPE html><html><head><title>NetGuard Pro — Threat Report</title>
-    <style>body{font-family:system-ui;padding:30px;max-width:800px;margin:0 auto}
-    h1{font-size:22px;border-bottom:2px solid #333;padding-bottom:8px}
-    h2{font-size:16px;margin-top:20px;color:#666}
-    table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
-    th{background:#f5f5f5;padding:6px 10px;text-align:left;border:1px solid #ddd}
-    td{padding:5px 10px;border:1px solid #eee}
-    .stat{display:inline-block;padding:8px 20px;background:#f0f0f0;border-radius:6px;margin:4px;text-align:center}
-    .stat b{display:block;font-size:20px}
-    @media print{body{padding:10px}}
-    </style></head><body>
-    <h1>Rapport de menaces — NetGuard Pro</h1>
-    <p style="color:#888">Généré le ${new Date().toLocaleString('fr-FR')}</p>
-    <div style="margin:16px 0">
-      <div class="stat"><b>${threats.length}</b>Menaces</div>
-      <div class="stat"><b>${blocked.length}</b>IPs bloquées</div>
-      <div class="stat"><b>${threats.filter(t=>t.severity==='critical').length}</b>Critiques</div>
-    </div>
-    <h2>Menaces détectées</h2>
-    <table><tr><th>Date</th><th>Sévérité</th><th>Type</th><th>IP source</th><th>Description</th></tr>
-    ${threats.map(t => `<tr><td>${(t.timestamp||'').replace('T',' ').slice(0,19)}</td><td style="text-transform:uppercase;font-weight:700;color:${t.severity==='critical'?'red':t.severity==='high'?'#d32f2f':'#f57c00'}">${t.severity}</td><td>${t.type}</td><td>${t.src_ip}</td><td>${t.description||''}</td></tr>`).join('')}
-    </table>
-    <h2>IPs bloquées (${blocked.length})</h2>
-    <p style="font-family:monospace;font-size:12px;word-break:break-all">${blocked.join(', ') || 'Aucune'}</p>
-    <hr style="margin-top:30px;border:none;border-top:1px solid #ddd">
-    <p style="color:#aaa;font-size:11px;margin-top:8px">NetGuard Pro v4.0 — Rapport de sécurité automatique</p>
-    <script>setTimeout(()=>window.print(),500)<\\/script>
-  </body></html>`);
-  win.document.close();
+  // Use overlay instead of window.open
+  const reportHtml = '<h2>Rapport de menaces</h2>'
+    + '<p style="color:#5a5a72;margin-bottom:16px">Généré le ' + new Date().toLocaleString('fr-FR') + '</p>'
+    + '<div style="display:flex;gap:10px;margin-bottom:16px">'
+    + '<div style="background:#16161d;border:1px solid #ffffff0f;border-radius:8px;padding:12px 20px;text-align:center"><div style="font-size:22px;font-weight:700;color:#ff4d6a">' + threats.length + '</div><div style="font-size:10px;color:#5a5a72;text-transform:uppercase">Menaces</div></div>'
+    + '<div style="background:#16161d;border:1px solid #ffffff0f;border-radius:8px;padding:12px 20px;text-align:center"><div style="font-size:22px;font-weight:700;color:#ffb347">' + blocked.length + '</div><div style="font-size:10px;color:#5a5a72;text-transform:uppercase">IPs bloquées</div></div>'
+    + '<div style="background:#16161d;border:1px solid #ffffff0f;border-radius:8px;padding:12px 20px;text-align:center"><div style="font-size:22px;font-weight:700;color:#ff1744">' + threats.filter(function(t){return t.severity==="critical"}).length + '</div><div style="font-size:10px;color:#5a5a72;text-transform:uppercase">Critiques</div></div>'
+    + '</div>'
+    + '<table><tr><th>Date</th><th>Sévérité</th><th>Type</th><th>IP source</th><th>Description</th></tr>'
+    + threats.map(function(t) { return '<tr><td>' + ((t.timestamp||'').replace('T',' ').slice(0,19)) + '</td><td style="text-transform:uppercase;font-weight:700;color:' + (t.severity==="critical"?"#ff1744":t.severity==="high"?"#ff4d6a":"#ffb347") + '">' + t.severity + '</td><td>' + t.type + '</td><td>' + t.src_ip + '</td><td>' + (t.description||'') + '</td></tr>'; }).join('')
+    + '</table>'
+    + '<h3 style="font-size:14px;margin:16px 0 8px;color:#9090a8">IPs bloquées (' + blocked.length + ')</h3>'
+    + '<p style="font-family:monospace;font-size:12px;word-break:break-all;color:#e8e8f0">' + (blocked.join(', ') || 'Aucune') + '</p>';
+  _showPopoutOverlay(reportHtml, 'Threat Report');
 }
 
 // Analyse import handlers
@@ -6314,10 +6417,22 @@ function dcRenderAnalysis() {
   const ONBOARD_KEY = 'ng_onboarding_done';
   const ONBOARD_DISMISSED = 'ng_onboarding_dismissed';
 
-  // Skip if already completed or dismissed
-  if (localStorage.getItem(ONBOARD_KEY) || localStorage.getItem(ONBOARD_DISMISSED)) return;
+  // This flag is set by the WS state handler once we know the server-side setting
+  window._onboardingChecked = false;
+  window._onboardingStarted = false;
 
-  const LANG = localStorage.getItem('ng_lang') || 'fr';
+  // Called from handleMsg/render when first state arrives
+  window._checkOnboardingFromState = function(serverDismissed) {
+    if (window._onboardingChecked) return;
+    window._onboardingChecked = true;
+    // Onboarding disabled by default — user can launch manually from Config > "Relancer le tour"
+    return;
+  };
+
+  // No auto-launch — onboarding only via manual button
+
+  function _launchOnboarding() {
+    const LANG = localStorage.getItem('ng_lang') || 'fr';
 
   const steps = [
     {
@@ -6523,8 +6638,12 @@ function dcRenderAnalysis() {
           ? 'Let us give you a quick tour of the main features. It only takes 30 seconds!'
           : 'Laissez-nous vous presenter les fonctionnalites principales. Ca prend 30 secondes !'}
       </div>
+      <label style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:16px;cursor:pointer;font-size:12px;color:var(--text2)">
+        <input type="checkbox" id="onboard-never" style="accent-color:var(--blue);width:16px;height:16px;cursor:pointer">
+        ${LANG === 'en' ? 'Don\\'t show this again' : 'Ne plus afficher'}
+      </label>
       <div style="display:flex;gap:10px;justify-content:center">
-        <button class="onboard-btn secondary" onclick="window._onboardDismiss()">
+        <button class="onboard-btn secondary" onclick="window._onboardSkip()">
           ${LANG === 'en' ? 'Skip tour' : 'Passer le tour'}
         </button>
         <button class="onboard-btn primary" style="padding:10px 24px;font-size:14px" onclick="this.closest('.onboard-bubble').remove();document.querySelector('.onboard-overlay').remove();window._startOnboard()">
@@ -6535,12 +6654,30 @@ function dcRenderAnalysis() {
     document.body.appendChild(welcome);
   }, 2000);
 
+  window._onboardSkip = function() {
+    const never = document.getElementById('onboard-never');
+    if (never && never.checked) {
+      localStorage.setItem(ONBOARD_DISMISSED, '1');
+      // Aussi sauvegarder cote serveur pour persister entre sessions pywebview
+      if (window.pywebview && window.pywebview.api) {
+        try { window.pywebview.api.send_command('set_setting', {key:'onboarding_dismissed', value:true}); } catch(_){}
+      } else if (ws && ws.readyState === 1) {
+        ws.send(JSON.stringify({cmd:'set_setting', key:'onboarding_dismissed', value:true}));
+      }
+    }
+    dismissTour();
+  };
+
   window._startOnboard = function() { showBubble(0); };
+  } // end _launchOnboarding
 
   // Also expose a way to restart the tour from settings
   window.restartOnboarding = function() {
     localStorage.removeItem(ONBOARD_KEY);
     localStorage.removeItem(ONBOARD_DISMISSED);
+    if (window.pywebview && window.pywebview.api) {
+      try { window.pywebview.api.send_command('set_setting', {key:'onboarding_dismissed', value:false}); } catch(_){}
+    }
     showBubble(0);
   };
 })();

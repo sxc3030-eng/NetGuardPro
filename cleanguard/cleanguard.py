@@ -2058,6 +2058,26 @@ class CleanGuardEngine:
             result = await asyncio.to_thread(delete_from_quarantine, q_name)
             await ws.send(json.dumps({"type": "quarantine_action", "action": "delete", "success": result}))
 
+        elif cmd == "quarantine_threat":
+            filepath = data.get("file", "")
+            if filepath and os.path.exists(filepath):
+                result = await asyncio.to_thread(quarantine_file, Path(filepath), "Manual quarantine")
+                await ws.send(json.dumps({"type": "quarantine_action", "action": "quarantine", "success": result}))
+            else:
+                await ws.send(json.dumps({"type": "quarantine_action", "action": "quarantine", "success": False, "error": "File not found"}))
+
+        elif cmd == "delete_threat":
+            filepath = data.get("file", "")
+            if filepath and os.path.exists(filepath):
+                try:
+                    os.remove(filepath)
+                    await ws.send(json.dumps({"type": "quarantine_action", "action": "delete_file", "success": True}))
+                    log.info(f"[AV] Fichier supprime: {filepath}")
+                except Exception as e:
+                    await ws.send(json.dumps({"type": "quarantine_action", "action": "delete_file", "success": False, "error": str(e)}))
+            else:
+                await ws.send(json.dumps({"type": "quarantine_action", "action": "delete_file", "success": False, "error": "File not found"}))
+
         # ── Disk ─────────────────────────────────────────────────────────
         elif cmd == "analyze_disk":
             path = data.get("path", str(HOME))
@@ -2478,13 +2498,13 @@ def main_webview():
     load_custom_signatures()
 
     print(f"""
-╔══════════════════════════════════════════════════════╗
-║        CleanGuard Pro v{VERSION}                        ║
-║        Nettoyeur Système + Antivirus                 ║
-╠══════════════════════════════════════════════════════╣
-║  Mode    : Fenêtre native (pywebview)                ║
-║  Protection: {'ON ' if CFG.realtime_protection else 'OFF'}                                    ║
-╚══════════════════════════════════════════════════════╝
++======================================================+
+|        CleanGuard Pro v{VERSION}                        |
+|        Nettoyeur Systeme + Antivirus                 |
++======================================================+
+|  Mode    : Fenetre native (pywebview)                |
+|  Protection: {'ON ' if CFG.realtime_protection else 'OFF'}                                    |
++======================================================+
     """)
 
     timeline_add("🚀", "CleanGuard Pro démarré", "system")
@@ -2516,7 +2536,7 @@ def main_webview():
     api.set_window(window)
 
     def on_loaded():
-        print("[✓] Dashboard chargé dans la fenêtre native")
+        print("[OK] Dashboard chargé dans la fenêtre native")
         # Start periodic state push
         threading.Thread(target=_pywebview_state_broadcast, args=(api,), daemon=True).start()
 
@@ -2553,32 +2573,32 @@ async def main_async():
 
     port = CFG.ws_port
     print(f"""
-╔══════════════════════════════════════════════════════╗
-║        CleanGuard Pro v{VERSION}                        ║
-║        Nettoyeur Système + Antivirus                 ║
-╠══════════════════════════════════════════════════════╣
-║  Mode    : WebSocket (fallback)                      ║
-║  WebSocket : ws://localhost:{port}                    ║
-║  Dashboard : cleanguard_dashboard.html               ║
-║  Protection: {'ON ' if CFG.realtime_protection else 'OFF'}                                    ║
-╚══════════════════════════════════════════════════════╝
++======================================================+
+|        CleanGuard Pro v{VERSION}                        |
+|        Nettoyeur Systeme + Antivirus                 |
++======================================================+
+|  Mode    : WebSocket (fallback)                      |
+|  WebSocket : ws://localhost:{port}                    |
+|  Dashboard : cleanguard_dashboard.html               |
+|  Protection: {'ON ' if CFG.realtime_protection else 'OFF'}                                    |
++======================================================+
     """)
 
     try:
         async with websockets.serve(ws_handler, "localhost", port):
-            print(f"[✓] Serveur WebSocket démarré sur le port {port}")
+            print(f"[OK] Serveur WebSocket démarré sur le port {port}")
             await asyncio.Future()
     except Exception as e:
         for fallback in range(port + 1, port + 5):
             try:
                 async with websockets.serve(ws_handler, "localhost", fallback):
-                    print(f"[✓] Serveur WebSocket démarré sur le port {fallback} (fallback)")
+                    print(f"[OK] Serveur WebSocket démarré sur le port {fallback} (fallback)")
                     CFG.ws_port = fallback
                     save_settings()
                     await asyncio.Future()
             except Exception:
                 continue
-        print(f"[✗] Impossible de démarrer le serveur WebSocket: {e}")
+        print(f"[FAIL] Impossible de démarrer le serveur WebSocket: {e}")
 
 
 def main():

@@ -3,10 +3,19 @@ chcp 65001 >nul 2>&1
 set PYTHONUTF8=1
 title NetGuard Pro v4.0 — NetGuardPro Suite
 
+:: Auto-elevation: request admin rights for WireGuard VPN
+net session >nul 2>&1
+if errorlevel 1 (
+    echo [*] Demande des droits administrateur pour WireGuard VPN...
+    powershell -Command "Start-Process cmd -ArgumentList '/c cd /d \"%~dp0..\" && python netguard.py && pause' -Verb RunAs" 2>nul
+    exit /b
+)
+
 echo.
 echo  +============================================+
-echo  !    NetGuard Pro v4.0                       !
+echo  !    NetGuard Pro v4.0  [ADMIN]              !
 echo  !    Network IDS / Packet Capture / Firewall !
+echo  !    WireGuard VPN Active                    !
 echo  +============================================+
 echo.
 
@@ -19,13 +28,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
-:: Install dependencies
-echo [*] Checking dependencies...
-python -m pip install pywebview scapy requests psutil winotify >nul 2>&1
-echo [OK] Dependencies ready.
-
 :: Launch
-echo [*] Starting NetGuard Pro...
+echo [*] Starting NetGuard Pro (admin mode)...
 cd /d "%~dp0.."
 python netguard.py
 

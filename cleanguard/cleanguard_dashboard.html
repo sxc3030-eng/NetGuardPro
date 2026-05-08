@@ -18,8 +18,8 @@
   --purple:#b47dff;--purpledim:#2a1a4d;
   --cyan:#00d4ff;
 }
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
-.main{display:grid;grid-template-columns:220px 1fr;height:calc(100vh - 49px)}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;margin:0}
+.main{display:grid;grid-template-columns:220px 1fr;height:calc(100vh - 49px);overflow:hidden}
 
 /* Topbar */
 .topbar{background:var(--bg2);border-bottom:1px solid var(--border);height:49px;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
@@ -388,8 +388,12 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);heig
       <!-- Threats found -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Menaces détectées</span>
+          <span class="card-title">Menaces detectees</span>
           <span class="nav-badge" id="av-threat-count" style="display:none">0</span>
+          <div style="display:flex;gap:6px;margin-left:auto" id="bulk-actions" hidden>
+            <button class="btn" style="padding:3px 10px;font-size:10px;background:var(--amberdim);color:var(--amber);border-color:var(--amber)" onclick="bulkQuarantine()">Tout quarantaine</button>
+            <button class="btn btn-red" style="padding:3px 10px;font-size:10px" onclick="bulkDelete()">Tout supprimer</button>
+          </div>
         </div>
         <div class="card-body" style="padding:0" id="av-threats">
           <div class="empty-state">
@@ -796,8 +800,16 @@ function handleMsg(msg) {
   } else if (msg.type === 'quarantine_list') {
     renderQuarantine(msg.entries);
   } else if (msg.type === 'quarantine_action') {
-    toast(msg.success ? '✓ Action réussie' : '✗ Erreur', msg.success ? 'var(--green)' : 'var(--red)');
+    if (msg.action === 'quarantine') {
+      toast(msg.success ? 'Mis en quarantaine' : 'Erreur quarantaine', msg.success ? 'var(--green)' : 'var(--red)');
+    } else if (msg.action === 'delete_file') {
+      toast(msg.success ? 'Fichier supprime' : 'Erreur suppression', msg.success ? 'var(--green)' : 'var(--red)');
+    } else {
+      toast(msg.success ? 'Action reussie' : 'Erreur', msg.success ? 'var(--green)' : 'var(--red)');
+    }
+    // Refresh quarantine list and re-request state for real-time update
     sendCmd({cmd:'get_quarantine'});
+    sendCmd({cmd:'get_state'});
   } else if (msg.type === 'clean_result') {
     if (msg.browser_running) {
       if (confirm(`⚠ ${msg.browser_name} est ouvert (${msg.pid_count} processus).\n\nFermer ${msg.browser_name} pour pouvoir supprimer son cache ?\n\nVos onglets ouverts seront fermés.`)) {
@@ -1053,9 +1065,12 @@ function renderScanProgress(s) {
   // Threats list
   const threats = s.scan_threats || [];
   const avBadge = document.getElementById('av-threat-count');
+  const bulkEl = document.getElementById('bulk-actions');
   if (threats.length) {
     avBadge.style.display = '';
     avBadge.textContent = threats.length;
+    const activeThreats = threats.filter(t => !t.quarantined);
+    if (bulkEl) bulkEl.hidden = activeThreats.length === 0;
     document.getElementById('av-threats').innerHTML = threats.map(t => {
       const fname = (t.file||'').split('\\').pop();
       return `<div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border)">
@@ -1066,14 +1081,16 @@ function renderScanProgress(s) {
         <div style="font-size:10px;color:var(--text3);font-family:'Geist Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${fname}</div>
       </div>
       <div style="display:flex;gap:4px;flex-shrink:0">
-        ${t.severity === 'critical' || t.severity === 'high'
-          ? `<span style="font-size:10px;color:var(--green);padding:3px 6px;border:1px solid var(--greendim);border-radius:4px">✓ En quarantaine</span>`
-          : `<button class="btn btn-red" style="padding:2px 8px;font-size:10px" onclick="if(confirm('Supprimer ${fname.replace(/'/g,"\\'")} ?')) toast('Fichier signalé','var(--amber)')">Ignorer</button>`
+        ${t.quarantined
+          ? `<span style="font-size:10px;color:var(--green);padding:3px 6px;border:1px solid var(--greendim);border-radius:4px">&#10003; En quarantaine</span>`
+          : `<button class="btn" style="padding:2px 8px;font-size:10px;background:var(--amber);color:#000" onclick="sendCmd({cmd:'quarantine_threat',file:'${(t.file||'').replace(/\\/g,'\\\\\\\\').replace(/'/g,"\\\\'")}'});toast('Mis en quarantaine','var(--green)')">&#128274; Quarantaine</button>
+             <button class="btn btn-red" style="padding:2px 8px;font-size:10px" onclick="if(confirm('Supprimer definitivement ce fichier ?')) {sendCmd({cmd:'delete_threat',file:'${(t.file||'').replace(/\\/g,'\\\\\\\\').replace(/'/g,"\\\\'")}'});toast('Fichier supprime','var(--red)')}">&#128465; Supprimer</button>`
         }
       </div>
     </div>`}).join('');
   } else {
     avBadge.style.display = 'none';
+    if (bulkEl) bulkEl.hidden = true;
   }
 }
 
@@ -1312,6 +1329,24 @@ function confirmCleanCategory(key, label, count, size) {
 function promptCustomScan() {
   const path = prompt('Dossier à scanner:', 'C:\\');
   if (path) sendCmd({cmd:'custom_scan', path});
+}
+
+function bulkQuarantine() {
+  const threats = (lastState && lastState.scan_threats) || [];
+  const active = threats.filter(t => !t.quarantined && t.file);
+  if (!active.length) { toast('Aucune menace a traiter', 'var(--text3)'); return; }
+  if (!confirm('Mettre ' + active.length + ' fichier(s) en quarantaine ?')) return;
+  active.forEach(t => sendCmd({cmd:'quarantine_threat', file: t.file}));
+  toast(active.length + ' fichier(s) en quarantaine...', 'var(--amber)');
+}
+
+function bulkDelete() {
+  const threats = (lastState && lastState.scan_threats) || [];
+  const active = threats.filter(t => !t.quarantined && t.file);
+  if (!active.length) { toast('Aucune menace a traiter', 'var(--text3)'); return; }
+  if (!confirm('SUPPRIMER DEFINITIVEMENT ' + active.length + ' fichier(s) ?\nCette action est irreversible.')) return;
+  active.forEach(t => sendCmd({cmd:'delete_threat', file: t.file}));
+  toast(active.length + ' fichier(s) en cours de suppression...', 'var(--red)');
 }
 
 function toggleSetting(key) {

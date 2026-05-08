@@ -4,8 +4,8 @@ Visual network topology mapper that scans your local network,
 discovers devices, classifies them, and renders an interactive map.
 
 Usage:
-    python sentinel_mapper.py          â†' GUI mode (pywebview)
-    python sentinel_mapper.py --headless  â†' WebSocket only (no GUI)
+    python sentinel_mapper.py          -> GUI mode (pywebview)
+    python sentinel_mapper.py --headless  -> WebSocket only (no GUI)
 """
 
 import os
@@ -43,9 +43,13 @@ try:
 except ImportError:
     HAS_WEBVIEW = False
 
+# - Constants -
+VERSION = "1.0.0"
+SENTINEL_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # NetGuardPro shared modules
+sys.path.insert(0, os.path.dirname(SENTINEL_DIR))
 try:
-    sys.path.insert(0, os.path.dirname(SENTINEL_DIR) if 'SENTINEL_DIR' not in dir() else os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from permissions import PermissionManager
     HAS_PERMISSIONS = True
 except ImportError:
@@ -56,11 +60,6 @@ try:
     HAS_TOAST = True
 except ImportError:
     HAS_TOAST = False
-
-# â"€â"€â"€ Constants â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-
-VERSION = "1.0.0"
-SENTINEL_DIR = os.path.dirname(os.path.abspath(__file__))
 MAP_HTML = os.path.join(SENTINEL_DIR, "sentinel_map.html")
 SETTINGS_FILE = os.path.join(SENTINEL_DIR, "sentinel_settings.json")
 MAP_SAVE_FILE = os.path.join(SENTINEL_DIR, "network_map.json")
@@ -81,7 +80,7 @@ logger = logging.getLogger("SentinelMapper")
 # Ensure logs dir
 os.makedirs(os.path.join(SENTINEL_DIR, "logs"), exist_ok=True)
 
-# â"€â"€â"€ Device Types â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+# - Device Types -
 
 DEVICE_TYPES = {
     "router":   {"icon": "\U0001f310", "label": "Routeur",   "label_en": "Router",   "color": "#ff6b35"},
@@ -99,9 +98,9 @@ DEVICE_TYPES = {
 }
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # MAC VENDOR DATABASE
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 MAC_VENDORS = {
     # Networking
@@ -163,7 +162,7 @@ MAC_VENDORS = {
     "AC:67:B2": "Espressif",
 }
 
-# Vendor â†' device type mapping
+# Vendor -> device type mapping
 VENDOR_DEVICE_MAP = {
     "printer": ["HP", "Epson", "Canon", "Brother", "Xerox", "Lexmark", "Ricoh"],
     "mobile":  ["Apple", "Samsung", "Xiaomi", "OnePlus", "HTC", "Google", "Huawei", "OPPO", "Vivo"],
@@ -176,9 +175,9 @@ VENDOR_DEVICE_MAP = {
 }
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # NETWORK SCANNER
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class NetworkScanner:
     """Scans the local network and discovers devices across multiple interfaces."""
@@ -391,7 +390,7 @@ class NetworkScanner:
                 self._scanning = False
                 return []
 
-            # â"€â"€ Scan each real interface â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+            # - Scan each real interface -
             known_ips = set()
             ifaces_to_scan = self.interfaces if self.interfaces else [
                 {"name": self.interface_name or "Default", "ip": self.local_ip,
@@ -744,9 +743,9 @@ class NetworkScanner:
         return services.get(port, f"Port {port}")
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # DEVICE CLASSIFIER
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class DeviceClassifier:
     """Classifies network devices by type based on multiple heuristics."""
@@ -774,7 +773,7 @@ class DeviceClassifier:
         hostname = device.get("hostname", "").lower()
         ports = device.get("open_ports", [])
 
-        # Gateway â†' router
+        # Gateway -> router
         if ip == self.gateway_ip:
             return "router"
 
@@ -834,21 +833,21 @@ class DeviceClassifier:
         if any(kw in hostname for kw in ["desktop", "laptop", "pc", "workstation"]):
             return "pc"
 
-        # Randomized MAC â†' almost certainly a phone or tablet
+        # Randomized MAC -> almost certainly a phone or tablet
         # (phones/tablets use MAC randomization for privacy, PCs/IoT generally don't)
         if self._is_randomized_mac(mac):
             return "mobile"
 
-        # No open ports + no hostname â†' likely a sleeping phone/tablet
+        # No open ports + no hostname -> likely a sleeping phone/tablet
         if not ports and not hostname:
             return "mobile"
 
         return "unknown"
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # SENTINEL FIREWALL  - Windows Firewall integration
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class SentinelFirewall:
     """Manages Windows Firewall rules for device blocking via netsh advfirewall.
@@ -858,12 +857,12 @@ class SentinelFirewall:
     FIREWALL_SAVE = os.path.join(SENTINEL_DIR, "firewall_state.json")
 
     def __init__(self):
-        self.blocked_devices = {}   # ip â†' {blocked_at, attempts, last_attempt, label, block_all, blocked_ports}
+        self.blocked_devices = {}   # ip -> {blocked_at, attempts, last_attempt, label, block_all, blocked_ports}
         self.monitoring = True
         self._admin = None          # cached admin check
         self._load_state()
 
-    # â"€â"€â"€ Admin check â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Admin check -
     def is_admin(self) -> bool:
         """Check if running with administrator privileges."""
         if self._admin is None:
@@ -874,7 +873,7 @@ class SentinelFirewall:
                 self._admin = False
         return self._admin
 
-    # â"€â"€â"€ Block / Unblock device â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Block / Unblock device -
     def block_device(self, ip: str, label: str = "") -> dict:
         """Block all traffic to/from an IP address."""
         if not self.is_admin():
@@ -950,7 +949,7 @@ class SentinelFirewall:
             logger.error(f"[Firewall] Unblock error: {e}")
             return {"success": False, "error": str(e)}
 
-    # â"€â"€â"€ Port-level blocking â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Port-level blocking -
     def block_port(self, ip: str, port: int, protocol: str = "tcp") -> dict:
         """Block a specific port for an IP address."""
         if not self.is_admin():
@@ -1018,7 +1017,7 @@ class SentinelFirewall:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    # â"€â"€â"€ Query â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Query -
     def is_blocked(self, ip: str) -> bool:
         """Check if a device is fully blocked."""
         entry = self.blocked_devices.get(ip)
@@ -1073,7 +1072,7 @@ class SentinelFirewall:
             if ip in visible_ips and self.blocked_devices[ip].get("block_all"):
                 self.record_attempt(ip)
 
-    # â"€â"€â"€ Sync rules from Windows â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Sync rules from Windows -
     def sync_rules(self) -> dict:
         """Verify that our tracked rules actually exist in Windows Firewall."""
         if not self.is_admin():
@@ -1098,7 +1097,7 @@ class SentinelFirewall:
         except Exception as e:
             return {"synced": False, "error": str(e)}
 
-    # â"€â"€â"€ Internal â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Internal -
     def _run_netsh(self, args: list, parse: bool = False) -> dict:
         """Execute a netsh command."""
         try:
@@ -1151,9 +1150,9 @@ class SentinelFirewall:
             logger.warning(f"[Firewall] Could not load state: {e}")
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # MAPPER API  - pywebview bridge
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class MapperAPI:
     """API exposed to the HTML dashboard via pywebview."""
@@ -1173,7 +1172,7 @@ class MapperAPI:
     def set_window(self, window):
         self._window = window
 
-    # â"€â"€â"€ Scan â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Scan -
 
     def scan_network(self) -> str:
         """Launch a network scan. Returns JSON with all discovered devices."""
@@ -1243,7 +1242,7 @@ class MapperAPI:
         result = self._scanner.scan_single_device(ip)
         return json.dumps(result, ensure_ascii=False)
 
-    # â"€â"€â"€ Map State â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Map State -
 
     def update_device_position(self, device_id: str, x: float, y: float) -> str:
         """Save a device's position after drag & drop."""
@@ -1274,7 +1273,7 @@ class MapperAPI:
         """Return the device type definitions (icons, colors)."""
         return json.dumps(DEVICE_TYPES, ensure_ascii=False)
 
-    # â"€â"€â"€ Firewall API â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Firewall API -
 
     def fw_block_device(self, ip: str, label: str = "") -> str:
         """Block a device via Windows Firewall."""
@@ -1322,7 +1321,7 @@ class MapperAPI:
         """Check if running as administrator."""
         return json.dumps({"admin": self._firewall.is_admin()})
 
-    # â"€â"€â"€ Permission API â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Permission API -
 
     def perm_get_status(self) -> str:
         """Get permission system status."""
@@ -1362,7 +1361,7 @@ class MapperAPI:
             return json.dumps({"error": "Permission module not available"})
         return json.dumps(self._perm.unlock(password))
 
-    # â"€â"€â"€ Internal â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Internal -
 
     def get_saved_devices(self) -> str:
         """Return previously saved devices (for display on startup before scan)."""
@@ -1419,9 +1418,9 @@ class MapperAPI:
             logger.warning(f"[Mapper] Could not load saved map: {e}")
 
 
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 # MAIN  - pywebview window
-# â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-â•-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def main():
     headless = "--headless" in sys.argv

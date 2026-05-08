@@ -28,7 +28,7 @@ import secrets
 import time
 from typing import Optional
 
-# â"€â"€â"€ paths â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+# - paths -
 SUITE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATE_FILE = os.path.join(SUITE_DIR, "permissions_state.json")
 
@@ -40,7 +40,7 @@ PROGRAMS = [
 
 PERM_TYPES = ["read", "write", "modify", "execute"]
 
-# â"€â"€â"€ helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+# - helpers -
 
 def _hash_password(password: str, salt: str = None) -> tuple:
     """Hash password with salt using SHA-256. Returns (hash, salt)."""
@@ -69,7 +69,7 @@ def _save_state(state: dict):
         json.dump(state, f, indent=2, ensure_ascii=False)
 
 
-# â"€â"€â"€ PermissionManager â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+# - PermissionManager -
 
 class PermissionManager:
     """
@@ -83,13 +83,13 @@ class PermissionManager:
     def _state(self) -> dict:
         return _load_state()
 
-    # â"€â"€ Status â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Status -
 
     def is_enabled(self) -> bool:
         """Check if permission system is active."""
         return self._state().get("enabled", False)
 
-    def is_locked(self) -> bool:
+    def is_locked(self, module: str = None) -> bool:
         """Check if permissions are locked (require auth for changes)."""
         s = self._state()
         return s.get("enabled", False) and s.get("locked", False)
@@ -105,7 +105,7 @@ class PermissionManager:
             "users": list(s.get("users", {}).keys())
         }
 
-    # â"€â"€ Enable / Disable â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Enable / Disable -
 
     def enable(self, master_user: str, master_password: str) -> dict:
         """
@@ -114,7 +114,7 @@ class PermissionManager:
         """
         s = self._state()
         if s.get("enabled"):
-            return {"error": "Permissions already enabled / Permissions déjÃ  activées"}
+            return {"error": "Permissions already enabled / Permissions déja activées"}
         if not master_user or not master_password:
             return {"error": "Username and password required / Nom d'utilisateur et mot de passe requis"}
         if len(master_password) < 4:
@@ -147,13 +147,13 @@ class PermissionManager:
         # Verify master password
         h, _ = _hash_password(master_password, s.get("master_salt", ""))
         if h != s.get("master_hash", ""):
-            return {"error": "Invalid master password / Mot de passe maÃ®tre invalide"}
+            return {"error": "Invalid master password / Mot de passe maitre invalide"}
         s["enabled"] = False
         s["locked"] = False
         _save_state(s)
         return {"ok": True, "message": "Permissions disabled / Permissions désactivées"}
 
-    # â"€â"€ Lock / Unlock â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Lock / Unlock -
 
     def lock(self, master_password: str) -> dict:
         """Lock permissions (require auth for all operations)."""
@@ -162,7 +162,7 @@ class PermissionManager:
             return {"error": "Permissions not enabled"}
         h, _ = _hash_password(master_password, s.get("master_salt", ""))
         if h != s.get("master_hash", ""):
-            return {"error": "Invalid master password / Mot de passe maÃ®tre invalide"}
+            return {"error": "Invalid master password / Mot de passe maitre invalide"}
         s["locked"] = True
         _save_state(s)
         return {"ok": True, "message": "Permissions locked / Permissions verrouillées"}
@@ -174,12 +174,12 @@ class PermissionManager:
             return {"error": "Permissions not enabled"}
         h, _ = _hash_password(master_password, s.get("master_salt", ""))
         if h != s.get("master_hash", ""):
-            return {"error": "Invalid master password / Mot de passe maÃ®tre invalide"}
+            return {"error": "Invalid master password / Mot de passe maitre invalide"}
         s["locked"] = False
         _save_state(s)
         return {"ok": True, "message": "Permissions unlocked / Permissions déverrouillées"}
 
-    # â"€â"€ Authentication â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Authentication -
 
     def authenticate(self, username: str, password: str) -> dict:
         """
@@ -202,15 +202,15 @@ class PermissionManager:
             "permissions": user.get("permissions", {})
         }
 
-    # â"€â"€ Permission Check (main gate) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Permission Check (main gate) -
 
     def check(self, program: str, perm_type: str, username: str = None) -> bool:
         """
         Check if an operation is allowed.
-        - If permissions not enabled â†' always True
-        - If enabled but not locked â†' always True
-        - If locked and no username â†' False
-        - If locked and username provided â†' check user's permissions
+        - If permissions not enabled -> always True
+        - If enabled but not locked -> always True
+        - If locked and no username -> False
+        - If locked and username provided -> check user's permissions
         """
         s = self._state()
         if not s.get("enabled", False):
@@ -226,7 +226,7 @@ class PermissionManager:
         prog_perms = user_perms.get(program, [])
         return perm_type in prog_perms
 
-    # â"€â"€ User Management â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - User Management -
 
     def create_user(self, admin_password: str, username: str, password: str,
                     permissions: dict = None, role: str = "user") -> dict:
@@ -243,7 +243,7 @@ class PermissionManager:
         if not username or not password:
             return {"error": "Username and password required"}
         if username in s.get("users", {}):
-            return {"error": f"User '{username}' already exists / L'utilisateur existe déjÃ "}
+            return {"error": f"User '{username}' already exists / L'utilisateur existe déja"}
 
         uh, usalt = _hash_password(password)
         if permissions is None:
@@ -268,7 +268,7 @@ class PermissionManager:
         if h != s.get("master_hash", ""):
             return {"error": "Invalid admin password"}
         if username == s.get("master_admin"):
-            return {"error": "Cannot delete master admin / Impossible de supprimer l'admin maÃ®tre"}
+            return {"error": "Cannot delete master admin / Impossible de supprimer l'admin maitre"}
         if username not in s.get("users", {}):
             return {"error": f"User '{username}' not found"}
         del s["users"][username]

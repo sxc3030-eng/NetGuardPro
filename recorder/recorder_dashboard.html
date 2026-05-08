@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RecordAgent - Forensic Recorder Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f13;--bg2:#16161d;--bg3:#1c1c28;--bg4:#22222f;
+  --text:#e8e8f0;--text2:#9090a8;--text3:#5a5a72;
+  --blue:#4d9fff;--red:#ff4d6a;--green:#3dffb4;--amber:#ffb347;
+  --border:#2a2a3a;--radius:10px;
+}
+html,body{height:100%;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+a{color:var(--blue);text-decoration:none}
+
+/* Layout */
+.header{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;background:var(--bg2);border-bottom:1px solid var(--border)}
+.header h1{font-size:18px;font-weight:600;letter-spacing:.5px}
+.header h1 span{color:var(--blue);font-weight:700}
+.conn-badge{font-size:12px;padding:4px 12px;border-radius:20px;font-weight:500}
+.conn-badge.ok{background:rgba(61,255,180,.12);color:var(--green)}
+.conn-badge.err{background:rgba(255,77,106,.12);color:var(--red)}
+
+.main{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px 28px;max-width:1400px;margin:0 auto}
+@media(max-width:900px){.main{grid-template-columns:1fr}}
+
+/* Cards */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.card.full{grid-column:1/-1}
+.card-title{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text2);display:flex;align-items:center;gap:8px}
+.card-title .icon{font-size:16px;opacity:.7}
+
+/* Status */
+.status-row{display:flex;flex-wrap:wrap;gap:12px}
+.stat{flex:1;min-width:120px;background:var(--bg4);border-radius:8px;padding:14px 16px}
+.stat .label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.stat .value{font-size:22px;font-weight:600}
+.stat .value.green{color:var(--green)}
+.stat .value.red{color:var(--red)}
+.stat .value.blue{color:var(--blue)}
+.stat .value.amber{color:var(--amber)}
+
+/* Buttons */
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{padding:8px 20px;border:none;border-radius:6px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-green{background:var(--green);color:#111}
+.btn-red{background:var(--red);color:#fff}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-amber{background:var(--amber);color:#111}
+
+/* Storage bar */
+.storage-bar-wrap{background:var(--bg);border-radius:6px;height:18px;overflow:hidden;position:relative}
+.storage-bar-fill{height:100%;border-radius:6px;transition:width .5s ease;background:linear-gradient(90deg,var(--blue),var(--green))}
+.storage-bar-fill.warn{background:linear-gradient(90deg,var(--amber),var(--red))}
+.storage-label{font-size:12px;color:var(--text2);margin-top:4px}
+
+/* Timeline / Event list */
+.event-list{max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.event-list::-webkit-scrollbar{width:5px}
+.event-list::-webkit-scrollbar-track{background:transparent}
+.event-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.evt{display:flex;align-items:flex-start;gap:10px;padding:7px 10px;border-radius:6px;font-size:12px;background:var(--bg);transition:background .15s}
+.evt:hover{background:var(--bg4)}
+.evt .ts{color:var(--text3);white-space:nowrap;min-width:68px;font-variant-numeric:tabular-nums}
+.evt .badge{padding:1px 7px;border-radius:4px;font-size:10px;font-weight:600;text-transform:uppercase;white-space:nowrap}
+.badge.info{background:rgba(77,159,255,.15);color:var(--blue)}
+.badge.warning{background:rgba(255,179,71,.15);color:var(--amber)}
+.badge.critical{background:rgba(255,77,106,.15);color:var(--red)}
+.evt .src{color:var(--text2);min-width:70px}
+.evt .msg{color:var(--text);flex:1;word-break:break-all}
+
+/* Monitor cards */
+.monitor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.monitor-item{background:var(--bg);border-radius:8px;padding:12px 14px}
+.monitor-item .m-label{font-size:11px;color:var(--text3);margin-bottom:2px}
+.monitor-item .m-val{font-size:18px;font-weight:600;color:var(--text)}
+
+/* Filters */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filter-row select{background:var(--bg4);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-family:inherit;font-size:12px;cursor:pointer}
+.filter-row select:focus{outline:1px solid var(--blue)}
+
+.empty-msg{color:var(--text3);font-size:13px;padding:20px;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>RecordAgent</span> &mdash; Forensic Recorder v1.0.0</h1>
+  <span id="connBadge" class="conn-badge err">&#x2022; Disconnected</span>
+</div>
+
+<div class="main">
+  <!-- Recording Status -->
+  <div class="card">
+    <div class="card-title"><span class="icon">&#9673;</span> Recording Status</div>
+    <div class="status-row">
+      <div class="stat">
+        <div class="label">Status</div>
+        <div class="value" id="recStatus">--</div>
+      </div>
+      <div class="stat">
+        <div class="label">Uptime</div>
+        <div class="value blue" id="recUptime">--</div>
+      </div>
+      <div class="stat">
+        <div class="label">Events</div>
+        <div class="value amber" id="recEvents">0</div>
+      </div>
+      <div class="stat">
+        <div class="label">Mode</div>
+        <div class="value" id="recMode">--</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-green" id="btnStartIncident">&#9654; Start Incident</button>
+      <button class="btn btn-red" id="btnStopIncident">&#9632; Stop Incident</button>
+      <button class="btn btn-blue" id="btnGenReport">&#9998; Generate Report</button>
+    </div>
+  </div>
+
+  <!-- Storage -->
+  <div class="card">
+    <div class="card-title"><span class="icon">&#9744;</span> Storage &amp; Monitors</div>
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+        <span>Storage Used</span>
+        <span id="storageText">0 / 500 MB</span>
+      </div>
+      <div class="storage-bar-wrap">
+        <div class="storage-bar-fill" id="storageBar" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="monitor-grid">
+      <div class="monitor-item">
+        <div class="m-label">Sessions</div>
+        <div class="m-val" id="monSessions">0</div>
+      </div>
+      <div class="monitor-item">
+        <div class="m-label">Processes</div>
+        <div class="m-val" id="monProcesses">0</div>
+      </div>
+      <div class="monitor-item">
+        <div class="m-label">New Proc/min</div>
+        <div class="m-val" id="monNewProc">0</div>
+      </div>
+      <div class="monitor-item">
+        <div class="m-label">File Changes</div>
+        <div class="m-val" id="monFiles">0</div>
+      </div>
+      <div class="monitor-item">
+        <div class="m-label">Net Sent</div>
+        <div class="m-val" id="monNetSent">0</div>
+      </div>
+      <div class="monitor-item">
+        <div class="m-label">Net Recv</div>
+        <div class="m-val" id="monNetRecv">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Timeline -->
+  <div class="card full">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div class="card-title"><span class="icon">&#9776;</span> Event Timeline</div>
+      <div class="filter-row">
+        <select id="filterSeverity">
+          <option value="">All Severities</option>
+          <option value="info">Info</option>
+          <option value="warning">Warning</option>
+          <option value="critical">Critical</option>
+        </select>
+        <select id="filterSource">
+          <option value="">All Sources</option>
+          <option value="session">Session</option>
+          <option value="process">Process</option>
+          <option value="file">File</option>
+          <option value="network">Network</option>
+        </select>
+      </div>
+    </div>
+    <div class="event-list" id="eventList">
+      <div class="empty-msg">Waiting for events...</div>
+    </div>
+  </div>
+
+  <!-- Incident Info -->
+  <div class="card">
+    <div class="card-title"><span class="icon">&#9888;</span> Current Incident</div>
+    <div id="incidentInfo" class="empty-msg">No active incident</div>
+  </div>
+
+  <!-- Reports -->
+  <div class="card">
+    <div class="card-title"><span class="icon">&#9997;</span> Reports</div>
+    <div id="reportList" class="empty-msg">No reports generated</div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var WS_URL = "ws://localhost:8860";
+var ws = null;
+var reconnectTimer = null;
+var state = null;
+
+// DOM refs
+var connBadge = document.getElementById("connBadge");
+var recStatus = document.getElementById("recStatus");
+var recUptime = document.getElementById("recUptime");
+var recEvents = document.getElementById("recEvents");
+var recMode = document.getElementById("recMode");
+var storageText = document.getElementById("storageText");
+var storageBar = document.getElementById("storageBar");
+var monSessions = document.getElementById("monSessions");
+var monProcesses = document.getElementById("monProcesses");
+var monNewProc = document.getElementById("monNewProc");
+var monFiles = document.getElementById("monFiles");
+var monNetSent = document.getElementById("monNetSent");
+var monNetRecv = document.getElementById("monNetRecv");
+var eventList = document.getElementById("eventList");
+var incidentInfo = document.getElementById("incidentInfo");
+var reportList = document.getElementById("reportList");
+var filterSeverity = document.getElementById("filterSeverity");
+var filterSource = document.getElementById("filterSource");
+
+function connect() {
+    if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
+    try {
+        ws = new WebSocket(WS_URL);
+    } catch(e) {
+        scheduleReconnect();
+        return;
+    }
+
+    ws.onopen = function() {
+        connBadge.textContent = "\u2022 Connected";
+        connBadge.className = "conn-badge ok";
+        sendCmd({cmd: "get_state"});
+    };
+
+    ws.onclose = function() {
+        connBadge.textContent = "\u2022 Disconnected";
+        connBadge.className = "conn-badge err";
+        scheduleReconnect();
+    };
+
+    ws.onerror = function() {
+        try { ws.close(); } catch(e) {}
+    };
+
+    ws.onmessage = function(e) {
+        var msg;
+        try { msg = JSON.parse(e.data); } catch(err) { return; }
+        handleMessage(msg);
+    };
+}
+
+function scheduleReconnect() {
+    if (reconnectTimer) return;
+    reconnectTimer = setTimeout(function() {
+        reconnectTimer = null;
+        connect();
+    }, 3000);
+}
+
+function sendCmd(obj) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(obj));
+    }
+}
+
+function handleMessage(msg) {
+    if (msg.type === "state") {
+        state = msg;
+        renderState();
+    } else if (msg.type === "incident_started") {
+        renderIncident(msg.incident);
+    } else if (msg.type === "incident_stopped") {
+        incidentInfo.innerHTML = '<div class="empty-msg">Incident closed</div>';
+        sendCmd({cmd: "get_state"});
+    } else if (msg.type === "report_generated") {
+        sendCmd({cmd: "get_state"});
+    } else if (msg.type === "timeline") {
+        renderTimeline(msg.events);
+    } else if (msg.type === "error") {
+        showToast(msg.message);
+    }
+}
+
+function formatBytes(b) {
+    if (b == null) return "0 B";
+    if (b < 1024) return b + " B";
+    if (b < 1048576) return (b / 1024).toFixed(1) + " KB";
+    if (b < 1073741824) return (b / 1048576).toFixed(1) + " MB";
+    return (b / 1073741824).toFixed(2) + " GB";
+}
+
+function formatUptime(seconds) {
+    if (!seconds || seconds < 0) return "--";
+    var h = Math.floor(seconds / 3600);
+    var m = Math.floor((seconds % 3600) / 60);
+    var s = Math.floor(seconds % 60);
+    if (h > 0) return h + "h " + m + "m";
+    if (m > 0) return m + "m " + s + "s";
+    return s + "s";
+}
+
+function formatTime(ts) {
+    if (!ts) return "--";
+    var d = new Date(ts * 1000);
+    var hh = String(d.getHours()).padStart(2, "0");
+    var mm = String(d.getMinutes()).padStart(2, "0");
+    var ss = String(d.getSeconds()).padStart(2, "0");
+    return hh + ":" + mm + ":" + ss;
+}
+
+function escapeHtml(str) {
+    if (!str) return "";
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function renderState() {
+    if (!state) return;
+
+    // Recording status
+    var rec = state.recording || {};
+    var active = rec.active;
+    recStatus.textContent = active ? "RECORDING" : "STOPPED";
+    recStatus.className = "value " + (active ? "green" : "red");
+    recUptime.textContent = formatUptime(state.stats ? state.stats.uptime : 0);
+    recEvents.textContent = rec.events_recorded || 0;
+    recMode.textContent = (state.mode || "normal").toUpperCase();
+    recMode.className = "value " + (state.mode === "incident" ? "red" : "blue");
+
+    // Storage
+    var usedMb = rec.storage_used_mb || 0;
+    var maxMb = rec.storage_max_mb || 500;
+    var pct = maxMb > 0 ? Math.min(100, (usedMb / maxMb) * 100) : 0;
+    storageText.textContent = usedMb.toFixed(1) + " / " + maxMb + " MB";
+    storageBar.style.width = pct.toFixed(1) + "%";
+    storageBar.className = "storage-bar-fill" + (pct > 80 ? " warn" : "");
+
+    // Monitors
+    var mon = state.monitors || {};
+    var sessions = mon.sessions || {};
+    var processes = mon.processes || {};
+    var files = mon.files || {};
+    var net = state.network || {};
+
+    monSessions.textContent = sessions.total_logged || 0;
+    monProcesses.textContent = processes.current_count || 0;
+    monNewProc.textContent = processes.new_last_min || 0;
+    monFiles.textContent = files.changes_detected || 0;
+    monNetSent.textContent = formatBytes(net.bytes_sent);
+    monNetRecv.textContent = formatBytes(net.bytes_recv);
+
+    // Incident
+    if (state.current_incident) {
+        renderIncident(state.current_incident);
+    } else {
+        incidentInfo.innerHTML = '<div class="empty-msg">No active incident</div>';
+    }
+
+    // Reports
+    renderReports(state.reports || []);
+
+    // Timeline
+    renderTimeline(state.timeline || []);
+}
+
+function renderIncident(inc) {
+    if (!inc) {
+        incidentInfo.innerHTML = '<div class="empty-msg">No active incident</div>';
+        return;
+    }
+    var html = '<div style="display:flex;flex-direction:column;gap:6px">';
+    html += '<div style="font-size:15px;font-weight:600;color:var(--red)">' + escapeHtml(inc.id || "Incident") + '</div>';
+    if (inc.started) html += '<div style="font-size:12px;color:var(--text2)">Started: ' + formatTime(inc.started) + '</div>';
+    if (inc.events_count != null) html += '<div style="font-size:12px;color:var(--text2)">Events: ' + inc.events_count + '</div>';
+    html += '</div>';
+    incidentInfo.innerHTML = html;
+}
+
+function renderReports(reports) {
+    if (!reports || reports.length === 0) {
+        reportList.innerHTML = '<div class="empty-msg">No reports generated</div>';
+        return;
+    }
+    var html = '<div style="display:flex;flex-direction:column;gap:4px">';
+    for (var i = reports.length - 1; i >= 0; i--) {
+        var r = reports[i];
+        html += '<div style="background:var(--bg);border-radius:6px;padding:8px 10px;font-size:12px;display:flex;justify-content:space-between">';
+        html += '<span style="font-weight:500">' + escapeHtml(r.id) + '</span>';
+        html += '<span style="color:var(--text3)">' + (r.events_count || 0) + ' events &middot; ' + (r.size_kb || 0) + ' KB</span>';
+        html += '</div>';
+    }
+    html += '</div>';
+    reportList.innerHTML = html;
+}
+
+function renderTimeline(events) {
+    if (!events || events.length === 0) {
+        eventList.innerHTML = '<div class="empty-msg">No events recorded yet</div>';
+        return;
+    }
+
+    // Apply filters
+    var sevFilter = filterSeverity.value;
+    var srcFilter = filterSource.value;
+    var filtered = events;
+    if (sevFilter) {
+        filtered = filtered.filter(function(e) { return e.severity === sevFilter; });
+    }
+    if (srcFilter) {
+        filtered = filtered.filter(function(e) { return e.source === srcFilter; });
+    }
+
+    if (filtered.length === 0) {
+        eventList.innerHTML = '<div class="empty-msg">No events match filters</div>';
+        return;
+    }
+
+    // Show newest first, limit to 100
+    var shown = filtered.slice(-100).reverse();
+    var html = "";
+    for (var i = 0; i < shown.length; i++) {
+        var ev = shown[i];
+        var sev = ev.severity || "info";
+        var src = ev.source || "";
+        var evType = ev.type || "";
+        var data = ev.data || {};
+
+        var desc = evType;
+        if (data.path) desc += " - " + data.path;
+        else if (data.name) desc += " - " + data.name;
+        else if (data.dst_ip) desc += " - " + data.dst_ip + ":" + (data.dst_port || "");
+        else if (data.pid) desc += " [PID " + data.pid + "]";
+
+        html += '<div class="evt">';
+        html += '<span class="ts">' + formatTime(ev.ts) + '</span>';
+        html += '<span class="badge ' + sev + '">' + sev + '</span>';
+        html += '<span class="src">' + escapeHtml(src) + '</span>';
+        html += '<span class="msg">' + escapeHtml(desc) + '</span>';
+        html += '</div>';
+    }
+    eventList.innerHTML = html;
+}
+
+function showToast(msg) {
+    var el = document.createElement("div");
+    el.style.cssText = "position:fixed;bottom:20px;right:20px;background:var(--bg4);color:var(--red);padding:12px 20px;border-radius:8px;font-size:13px;border:1px solid var(--red);z-index:9999;opacity:0;transition:opacity .3s";
+    el.textContent = msg;
+    document.body.appendChild(el);
+    requestAnimationFrame(function() { el.style.opacity = "1"; });
+    setTimeout(function() {
+        el.style.opacity = "0";
+        setTimeout(function() { el.remove(); }, 400);
+    }, 4000);
+}
+
+// Button handlers
+document.getElementById("btnStartIncident").addEventListener("click", function() {
+    sendCmd({cmd: "start_incident"});
+});
+document.getElementById("btnStopIncident").addEventListener("click", function() {
+    sendCmd({cmd: "stop_incident"});
+});
+document.getElementById("btnGenReport").addEventListener("click", function() {
+    sendCmd({cmd: "generate_report", minutes: 30});
+});
+
+// Filter handlers
+filterSeverity.addEventListener("change", function() {
+    if (state && state.timeline) renderTimeline(state.timeline);
+});
+filterSource.addEventListener("change", function() {
+    if (state && state.timeline) renderTimeline(state.timeline);
+});
+
+// Init
+connect();
+
+})();
+</script>
+</body>
+</html>

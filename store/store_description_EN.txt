@@ -1,0 +1,58 @@
+══════════════════════════════════════════════════
+MICROSOFT STORE LISTING — ENGLISH
+══════════════════════════════════════════════════
+
+DISPLAY NAME: NetGuard Pro
+
+SHORT TITLE (max 50 char.):
+NetGuard Pro — All-in-One Cybersecurity
+
+SHORT DESCRIPTION (max 150 char.):
+Complete cybersecurity suite: IDS/IPS, smart firewall, real-time threat map, WireGuard VPN, anti-malware, and 14 security modules.
+
+LONG DESCRIPTION:
+NetGuard Pro is a professional all-in-one cybersecurity suite for Windows. Protect your network with a real-time intrusion detection system (IDS/IPS), smart firewall, and live global threat map.
+
+Key Features:
+
+• Real-time IDS/IPS — Analyzes every network packet with 10-level threat classification, from normal traffic to critical attacks.
+
+• Smart Firewall — Automatic blocking of malicious IPs, protection against port scans, DDoS, and brute force attacks.
+
+• Global Threat Map — Visualize the geographic origin of every connection in real-time with city-level geolocation accuracy.
+
+• Built-in WireGuard VPN — Create and manage your VPN tunnels directly from the dashboard.
+
+• Professional Dashboard — Wireshark-like interface with advanced filters, hex view, protocol statistics, and I/O graphs.
+
+• 14 Security Modules:
+  - SentinelOS: central orchestrator
+  - CleanGuard: anti-malware & system cleanup
+  - MailShield: email security (SPF/DKIM/DMARC)
+  - VPN Guard: WireGuard VPN management
+  - HoneyPot: decoy-based intrusion detection
+  - FIM: file integrity monitoring
+  - Session Recorder: session recording
+  - StrikeBack: active threat response
+  - Sandbox: behavioral analysis
+  - SIEM: centralized log integration
+  - RedTeam: penetration testing tools
+  - Mobile Gateway: mobile protection
+  - Network Mapper: network cartography
+
+• Privacy-first — No telemetry, no tracking. All data stays on your computer.
+
+• Bilingual interface — French and English.
+
+System Requirements:
+- Windows 10/11 (64-bit)
+- 4 GB RAM minimum
+- 200 MB disk space
+- Network connection
+
+KEYWORDS:
+cybersecurity, firewall, IDS, IPS, antivirus, anti-malware, VPN, WireGuard, network, security, protection, threats, intrusion, monitoring
+
+CATEGORY: Security
+
+SUBCATEGORY: PC protection

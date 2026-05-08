@@ -19,7 +19,7 @@ except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "pywebview", "--quiet"])
     import webview
 
-# â"€â"€ Paths â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+# - Paths -
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 LAUNCHERS_DIR = os.path.join(ROOT_DIR, "launchers")
@@ -27,7 +27,7 @@ THEMES_DIR = os.path.join(BASE_DIR, "themes")
 SETTINGS_DIR = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), "NetGuardPro")
 SETTINGS_FILE = os.path.join(SETTINGS_DIR, "desktop_settings.json")
 
-# â"€â"€ Program Registry â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+# - Program Registry -
 PROGRAMS = [
     {"id": "netguard",    "name": "NetGuard Pro",     "port": 8765, "icon": "shield-halved",   "color": "#00e5ff",
      "desc": "IDS / Firewall",           "launcher": "LANCER_NETGUARD.bat",         "category": "defense"},
@@ -70,14 +70,14 @@ def port_is_open(port: int) -> bool:
         return False
 
 
-# â"€â"€ Desktop API (pywebview bridge) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+# - Desktop API (pywebview bridge) -
 class DesktopAPI:
     """Exposed to JavaScript via window.pywebview.api"""
 
     def __init__(self):
         self._procs: dict[str, subprocess.Popen] = {}
 
-    # â"€â"€ Launch / Stop â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Launch / Stop -
     def launch_program(self, prog_id: str) -> dict:
         prog = next((p for p in PROGRAMS if p["id"] == prog_id), None)
         if not prog:
@@ -118,7 +118,7 @@ class DesktopAPI:
                 stopped.append(prog["name"])
         return {"ok": True, "stopped": stopped}
 
-    # â"€â"€ Status â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Status -
     def get_status(self) -> list:
         result = []
         for p in PROGRAMS:
@@ -161,7 +161,7 @@ class DesktopAPI:
                     "disk_total_gb": 0, "disk_used_gb": 0,
                     "net_sent_mb": 0, "net_recv_mb": 0}
 
-    # â"€â"€ Settings / Themes â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # - Settings / Themes -
     def save_settings(self, settings_json: str) -> dict:
         try:
             os.makedirs(SETTINGS_DIR, exist_ok=True)
@@ -214,7 +214,7 @@ class DesktopAPI:
         return notes[-8:]
 
 
-# â"€â"€ Status Poller (pushes updates to JS) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+# - Status Poller (pushes updates to JS) -
 class StatusPoller(threading.Thread):
     def __init__(self, api: DesktopAPI):
         super().__init__(daemon=True)
@@ -236,7 +236,7 @@ class StatusPoller(threading.Thread):
             time.sleep(3)
 
 
-# â"€â"€ Main â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+# - Main -
 def main():
     api = DesktopAPI()
     poller = StatusPoller(api)

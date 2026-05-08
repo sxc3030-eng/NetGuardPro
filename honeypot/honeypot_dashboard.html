@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetGuard Pro - HoneyPot Agent</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f0f13;--bg2:#16161d;--bg3:#1c1c28;--bg4:#22222f;
+  --text:#e8e8f0;--text2:#9090a8;--text3:#5a5a72;
+  --blue:#4d9fff;--red:#ff4d6a;--green:#3dffb4;--amber:#ffb347;
+  --border:#2a2a3a;
+}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{color:var(--blue);text-decoration:none}
+
+/* Header */
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;font-weight:600;letter-spacing:.5px}
+.header h1 span{color:var(--amber);font-weight:700}
+.conn-status{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)}
+.conn-dot{width:9px;height:9px;border-radius:50%;background:var(--red);transition:background .3s}
+.conn-dot.ok{background:var(--green)}
+
+/* Layout */
+.container{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px 24px;max-width:1400px;margin:0 auto}
+.full-width{grid-column:1/-1}
+
+/* Cards */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.card-head{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-head h2{font-size:14px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px}
+.card-body{padding:16px 18px}
+
+/* Stats row */
+.stats-row{display:flex;gap:14px;flex-wrap:wrap}
+.stat-box{background:var(--bg4);border-radius:8px;padding:14px 20px;flex:1;min-width:140px;text-align:center}
+.stat-box .val{font-size:28px;font-weight:700;line-height:1.1}
+.stat-box .lbl{font-size:11px;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:.6px}
+.val.blue{color:var(--blue)}.val.red{color:var(--red)}.val.green{color:var(--green)}.val.amber{color:var(--amber)}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--text3);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;border-bottom:1px solid var(--border)}
+td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(77,159,255,.03)}
+
+/* Severity badges */
+.sev{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase}
+.sev-critical{background:rgba(255,77,106,.15);color:var(--red)}
+.sev-warning{background:rgba(255,179,71,.15);color:var(--amber)}
+.sev-info{background:rgba(77,159,255,.15);color:var(--blue)}
+
+/* Trap status */
+.trap-status{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.trap-safe{background:rgba(61,255,180,.12);color:var(--green)}
+.trap-accessed{background:rgba(255,179,71,.15);color:var(--amber)}
+.trap-modified{background:rgba(255,77,106,.15);color:var(--red)}
+
+/* Buttons */
+.btn{padding:6px 14px;border:none;border-radius:6px;font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-red{background:var(--red);color:#fff}
+.btn-green{background:var(--green);color:#111}
+.btn-sm{padding:4px 10px;font-size:11px}
+
+/* Log area */
+.log-area{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 14px;max-height:320px;overflow-y:auto;font-family:'Courier New',monospace;font-size:12px;line-height:1.7;color:var(--text2)}
+.log-line{white-space:pre-wrap;word-break:break-all}
+.log-line .ts{color:var(--text3)}
+.log-line .src{color:var(--blue)}
+.log-line.critical{color:var(--red)}
+.log-line.warning{color:var(--amber)}
+
+/* Service chips */
+.svc-chip{display:inline-flex;align-items:center;gap:6px;background:var(--bg4);border-radius:6px;padding:8px 14px;font-size:13px}
+.svc-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.svc-port{color:var(--text3);font-size:11px}
+
+/* Permission controls */
+.perm-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.perm-row:last-child{border-bottom:none}
+.perm-label{font-size:13px}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* Empty state */
+.empty{color:var(--text3);font-size:13px;text-align:center;padding:30px 10px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>&#x1f6e1; <span>NetGuard Pro</span> &mdash; HoneyPot Agent</h1>
+  <div class="conn-status">
+    <div class="conn-dot" id="connDot"></div>
+    <span id="connLabel">Disconnected</span>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="container">
+  <div class="card full-width">
+    <div class="card-head"><h2>Overview</h2><span id="versionLabel" style="font-size:12px;color:var(--text3)"></span></div>
+    <div class="card-body">
+      <div class="stats-row">
+        <div class="stat-box"><div class="val blue" id="statTraps">--</div><div class="lbl">Active Traps</div></div>
+        <div class="stat-box"><div class="val red" id="statTriggered">--</div><div class="lbl">Traps Triggered</div></div>
+        <div class="stat-box"><div class="val amber" id="statConnections">--</div><div class="lbl">Service Probes</div></div>
+        <div class="stat-box"><div class="val green" id="statUniqueIPs">--</div><div class="lbl">Unique IPs</div></div>
+        <div class="stat-box"><div class="val blue" id="statAlerts">--</div><div class="lbl">Total Alerts</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trap Files -->
+  <div class="card">
+    <div class="card-head"><h2>&#x1f4c4; Trap Files</h2><button class="btn btn-blue btn-sm" onclick="requestState()">Refresh</button></div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th>File</th><th>Status</th><th>Accesses</th><th>Last Access</th></tr></thead>
+        <tbody id="trapTable"><tr><td colspan="4" class="empty">Waiting for data...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Fake Services -->
+  <div class="card">
+    <div class="card-head"><h2>&#x1f50c; Fake Services</h2></div>
+    <div class="card-body">
+      <div id="serviceList" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+        <div class="empty" style="width:100%">Waiting for data...</div>
+      </div>
+      <h3 style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">Recent Connections</h3>
+      <div style="max-height:220px;overflow-y:auto">
+        <table>
+          <thead><tr><th>Time</th><th>IP</th><th>Service</th><th>Port</th><th>Payload</th></tr></thead>
+          <tbody id="connTable"><tr><td colspan="5" class="empty">No connections yet</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div class="card">
+    <div class="card-head">
+      <h2>&#x26a0; Recent Alerts</h2>
+      <button class="btn btn-blue btn-sm" onclick="requestAlerts()">Load More</button>
+    </div>
+    <div class="card-body">
+      <div style="max-height:300px;overflow-y:auto">
+        <table>
+          <thead><tr><th>Time</th><th>Severity</th><th>Type</th><th>Message</th></tr></thead>
+          <tbody id="alertTable"><tr><td colspan="4" class="empty">No alerts</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Permission Controls -->
+  <div class="card">
+    <div class="card-head">
+      <h2>&#x2699; Permission Controls</h2>
+      <button class="btn btn-blue btn-sm" onclick="requestPermStatus()">Refresh</button>
+    </div>
+    <div class="card-body" id="permBody">
+      <div class="empty">Click Refresh to load permissions</div>
+    </div>
+  </div>
+
+  <!-- Interaction Log / Timeline -->
+  <div class="card full-width">
+    <div class="card-head">
+      <h2>&#x1f4dc; Attacker Interaction Log</h2>
+      <button class="btn btn-red btn-sm" onclick="clearLog()">Clear</button>
+    </div>
+    <div class="card-body">
+      <div class="log-area" id="logArea">
+        <div class="log-line"><span class="ts">[--:--:--]</span> Waiting for connection...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var WS_URL = 'ws://localhost:8830';
+  var ws = null;
+  var reconnectTimer = null;
+  var logLines = [];
+  var MAX_LOG = 200;
+
+  // DOM refs
+  var connDot = document.getElementById('connDot');
+  var connLabel = document.getElementById('connLabel');
+  var versionLabel = document.getElementById('versionLabel');
+  var statTraps = document.getElementById('statTraps');
+  var statTriggered = document.getElementById('statTriggered');
+  var statConnections = document.getElementById('statConnections');
+  var statUniqueIPs = document.getElementById('statUniqueIPs');
+  var statAlerts = document.getElementById('statAlerts');
+  var trapTable = document.getElementById('trapTable');
+  var connTable = document.getElementById('connTable');
+  var alertTable = document.getElementById('alertTable');
+  var serviceList = document.getElementById('serviceList');
+  var logArea = document.getElementById('logArea');
+  var permBody = document.getElementById('permBody');
+
+  function fmtTime(ts) {
+    if (!ts || ts === 0) return '--';
+    var d = new Date(ts * 1000);
+    return d.toLocaleTimeString();
+  }
+
+  function fmtDateTime(ts) {
+    if (!ts || ts === 0) return '--';
+    var d = new Date(ts * 1000);
+    return d.toLocaleString();
+  }
+
+  function escHtml(s) {
+    if (!s) return '';
+    var d = document.createElement('div');
+    d.appendChild(document.createTextNode(s));
+    return d.innerHTML;
+  }
+
+  function sevClass(sev) {
+    if (sev === 'critical') return 'sev-critical';
+    if (sev === 'warning') return 'sev-warning';
+    return 'sev-info';
+  }
+
+  function trapStatusHtml(trap) {
+    if (trap.modified) return '<span class="trap-status trap-modified">MODIFIED</span>';
+    if (trap.accessed) return '<span class="trap-status trap-accessed">ACCESSED</span>';
+    return '<span class="trap-status trap-safe">SAFE</span>';
+  }
+
+  // ---- Render functions ----
+
+  function renderState(s) {
+    versionLabel.textContent = 'v' + (s.version || '?');
+
+    // Stats
+    var traps = s.traps || [];
+    statTraps.textContent = traps.length;
+    statTriggered.textContent = s.traps_triggered || 0;
+    var ss = s.service_stats || {};
+    statConnections.textContent = ss.total_connections || 0;
+    statUniqueIPs.textContent = ss.unique_ips || 0;
+    statAlerts.textContent = s.alerts_count || 0;
+
+    // Trap table
+    if (traps.length === 0) {
+      trapTable.innerHTML = '<tr><td colspan="4" class="empty">No traps deployed</td></tr>';
+    } else {
+      var html = '';
+      for (var i = 0; i < traps.length; i++) {
+        var t = traps[i];
+        html += '<tr><td>' + escHtml(t.name) + '</td><td>' + trapStatusHtml(t) + '</td><td>' + (t.access_count || 0) + '</td><td>' + fmtDateTime(t.last_access) + '</td></tr>';
+      }
+      trapTable.innerHTML = html;
+    }
+
+    // Services
+    var services = ss.services || {};
+    var svcKeys = Object.keys(services);
+    if (svcKeys.length === 0) {
+      serviceList.innerHTML = '<div class="empty" style="width:100%">No fake services</div>';
+    } else {
+      var shtml = '';
+      for (var j = 0; j < svcKeys.length; j++) {
+        var sn = svcKeys[j];
+        var sp = services[sn];
+        shtml += '<div class="svc-chip"><span class="svc-dot"></span>' + escHtml(sn) + ' <span class="svc-port">:' + sp + '</span></div>';
+      }
+      serviceList.innerHTML = shtml;
+    }
+
+    // Connections table
+    var conns = s.recent_connections || [];
+    if (conns.length === 0) {
+      connTable.innerHTML = '<tr><td colspan="5" class="empty">No connections yet</td></tr>';
+    } else {
+      var chtml = '';
+      for (var k = conns.length - 1; k >= 0; k--) {
+        var c = conns[k];
+        var payload = escHtml((c.payload || '').substring(0, 80));
+        chtml += '<tr><td>' + fmtTime(c.ts) + '</td><td>' + escHtml(c.ip) + '</td><td>' + escHtml(c.service) + '</td><td>' + c.port + '</td><td style="color:var(--text3);font-size:12px">' + (payload || '--') + '</td></tr>';
+      }
+      connTable.innerHTML = chtml;
+    }
+
+    // Alerts
+    renderAlerts(s.recent_alerts || []);
+
+    // Timeline -> log
+    var timeline = s.timeline || [];
+    for (var m = 0; m < timeline.length; m++) {
+      var ev = timeline[m];
+      var key = ev.ts + '_' + ev.channel;
+      if (!seenLogKeys[key]) {
+        seenLogKeys[key] = true;
+        addLogLine(ev);
+      }
+    }
+  }
+
+  function renderAlerts(alerts) {
+    if (alerts.length === 0) {
+      alertTable.innerHTML = '<tr><td colspan="4" class="empty">No alerts</td></tr>';
+      return;
+    }
+    var html = '';
+    for (var i = alerts.length - 1; i >= 0; i--) {
+      var a = alerts[i];
+      html += '<tr><td>' + fmtTime(a.ts) + '</td><td><span class="sev ' + sevClass(a.severity) + '">' + escHtml(a.severity || 'info') + '</span></td><td>' + escHtml(a.type) + '</td><td>' + escHtml(a.message) + '</td></tr>';
+    }
+    alertTable.innerHTML = html;
+  }
+
+  var seenLogKeys = {};
+
+  function addLogLine(ev) {
+    var sev = ev.severity || 'info';
+    var line = document.createElement('div');
+    line.className = 'log-line ' + sev;
+    var tsStr = fmtTime(ev.ts);
+    var chan = ev.channel || '';
+    var dataStr = '';
+    if (ev.data) {
+      if (ev.data.message) dataStr = ev.data.message;
+      else if (ev.data.ip) dataStr = ev.data.service + ':' + ev.data.port + ' from ' + ev.data.ip;
+      else dataStr = JSON.stringify(ev.data);
+    }
+    line.innerHTML = '<span class="ts">[' + escHtml(tsStr) + ']</span> <span class="src">' + escHtml(chan) + '</span> ' + escHtml(dataStr);
+    logArea.appendChild(line);
+    logLines.push(line);
+    if (logLines.length > MAX_LOG) {
+      var rm = logLines.shift();
+      if (rm.parentNode) rm.parentNode.removeChild(rm);
+    }
+    logArea.scrollTop = logArea.scrollHeight;
+  }
+
+  function renderPermissions(data) {
+    if (data.error) {
+      permBody.innerHTML = '<div class="empty">' + escHtml(data.error) + '</div>';
+      return;
+    }
+    var perms = data.permissions;
+    if (!perms || typeof perms !== 'object') {
+      permBody.innerHTML = '<div class="empty">No permission data</div>';
+      return;
+    }
+    var keys = Object.keys(perms);
+    if (keys.length === 0) {
+      permBody.innerHTML = '<div class="empty">No modules registered</div>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < keys.length; i++) {
+      var mod = keys[i];
+      var val = perms[mod];
+      var enabled = val === true || val === 'enabled' || (typeof val === 'object' && val.enabled);
+      var locked = typeof val === 'object' && val.locked;
+      html += '<div class="perm-row"><span class="perm-label">' + escHtml(mod);
+      if (locked) html += ' <span style="color:var(--red);font-size:11px">[LOCKED]</span>';
+      html += '</span><span>';
+      if (enabled) {
+        html += '<button class="btn btn-red btn-sm" onclick="sendPermLock(\'' + escHtml(mod) + '\')">Lock</button>';
+      } else {
+        html += '<button class="btn btn-green btn-sm" onclick="sendPermEnable(\'' + escHtml(mod) + '\')">Enable</button>';
+      }
+      if (locked) {
+        html += ' <button class="btn btn-blue btn-sm" onclick="sendPermUnlock(\'' + escHtml(mod) + '\')">Unlock</button>';
+      }
+      html += '</span></div>';
+    }
+    permBody.innerHTML = html;
+  }
+
+  // ---- WebSocket ----
+
+  function connect() {
+    if (ws && (ws.readyState === WebSocket.CONNECTING || ws.readyState === WebSocket.OPEN)) return;
+    try {
+      ws = new WebSocket(WS_URL);
+    } catch(e) {
+      scheduleReconnect();
+      return;
+    }
+
+    ws.onopen = function() {
+      connDot.classList.add('ok');
+      connLabel.textContent = 'Connected';
+      requestState();
+    };
+
+    ws.onmessage = function(evt) {
+      try {
+        var msg = JSON.parse(evt.data);
+        if (msg.type === 'state') renderState(msg);
+        else if (msg.type === 'alerts') renderAlerts(msg.alerts || []);
+        else if (msg.type === 'perm_status') renderPermissions(msg);
+        else if (msg.type === 'perm_enable' || msg.type === 'perm_lock' || msg.type === 'perm_unlock') requestPermStatus();
+      } catch(e) {}
+    };
+
+    ws.onclose = function() {
+      connDot.classList.remove('ok');
+      connLabel.textContent = 'Disconnected';
+      scheduleReconnect();
+    };
+
+    ws.onerror = function() {
+      connDot.classList.remove('ok');
+      connLabel.textContent = 'Error';
+    };
+  }
+
+  function scheduleReconnect() {
+    if (reconnectTimer) return;
+    reconnectTimer = setTimeout(function() {
+      reconnectTimer = null;
+      connect();
+    }, 3000);
+  }
+
+  function send(obj) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(obj));
+    }
+  }
+
+  // ---- Public commands ----
+
+  window.requestState = function() { send({cmd: 'get_state'}); };
+  window.requestAlerts = function() { send({cmd: 'get_alerts', limit: 100}); };
+  window.requestPermStatus = function() { send({cmd: 'perm_get_status'}); };
+  window.sendPermEnable = function(mod) { send({cmd: 'perm_enable', module: mod}); };
+  window.sendPermLock = function(mod) { send({cmd: 'perm_lock', module: mod}); };
+  window.sendPermUnlock = function(mod) { send({cmd: 'perm_unlock', module: mod}); };
+
+  window.clearLog = function() {
+    logArea.innerHTML = '';
+    logLines = [];
+    seenLogKeys = {};
+  };
+
+  // ---- Init ----
+  connect();
+})();
+</script>
+</body>
+</html>
