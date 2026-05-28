@@ -4,6 +4,7 @@
 
 ### 14-Program Cybersecurity Defense Platform for Windows
 
+[![Microsoft Store](https://img.shields.io/badge/Microsoft%20Store-Published-0078D4?logo=microsoftstore&logoColor=white)]()
 [![License](https://img.shields.io/badge/License-Commercial-blue.svg)]()
 [![Python](https://img.shields.io/badge/Python-3.8%2B-green.svg)]()
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6.svg)]()
@@ -15,6 +16,8 @@
 [Quick Start](#-quick-start) | [Programs](#-programs) | [Licensing](#-licensing) | [Architecture](#-architecture) | [Linux Version](#-linux-version)
 
 </div>
+
+> 🎉 **Published on the Microsoft Store.** NetGuardPro ships as a signed, verified Windows desktop application — search for **NetGuardPro** on the Microsoft Store to install. This repository hosts the source code for transparency, study, and self-hosting.
 
 ---
 
