@@ -53,7 +53,18 @@ Whether you need a network firewall, antivirus scanner, VPN manager, email secur
 
 ## 🖥️ Screenshots
 
-> Screenshots coming soon. Launch any program and visit `http://localhost:<port>` to see the dashboard in action.
+The unified **SentinelOS Cortex** dashboard running live with packet capture, anomaly detection, and threat correlation across all 14 modules. Public IPs have been blurred for privacy.
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/01-dashboard.png" alt="Tableau de bord — live packet capture, attack types, suspect IPs, bandwidth usage" /><br/><sub><b>Dashboard</b> — live overview: packets/sec, blocked, threats, active connections, attack types, protocols, suspect IPs</sub></td>
+<td width="50%"><img src="docs/screenshots/02-packets.png" alt="Packet Analyzer — DPI-style table with filtering" /><br/><sub><b>Packet Analyzer</b> — DPI-style view with Wireshark-like filtering (<code>ip.src</code>, <code>proto</code>), per-packet status (allow / block) and reason</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/screenshots/03-threats.png" alt="Threats — anomaly detection with z-scores" /><br/><sub><b>Threats</b> — statistical anomaly detection (z-score on byte volume, packet rate, port diversity) plus high-entropy payload detection and behavioral change scoring</sub></td>
+<td width="50%"><img src="docs/screenshots/04-map.png" alt="Network Intelligence — world map of connections" /><br/><sub><b>Network Intelligence</b> — geo-resolved connection map with per-country activity counters and ASN breakdown</sub></td>
+</tr>
+</table>
 
 ---
 
